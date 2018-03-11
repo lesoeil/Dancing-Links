@@ -58,6 +58,7 @@ int CLAUSE::algoA()
 	progress in an array m_1 ... m_n of "moves," whose significance is explained below.
 */
 	int nRet = -1;
+	int l_xor = -1;
 	int l_inv = -1;
 	int check = -1;
 	int suppress = -1;
@@ -83,7 +84,7 @@ A1:
 	d = 1;
 
 A2:
-/*	A2. [Choose.] Set l <- 2d. If C(l) <= C(l+1), set l <- l+1. Then sete m_d <-
+/*	A2. [Choose.] Set l <- 2d. If C(l) <= C(l+1), set l <- l+1. Then set m_d <-
 		(l & 1) + 4[C(l XOR 1)=0]. (See below.) Terminate successfully if C(l) =a.		*/
 	l = 2*d;
 	if (cell[l].C <= cell[l+1].C)
@@ -91,8 +92,6 @@ A2:
 		l = l+1;
 	}
 
-
-	int l_xor = 0;
 	if ((l & 1)==1)
 	{
 		l_xor = l-1;//l_xor = l & (!1);
@@ -107,13 +106,18 @@ A2:
 	{
 		//Successfully finish.
 		cout<<"A2: Successfully Finish."<<endl;
+		cout<<"l: "<<l<<" a: "<<a<<" d: "<<d<<endl;
+		for (int s=0; s<m; s++)
+		{
+			cout<<mt[s]<<" ";
+		}
+		cout<<endl;
 		return 0;
 	}
 
 A3:
 /*	A3. [Remove ~l.] Delete ~l from all active clause; but goto A5 if that would make
 		a clause empty. (We want to ignore ~l, because we're making l true.)			*/
-	l_inv = -1;
 	if ((l & 1)==1)
 	{
 		l_inv = l-1;
@@ -127,16 +131,21 @@ A3:
 	check = cell[l_inv].B;
 	while (check != l_inv)
 	{
-		if (check == START[cell[check].C])
+		if ((check == START[cell[check].C]) && (SIZE[cell[check].C]>=0))
 		{
 			goto A5;
 		}
+		check = cell[check].B;
 	}
 
 	check = cell[l_inv].B;
 	while (check != l_inv)
 	{
-		SIZE[cell[check].C]--;
+		if (SIZE[cell[check].C]>=0)
+		{
+			SIZE[cell[check].C]--;	
+		}
+		check = cell[check].B;
 	}
 
 A4:
@@ -145,7 +154,17 @@ A4:
 	suppress = cell[l].B;
 	while (suppress != l)
 	{
-		SIZE[cell[suppress].C] *= -1;//way to suppress clauses that contain l.
+		if (SIZE[cell[suppress].C]>=0)
+		{
+			for (int s=0; s<SIZE[cell[suppress].C]; s++)
+			{
+				cell[cell[suppress].L].C--;
+			}
+
+			SIZE[cell[suppress].C] *= -1;//way to suppress clauses that contain l.
+		}
+		
+		suppress = cell[suppress].B;
 	}
 
 
@@ -184,7 +203,16 @@ A7:
 	suppress = cell[l].B;
 	while (suppress != l)
 	{
-		SIZE[cell[suppress].C] *= -1;//way to suppress clauses that contain l.
+		if (SIZE[cell[suppress].C]<=0)
+		{
+			SIZE[cell[suppress].C] *= -1;//way to suppress clauses that contain l.
+			for (int s=0; s<SIZE[cell[suppress].C]; s++)
+			{
+				cell[cell[suppress].L].C++;
+			}			
+		}
+		
+		suppress = cell[suppress].B;
 	}
 
 A8:
@@ -194,7 +222,12 @@ A8:
 	check = cell[l_inv].B;
 	while (check != l_inv)
 	{
-		SIZE[cell[check].C]++;
+		if (SIZE[cell[check].C]>=0)
+		{
+			SIZE[cell[check].C]++;	
+		}
+		
+		check = cell[check].B;
 	}
 
 	goto A5;
