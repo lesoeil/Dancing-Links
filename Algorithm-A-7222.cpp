@@ -74,8 +74,8 @@ int CLAUSE::algoA()
 	int a = -1;// the number of active clauses.
 	int d = -1;// the depth-plus-one in an implicit search tree.
 	int l = -1;
-	int mt[m];
-	memset(mt, m, 0);
+	int mt[d+1];
+	memset(mt, 0, d+1);
 
 A1:
 /*	A1. [Initialize.] Set a <- m and d <- 1. (Here a represents the number of active
@@ -102,12 +102,14 @@ A2:
 	}
 
 	mt[d] = (l & 1) + 4*( (cell[l_xor].C==0)? 1:0);
+
+	//cout<<"C("<<l<<"): "<<cell[l].C<<" a: "<<a<<" d: "<<d<<endl;
 	if (cell[l].C ==a)
 	{
 		//Successfully finish.
 		cout<<"A2: Successfully Finish."<<endl;
-		cout<<"l: "<<l<<" a: "<<a<<" d: "<<d<<endl;
-		for (int s=0; s<m; s++)
+		//cout<<"l: "<<l<<" a: "<<a<<" d: "<<d<<endl;
+		for (int s=1; s<=d; s++)
 		{
 			cout<<mt[s]<<" ";
 		}
@@ -131,7 +133,7 @@ A3:
 	check = cell[l_inv].B;
 	while (check != l_inv)
 	{
-		if ((check == START[cell[check].C]) && (SIZE[cell[check].C]>=0))
+		if ((check == START[cell[check].C]) && (SIZE[cell[check].C]>0))
 		{
 			goto A5;
 		}
@@ -141,7 +143,7 @@ A3:
 	check = cell[l_inv].B;
 	while (check != l_inv)
 	{
-		if (SIZE[cell[check].C]>=0)
+		if (SIZE[cell[check].C]>0)
 		{
 			SIZE[cell[check].C]--;	
 		}
@@ -154,21 +156,22 @@ A4:
 	suppress = cell[l].B;
 	while (suppress != l)
 	{
-		if (SIZE[cell[suppress].C]>=0)
+		if (SIZE[cell[suppress].C]>0)
 		{
 			for (int s=0; s<SIZE[cell[suppress].C]; s++)
 			{
-				cell[cell[suppress].L].C--;
+				cell[cell[START[cell[suppress].C]+s].L].C--;
 			}
 
 			SIZE[cell[suppress].C] *= -1;//way to suppress clauses that contain l.
+			a--;
 		}
 		
 		suppress = cell[suppress].B;
 	}
 
 
-	a = a-cell[l].C;
+	//a = a-cell[l].C;
 	d = d+1;
 	goto A2;
 
@@ -198,7 +201,7 @@ A6:
 A7:
 /*	A7. [Reactivate l's clauses.] Set a <- a + C(l), and unsuppress all clauses that
 		contain l. (Those clauses are now unsatisfied, because l is no longer true.)	*/
-	a = a+cell[l].C;
+	//a = a+cell[l].C;
 
 	suppress = cell[l].B;
 	while (suppress != l)
@@ -208,8 +211,9 @@ A7:
 			SIZE[cell[suppress].C] *= -1;//way to suppress clauses that contain l.
 			for (int s=0; s<SIZE[cell[suppress].C]; s++)
 			{
-				cell[cell[suppress].L].C++;
-			}			
+				cell[cell[START[cell[suppress].C]+s].L].C++;
+			}
+			a++;		
 		}
 		
 		suppress = cell[suppress].B;
@@ -222,7 +226,7 @@ A8:
 	check = cell[l_inv].B;
 	while (check != l_inv)
 	{
-		if (SIZE[cell[check].C]>=0)
+		if (SIZE[cell[check].C]>0)
 		{
 			SIZE[cell[check].C]++;	
 		}
