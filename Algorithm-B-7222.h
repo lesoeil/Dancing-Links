@@ -25,7 +25,8 @@ private:
 	vector<CELL> cell;
 	vector<int> START;
 	vector<int> LINK;
-	int m;	// number of 3SAT clauses
+	vector<int> W;
+	int mClauses;	// number of 3SAT clauses
 	int n;	// number of literals
 
 	int extract();	

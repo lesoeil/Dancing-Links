@@ -59,11 +59,99 @@ int main(int argc, char** argv)
 CLAUSE::CLAUSE(string& data_file)
 		:fileName(data_file),
 		cell(),
-		m(-1),
+		mClauses(-1),
 		n(-1)
 {}
 
+/*	Algorithm B (Satisfiability by watching). Given nonempty clauses C_1 ^ .... ^ C_m
+	on n > 0 Boolean variables x_1 ... x_n, represented as above, this algorithm finds
+	a solution if and only if the clauses are satisfiable. It records its current progress
+	in an array m_1 ... m_n of "moves," whose significance was explained above.
+*/
 int CLAUSE::algoB()
 {
+	int d = -1;
+	int l = -1;
+	vector<int> m;
+	int l_inv = -1;
+	int nRet = -1;
+
+//	00. To read number of literals and 3SAT clauses from file.
+	nRet = extract();
+	if (nRet < 0)
+	{
+		cout<<"Open file "<<fileName<<" failed!!!"<<endl;
+		return nRet;
+	}
+
+	//n should has already been initialized before here.
+	m.insert(m.begin(), n+1, -1);
+
+B1: /*	[Initialize.] Set d <- 1. */
+	d = 1;
+
+B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d <- 
+		[W_(2d) = 0 or W_(2d+1) != 0] and l <- 2d + m_d. */
+	if (d > n)
+	{
+		cout<<"successfully Finished!"<<endl;
+		return 0;
+	}
+	else
+	{
+		m[d] = ((W[2*d]==0) || (W[2*d+1]!=0))? 1:0;
+		l = 2*d + m[d];
+		/* 
+		if ((W[2*d]==0) || (W[2*d+1]!=0))
+		{
+			m[d] = 1;
+		}
+		else
+		{
+			m[d] = 0;
+		}
+
+		l = 2*d + m[d];
+		*/
+	}
+
+B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch another
+		literal of C_j. But go to B5 if that can't be done. (See exercise 124.) */
+
+
+B4: /*	[Advance.] Set W_(~l) <- 0, d <- d+1, and return to B2. */
+	W[l^1] = 0;
+	d = d + 1;
+	goto B2;
+
+B5: /*	[Try again.] If m_d < 2, set m_d <- 3 - m_d, l <- 2d + (m_d & 1), and go to B3.*/
+	if (m[d] < 2)
+	{
+		m[d] = 3 - m[d];
+		l = 2*d + (m[d] & 1);
+		goto B3;
+	}
+
+B6: /*	[Backtrack.] Terminate unsuccessfully if d = 1 (the clauses are unsatisfi-
+		able). Otherwise set d <- d - 1 and to back to B5. */
+	if (d==1)
+	{
+		cout<<"Failed to find. The clauses seems unsatisfiable???"<<endl;
+		return -1;
+	}
+	else
+	{
+		d = d-1;
+		goto B5;
+	}
+
+
+	return 0;
+}
+
+
+int CLAUSE::extract()
+{
+
 	return 0;
 }

@@ -179,5 +179,8 @@ int main(int argc, char* argv[])
 	//cout<<"Total lines/words handled: "<<count<<endl;
 	
 
+	int l = 101;
+	cout<<"l: "<<l<<"   l_inv: "<<(l^1)<<endl;
+
 	return 0;
 }
