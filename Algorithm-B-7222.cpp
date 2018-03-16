@@ -101,18 +101,6 @@ B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d 
 	{
 		m[d] = ((W[2*d]==0) || (W[2*d+1]!=0))? 1:0;
 		l = 2*d + m[d];
-		/* 
-		if ((W[2*d]==0) || (W[2*d+1]!=0))
-		{
-			m[d] = 1;
-		}
-		else
-		{
-			m[d] = 0;
-		}
-
-		l = 2*d + m[d];
-		*/
 	}
 
 B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch another
@@ -152,6 +140,129 @@ B6: /*	[Backtrack.] Terminate unsuccessfully if d = 1 (the clauses are unsatisfi
 
 int CLAUSE::extract()
 {
+	//cout<<fileName<<endl;
+
+	fstream fs;
+	fs.open(fileName.c_str(), fstream::in);
+	string line;
+	
+	getline(fs, line);
+	//cout<<line<<endl;
+
+	istringstream buf(line);
+	istream_iterator<string> beg(buf);
+	istream_iterator<string> end;
+
+	vector<string> tokens(beg, end);
+
+	for (auto& s: tokens)
+	{
+		//cout<<s<<" ";
+		n = std::stoi(s);
+		//cout<<"number of literals n is:"<<n<<endl;
+	}
+	//cout<<endl;
+
+	vector<set<int, less<int>>* > raw;
+	int i_index=0;
+
+	while (getline(fs, line))
+	{
+		istringstream buf(line);
+		istream_iterator<string> beg(buf);
+		istream_iterator<string> end;
+
+		vector<string> tokens(beg, end);
+		if (tokens.size()<=0)
+		{
+			continue;
+		}
+
+		set<int, less<int>>* its = new set<int, less<int>>; 
+		raw.push_back(its);
+		
+		for (auto& s: tokens)
+		{
+			//cout<<s<<" ";
+			raw[i_index]->insert(std::stoi(s));
+		}
+		//cout<<endl;
+		i_index++;
+	}
+
+	//cout<<"i_index: "<<i_index<<endl;
+	mClauses = i_index;
+
+	//cout<<"raw.size(): "<<raw.size()<<endl;
+	//set<int>::const_iterator it;
+	for (int i=0; i<=1; i++)
+	{
+		cell.push_back(CELL());
+		cell[i].L = -1;
+		W.push_back(0);
+	}
+	
+
+	int tail[2+2*n];
+	for (int i=2; i<2*n+2; i++)
+	{
+		cell.push_back(CELL());
+		cell[i].L = -1;
+		W.push_back(0);
+	}
+
+
+
+	int sidx = 2+2*n;
+	for(int i=0; i<raw.size(); i++)
+	{
+		START.push_back(0);
+		LINK.push_back(0);
+	}
+
+	for (int i=raw.size()-1; i>=0; i--)
+	{
+		//int j = 0;
+
+		START[i+1] = sidx;		
+		for (auto val: *raw[i])
+		{
+			cell.push_back(CELL());
+			cell[sidx].L = val;
+			sidx++;
+			//j++;cout<<j<<":";
+			cout<<val<<" ";
+		}
+		LINK[i+1] = W[cell[START[i+1]].L];
+		W[cell[START[i+1]].L] = i+1;
+		cout<<endl;
+	}
+
+	/*	
+	cout<<"sidx: "<<sidx<<endl;
+	START[0] =  sidx;
+	for (int s=2; s<=2*n+1; s++)
+	{
+		cout<<"W["<<s<<"]: "<<W[s]<<endl;
+	}
+
+	for (int s=0; s<sidx; s++)
+	{
+		cout<<s<<" L: "<<cell[s].L<<endl;
+	}
+
+	for(int i=0; i<=raw.size(); i++)
+	{
+		cout<<"START["<<i<<"]: "<<START[i]<<" LINK["<<i<<"]: "<<LINK[i]<<endl;
+	}
+	*/
+
+	/*
+	while (getline(fs, line))
+	{
+		cout<<line<<endl;
+	}
+	*/
 
 	return 0;
 }
