@@ -129,7 +129,7 @@ int CLAUSE::algoB()
 		return nRet;
 	}
 
-	debugPrint();
+	//debugPrint();
 
 	//n should has already been initialized before here.
 	m.insert(m.begin(), n+1, -1);
@@ -142,6 +142,12 @@ B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d 
 	if (d > n)
 	{
 		cout<<"successfully Finished!"<<endl;
+		for (int i=1; i<d; i++)
+		{
+			cout<<m[i]<<" ";
+		}
+		cout<<endl;
+
 		return 0;
 	}
 	else
@@ -150,8 +156,11 @@ B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d 
 		l = 2*d + m[d];
 	}
 
+
 B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch another
 		literal of C_j. But go to B5 if that can't be done. (See exercise 124.) */
+
+	//cout<<"d: "<<d<<"  l:"<<l<<endl;
 	watchee = W[l^1];
 	while (watchee)
 	{
@@ -163,6 +172,31 @@ B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch 
 		watchee = LINK[watchee];
 	}
 
+
+	for (int i=1; i<=START.size(); i++)
+	{
+		if ((cell[START[i]].L)>l)
+		{
+			for (int s=START[i]+1; s<=START[i-1]-1; s++)
+			{
+				if (l == cell[s].L)
+				{
+					//cout<<"Before swap: "<<cell[START[watchee]].L<<"  "<<cell[s].L<<endl;
+					swap(cell[START[i]].L, cell[s].L);
+					//cout<<"After swap: "<<cell[START[watchee]].L<<"  "<<cell[s].L<<endl;
+					break;
+				}
+			}
+
+			if (l == cell[START[i]].L)
+			{
+				int temp = LINK[i];
+				LINK[i] = W[l];
+				W[l] = i;	
+			}
+		}
+	}
+
 	watchee = W[l^1];
 	while (watchee)
 	{
@@ -170,14 +204,18 @@ B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch 
 		{
 			if (cell[START[watchee]].L < cell[s].L)
 			{
+				//cout<<"Before swap: "<<cell[START[watchee]].L<<"  "<<cell[s].L<<endl;
 				swap(cell[START[watchee]].L, cell[s].L);
+				//cout<<"After swap: "<<cell[START[watchee]].L<<"  "<<cell[s].L<<endl;
 				break;
 			}
 		}
-		LINK[watchee] = W[cell[START[watchee]].L];
+
+		int temp = LINK[watchee];
+		LINK[watchee] = W[cell[START[watchee]].L];		
 		W[cell[START[watchee]].L] = watchee;
 
-		watchee = LINK[watchee];
+		watchee = temp;
 	}
 
 
@@ -199,6 +237,7 @@ B6: /*	[Backtrack.] Terminate unsuccessfully if d = 1 (the clauses are unsatisfi
 	if (d==1)
 	{
 		cout<<"Failed to find. The clauses seems unsatisfiable???"<<endl;
+		//debugPrint();
 		return -1;
 	}
 	else
