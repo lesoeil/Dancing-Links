@@ -29,5 +29,6 @@ private:
 	int mClauses;	// number of 3SAT clauses
 	int n;	// number of literals
 
-	int extract();	
+	int extract();
+	int debugPrint();
 };

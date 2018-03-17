@@ -49,8 +49,7 @@ int main(int argc, char** argv)
 	auto_ptr<CLAUSE> pClause((new CLAUSE(clause_file)));
 	pClause->algoB();
 
-	
-	cout<<"Hello Algorithm B!"<<endl;
+	//cout<<"Hello Algorithm B!"<<endl;
 	return 0;
 }
 
@@ -62,6 +61,51 @@ CLAUSE::CLAUSE(string& data_file)
 		mClauses(-1),
 		n(-1)
 {}
+
+
+int CLAUSE::debugPrint()
+{
+	/*
+	cout<<"Total number cells: "<<cell.size()<<endl;
+	cout<<"Total number START: "<<START.size()<<endl;
+	cout<<"Total number LINK: "<<LINK.size()<<endl;
+	cout<<"Total number W: "<<W.size()<<endl;
+
+	for (int s=0; s<cell.size(); s++)
+	{
+		cout<<s<<" L: "<<cell[s].L<<endl;
+	}
+	*/
+
+	for (int s=2; s<=2*n+1; s++)
+	{
+		cout<<"Literal: "<<s<<"       -->                   W["<<s<<"]: "<<W[s]<<endl;
+	}
+
+
+	cout<<"Clause "<<0<<":        -->   START["<<0<<"]: "<<START[0]<<" LINK["<<0<<"]: "<<LINK[0]<<endl;
+	for (int c=1; c<=START.size(); c++)
+	{
+		cout<<"Clause "<<c<<": ";
+		for (int s=START[c]; s<START[c-1]; s++)
+		{
+			cout<<cell[s].L<<" ";
+		}
+
+		cout<<" -->   START["<<c<<"]: "<<START[c]<<" LINK["<<c<<"]: "<<LINK[c];
+
+		cout<<endl;
+	}
+
+	/*
+	for(int i=0; i<=START.size(); i++)
+	{
+		cout<<"Clause "<<i<<" -->   START["<<i<<"]: "<<START[i]<<" LINK["<<i<<"]: "<<LINK[i]<<endl;
+	}
+	*/
+
+	return 0;
+}
 
 /*	Algorithm B (Satisfiability by watching). Given nonempty clauses C_1 ^ .... ^ C_m
 	on n > 0 Boolean variables x_1 ... x_n, represented as above, this algorithm finds
@@ -75,6 +119,7 @@ int CLAUSE::algoB()
 	vector<int> m;
 	int l_inv = -1;
 	int nRet = -1;
+	int watchee = -1;
 
 //	00. To read number of literals and 3SAT clauses from file.
 	nRet = extract();
@@ -83,6 +128,8 @@ int CLAUSE::algoB()
 		cout<<"Open file "<<fileName<<" failed!!!"<<endl;
 		return nRet;
 	}
+
+	debugPrint();
 
 	//n should has already been initialized before here.
 	m.insert(m.begin(), n+1, -1);
@@ -105,6 +152,33 @@ B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d 
 
 B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch another
 		literal of C_j. But go to B5 if that can't be done. (See exercise 124.) */
+	watchee = W[l^1];
+	while (watchee)
+	{
+		if (cell[START[watchee]].L > cell[START[watchee-1]-1].L)
+		{
+			goto B5;
+		}
+
+		watchee = LINK[watchee];
+	}
+
+	watchee = W[l^1];
+	while (watchee)
+	{
+		for (int s=START[watchee]+1; s<=START[watchee-1]-1; s++)
+		{
+			if (cell[START[watchee]].L < cell[s].L)
+			{
+				swap(cell[START[watchee]].L, cell[s].L);
+				break;
+			}
+		}
+		LINK[watchee] = W[cell[START[watchee]].L];
+		W[cell[START[watchee]].L] = watchee;
+
+		watchee = LINK[watchee];
+	}
 
 
 B4: /*	[Advance.] Set W_(~l) <- 0, d <- d+1, and return to B2. */
@@ -231,13 +305,14 @@ int CLAUSE::extract()
 			cell[sidx].L = val;
 			sidx++;
 			//j++;cout<<j<<":";
-			cout<<val<<" ";
+			//cout<<val<<" ";
 		}
 		LINK[i+1] = W[cell[START[i+1]].L];
 		W[cell[START[i+1]].L] = i+1;
-		cout<<endl;
+		//cout<<endl;
 	}
 
+	START[0] =  sidx;
 	/*	
 	cout<<"sidx: "<<sidx<<endl;
 	START[0] =  sidx;
