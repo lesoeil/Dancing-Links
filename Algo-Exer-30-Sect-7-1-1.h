@@ -23,7 +23,7 @@ private:
 	string fileName;
 	int n;
 	std::vector<pair<int, int>> raw;
-	std::vector<pair<int, int>> subcube;
+	std::set<pair<int, int>> maxSet;
 };
 
 

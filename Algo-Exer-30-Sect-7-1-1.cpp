@@ -86,9 +86,8 @@ C1:
 	});
 	*/
 
-	auto printCube = [](const pair<int, int> &point) { std::cout<<point.first<<" "<<point.second<<endl;};
-	for_each (baseCube.begin(), baseCube.end(), printCube);
-	return 0;
+	//auto printCube = [](const pair<int, int> &point) { std::cout<<point.first<<" "<<point.second<<endl;};
+	//for_each (baseCube.begin(), baseCube.end(), printCube);
 
 	while (baseCube.size() >0)
 	{
@@ -116,12 +115,68 @@ C1:
 			int a = baseCube[i].first;
 			int b = baseCube[i].second;
 
-
+			for (int j=0; j<n; j++)
+			{
+				if ((a & (1<<j))==0)
+				{
+					//int a_next = a | (1<<j);
+					//int b_next = b ^ (1<<j);
+					int b_temp = b^(1<<j);
+					for (int k=i+1; k<baseCube.size(); k++)
+					{
+						if ((baseCube[k].first == a) && (baseCube[k].second == b_temp))
+						{
+							int a_new = a | (1<<j);
+							int b_new = b & ~(1<<j);
+							nextCube.push_back(make_pair(a_new, b_new));
+							t[i] |= (1<<j);
+							t[k] |= (1<<j);
+						}
+					}
+				}
+				else
+				{
+					continue;
+				}
+			}
 		}
 
+		for (int i = 0; i < baseCube.size(); i++)
+		{
+			if (t[i]==0)
+			{
+				maxSet.insert(make_pair(baseCube[i].first, baseCube[i].second));
+			}
+		}
+
+		baseCube = nextCube;
+		nextCube.clear();
 	}
 
-
+	std::set<pair<int, int>>::iterator it;
+	for (it = maxSet.begin(); it !=maxSet.end(); it++)
+	{
+		for (int j=0; j<n; j++)
+		{
+			if (it->first & (1<<(n-j-1)))
+			{
+				cout<<"*";
+			}
+			else
+			{
+				if (it->second & (1<<(n-j-1)))
+				{
+					cout<<"1";
+				}
+				else
+				{
+					cout<<"0";
+				}
+			}
+		}
+		cout<<endl;
+	};
+	
 
 
 	return nRet;
