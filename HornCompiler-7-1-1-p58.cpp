@@ -111,8 +111,20 @@ int SimpleParser::extract()
 	//cout<<endl;
 	#endif
 
+	vector<char> symb = {'+', '-', '*', '/', '(', ')', 'a', 'b', 'c', '0', '1'};
+	/*
+	{
+		vector<char>::const_iterator it;
+		for (it=symb.begin(); it!=symb.end(); it++)
+		{
+			cout<<*it<<endl;
+		}
+	}
+	*/
+
 	//vector<set<int, greater<int>>* > raw;
 	int i_index=1;
+	int count=0;
 
 	while (getline(fs, line))
 	{
@@ -128,23 +140,80 @@ int SimpleParser::extract()
 
 		//set<int, greater<int>>* its = new set<int, greater<int>>; 
 		//raw.push_back(its);
-		cout<<i_index<<":  ";
-		for (auto& s: tokens)
+		//cout<<i_index<<":  ";
+		//cout<<"\""<<line<<"\" ==> size: "<<tokens.size()<<endl;
+
+		vector<char>::const_iterator it;
+		switch (tokens.size())
 		{
-			int temp = 0;
-			int len = s.length();
+		case 2:
+			for (auto& ch: symb)
+			{
+				for (auto& s: tokens)
+				{
+					auto temp = s;
+					std::replace(temp.begin(), temp.end(), 'x', ch);
+					cout<<temp<<" ";
+				}
+				cout<<endl;
+				count++;
+			}
+			
+		break;
+
+		case 1:
+			for (auto& s: tokens)
+			{
+					//auto temp = s;
+					//std::replace(temp.begin(), temp.end(), 'x', ch);
+					cout<<s;
+			}
+			cout<<endl;
+			count++;
+
+		break;
+
+		case 3:
+			for (auto& chx: symb)
+			{
+				for (auto& chy: symb)
+				{
+					for (auto& s: tokens)
+					{
+						auto temp = s;
+						std::replace(temp.begin(), temp.end(), 'x', chx);
+						std::replace(temp.begin(), temp.end(), 'y', chy);
+						cout<<temp<<" ";
+					}
+					cout<<endl;
+					count++;
+				}
+			}
+
+		break;
+
+		default:
+		break;
+		}
+
+		//for (auto& s: tokens)
+		//{
+		//	int temp = 0;
+		//	int len = s.length();
 			//std::stoi(s)
 			
 			//cout<<s<<" => "<<temp<<endl;
 
 			//raw.push_back(make_pair(0, temp));
-			cout<<s<<" ";
+			//cout<<s<<" ";
 			//raw[i_index]->insert(std::stoi(s));
-		}
-		cout<<endl;
+		//}
 		//cout<<endl;
-		i_index++;
+		//cout<<endl;
+		//i_index++;
 	}
+
+	cout<<"Total number of clauses: "<<count<<endl;
 
 #if 0
 	//cout<<"i_index: "<<i_index<<endl;
