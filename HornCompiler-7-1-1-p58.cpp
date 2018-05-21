@@ -55,6 +55,14 @@ int generateALL()
 	return 0;
 }
 
+PROPOSITION::PROPOSITION(std::string& var)
+	:pro(var),
+	 truth(false),
+	 last(NULL)
+{
+
+}
+
 SimpleParser::SimpleParser(string& fname)
 :fileName(fname)
 {
@@ -71,6 +79,9 @@ int SimpleParser::horn()
 	int nRet = -1;
 
 	nRet = extract();
+
+	auto print = [](const PROPOSITION& med) { std::cout<<med.pro<<endl;};
+	for_each (P.begin(), P.end(), print);
 
 	return nRet;
 }
@@ -153,9 +164,12 @@ int SimpleParser::extract()
 				{
 					auto temp = s;
 					std::replace(temp.begin(), temp.end(), 'x', ch);
-					cout<<temp<<" ";
+					//cout<<temp<<" ";
+					//P.insert((std::string&)(*temp));
+					PROPOSITION* pEle = new PROPOSITION(temp);
+					P.insert(*pEle);
 				}
-				cout<<endl;
+				//cout<<endl;
 				count++;
 			}
 			
@@ -164,11 +178,13 @@ int SimpleParser::extract()
 		case 1:
 			for (auto& s: tokens)
 			{
-					//auto temp = s;
+					auto temp = s;
 					//std::replace(temp.begin(), temp.end(), 'x', ch);
-					cout<<s;
+					//cout<<s;
+					PROPOSITION* pEle = new PROPOSITION(temp);
+					P.insert(*pEle);
 			}
-			cout<<endl;
+			//cout<<endl;
 			count++;
 
 		break;
@@ -183,9 +199,11 @@ int SimpleParser::extract()
 						auto temp = s;
 						std::replace(temp.begin(), temp.end(), 'x', chx);
 						std::replace(temp.begin(), temp.end(), 'y', chy);
-						cout<<temp<<" ";
+						//cout<<temp<<" ";
+						PROPOSITION* pEle = new PROPOSITION(temp);
+						P.insert(*pEle);
 					}
-					cout<<endl;
+					//cout<<endl;
 					count++;
 				}
 			}
@@ -213,7 +231,7 @@ int SimpleParser::extract()
 		//i_index++;
 	}
 
-	cout<<"Total number of clauses: "<<count<<endl;
+	//cout<<"Total number of clauses: "<<count<<endl;
 
 #if 0
 	//cout<<"i_index: "<<i_index<<endl;
