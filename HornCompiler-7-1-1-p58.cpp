@@ -60,13 +60,26 @@ PROPOSITION::PROPOSITION(std::string& var)
 	 truth(false),
 	 last(NULL)
 {
+	//Empty
+}
+
+CLAUSE::CLAUSE(std::string& var)
+	:wholeClause(var),
+	 count(0),
+	 prev(NULL),
+	 start(0)
+{
 
 }
 
-SimpleParser::SimpleParser(string& fname)
-:fileName(fname)
-{
 
+SimpleParser::SimpleParser(string& fname)
+	:fileName(fname),
+	 l(0),
+	 s(0)
+{
+	//std::set<PROPOSITION>::const_iterator it=P.begin();
+	//MEM.insert(P.begin());
 }
 
 SimpleParser::~SimpleParser()
@@ -80,8 +93,18 @@ int SimpleParser::horn()
 
 	nRet = extract();
 
-	auto print = [](const PROPOSITION& med) { std::cout<<med.pro<<endl;};
-	for_each (P.begin(), P.end(), print);
+	cout<<"Number of clauses: "<<C.size()<<endl;
+	//auto print = [](const PROPOSITION& med) { std::cout<<med.pro<<endl;};
+	//for_each (P.begin(), P.end(), print);
+	
+	//auto print = [](const std::set<PROPOSITION>::const_iterator& it) { std::cout<<it->pro<<endl;};
+	//for_each (++MEM.begin(), MEM.end(), print);
+	/*
+	for (int i=1; i<MEM.size(); i++)
+	{
+		cout<<MEM[i]->pro<<endl;
+	}
+	*/
 
 	return nRet;
 }
@@ -133,6 +156,9 @@ int SimpleParser::extract()
 	}
 	*/
 
+	MEM.push_back(P.begin());
+	//MEM.push_back((std::set<PROPOSITION>::const_iterator)(empty()));
+
 	//vector<set<int, greater<int>>* > raw;
 	int i_index=1;
 	int count=0;
@@ -160,15 +186,68 @@ int SimpleParser::extract()
 		case 2:
 			for (auto& ch: symb)
 			{
+				int index = 0;
+				set<string> conditions;
+				string target;
+				int k = -1;
+				string* final = new string("");
+				CLAUSE* pClause = new CLAUSE(*final);
+				pClause->start = l;
 				for (auto& s: tokens)
 				{
 					auto temp = s;
 					std::replace(temp.begin(), temp.end(), 'x', ch);
 					//cout<<temp<<" ";
 					//P.insert((std::string&)(*temp));
-					PROPOSITION* pEle = new PROPOSITION(temp);
-					P.insert(*pEle);
+					auto checkp = P.find(temp);
+					if (checkp == P.end())
+					{
+						PROPOSITION* pEle = new PROPOSITION(temp);
+						P.insert(*pEle);
+					}
+					
+					index++;
+					if (index == tokens.size())
+					{
+						target = *(new string(temp));
+						pClause->conclusion = temp;						
+					}
+					else
+					{
+						conditions.insert(*(new string(temp)));
+						pClause->count++;
+						k = pClause->count;
+						//pClause->
+						//MEM.push_back(P.begin());
+						//MEM[l+k] = P.find(temp);
+						MEM.insert(MEM.begin()+l+k, P.find(temp));
+					}
 				}
+
+
+				for (auto& ts : conditions)
+				{
+					*final += ts+" ";
+				}
+
+				*final += target;
+				//string temp_s = *final+target;
+
+				//cout<<*final<<endl;
+				auto lookfor = C.find(*final);
+				if (lookfor == C.end())
+				{
+					//cout<<*final<<": Not Find Yet"<<endl;
+					l = l+k;
+					pClause->wholeClause = *final;
+					C.insert(*pClause);
+				}
+				else
+				{
+					//cout<<"Duplicate clause!"<<*final<<" No need to insert."<<endl;
+					delete pClause;
+				}
+
 				//cout<<endl;
 				count++;
 			}
@@ -176,34 +255,142 @@ int SimpleParser::extract()
 		break;
 
 		case 1:
+		{
+			int index = 0;
+			set<string> conditions;
+			string target;
+			int k = -1;
+			string* final = new string("");
+			CLAUSE* pClause = new CLAUSE(*final);
+			pClause->start = l;
+
 			for (auto& s: tokens)
 			{
-					auto temp = s;
-					//std::replace(temp.begin(), temp.end(), 'x', ch);
-					//cout<<s;
+				auto temp = s;
+				//std::replace(temp.begin(), temp.end(), 'x', ch);
+				//cout<<s;
+
+				auto checkp = P.find(temp);
+				if (checkp == P.end())
+				{
 					PROPOSITION* pEle = new PROPOSITION(temp);
 					P.insert(*pEle);
+				}
+
+				index++;
+				if (index == tokens.size())
+				{
+					target = *(new string(temp));
+					pClause->conclusion = temp;
+				}
+				else
+				{
+					conditions.insert(*(new string(temp)));
+					pClause->count++;
+					k = pClause->count;
+					//pClause->
+					//MEM.push_back(P.begin());
+					//MEM[l+k] = P.find(temp);
+					MEM.insert(MEM.begin()+l+k, P.find(temp));
+				}			
 			}
 			//cout<<endl;
+
+			for (auto& ts : conditions)
+			{
+				*final += ts+" ";
+			}
+
+			*final += target;
+			//string temp_s = *final+target;
+
+			//cout<<*final<<endl;
+			auto lookfor = C.find(*final);
+			if (lookfor == C.end())
+			{
+				//cout<<*final<<": Not Find Yet"<<endl;
+				l = l+k;
+				pClause->wholeClause = *final;
+				C.insert(*pClause);
+			}
+			else
+			{
+				//cout<<"Duplicate clause!"<<*final<<" No need to insert."<<endl;
+				delete pClause;
+			}
 			count++;
 
 		break;
+		}
 
 		case 3:
 			for (auto& chx: symb)
 			{
 				for (auto& chy: symb)
 				{
+					int index = 0;
+					set<string> conditions;
+					string target;
+					int k = -1;
+					string* final = new string("");
+					CLAUSE* pClause = new CLAUSE(*final);
+					pClause->start = l;
 					for (auto& s: tokens)
 					{
 						auto temp = s;
 						std::replace(temp.begin(), temp.end(), 'x', chx);
 						std::replace(temp.begin(), temp.end(), 'y', chy);
 						//cout<<temp<<" ";
-						PROPOSITION* pEle = new PROPOSITION(temp);
-						P.insert(*pEle);
+
+						auto checkp = P.find(temp);
+						if (checkp == P.end())
+						{
+							PROPOSITION* pEle = new PROPOSITION(temp);
+							P.insert(*pEle);
+						}
+						
+						index++;
+						if (index == tokens.size())
+						{
+							target = *(new string(temp));
+							pClause->conclusion = temp;
+						}
+						else
+						{
+							conditions.insert(*(new string(temp)));
+							pClause->count++;
+							k = pClause->count;
+							//pClause->
+							//MEM.push_back(P.begin());
+							//MEM[l+k] = P.find(temp);
+							MEM.insert(MEM.begin()+l+k, P.find(temp));
+						}
 					}
 					//cout<<endl;
+
+					for (auto& ts : conditions)
+					{
+						*final += ts+" ";
+					}
+
+					*final += target;
+					//string temp_s = *final+target;
+
+					//cout<<*final<<endl;
+					auto lookfor = C.find(*final);
+					if (lookfor == C.end())
+					{
+						//cout<<*final<<": Not Find Yet"<<endl;
+						l = l+k;
+						pClause->wholeClause = *final;
+						C.insert(*pClause);
+					}
+					else
+					{
+						cout<<"Duplicate clause!"<<*final<<" No need to insert."<<endl;
+						delete pClause;
+					}
+
 					count++;
 				}
 			}
