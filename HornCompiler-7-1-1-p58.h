@@ -40,7 +40,7 @@ public:
 
 	std::string pro;	// content of the proposition, for example, in "Vc ⋀ 1L => c1",
 						// each of {"Vc", "1L", "c1"} is one PROPOSITION.
-	bool truth;			// TRUTH(p) is 1 if known to be true, otherwise 0;
+	int truth;			// TRUTH(p) is 1 if known to be true, otherwise 0;
 	const CLAUSE* last; // LAST(p) is the last clause in which p is waiting to be asserted;
 
 };
