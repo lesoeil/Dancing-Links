@@ -207,17 +207,50 @@ C4:	/*	[Done with c?] If k = 0, go to C5. Otherwise set p <- MEM[l+k].
 		If TRUTH(p) = 1, set k <- k-1 and repeat this step. Otherwise set
 		COUNT(c) <- k, PREV(c) <- LAST(p), LAST(p) <- c, and go to C6.
 	*/
+	if (0==k)
+	{
+		goto C5;
+	}
+	else
+	{
+		p = MEM[l+k];		
+		while (k>0) 
+		{
+			if (1==p->truth)
+			{
+				k = k-1;
+				p = MEM[l+k];
+			}
+			else
+			{
+		 		c->count = k;
+		 		c->prev = p->last;
+		 		const_cast<CLAUSE*&> (p->last) = c;
+		 		goto C6;
+			}
+		}
+
+		//c->count = k;
+	}
 
 
 C5:	/*	[Deduce CONCLUSION(c).] Set p <- CONCLUSION(c). If TRUTH(p) = 0, set
 		TRUTH(p) <- 1, S_s <- p, s <- s+1.
 	*/
+	p = P.find(c->conclusion);
+	if (0==p->truth)
+	{
+		const_cast<int&>(p->truth) = 1;
+		SS.push_back(*p);
+		s++;	
+	}
 
 
 C6:	/*	[Loop on c.] Set c <- c' and return to C3.
 	*/
-
-	return nRet;
+	c = c_proceed;
+	goto C3;
+	
 }
 
 int SimpleParser::extract()
