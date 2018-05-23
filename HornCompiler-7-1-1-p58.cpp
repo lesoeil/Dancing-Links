@@ -113,22 +113,53 @@ SimpleParser::~SimpleParser()
 int SimpleParser::horn()
 {
 	int nRet = -1;
-
+	std::set<PROPOSITION>::const_iterator p;
+	CLAUSE* c;
+	int k = 0;
+	int l = 0;
+	CLAUSE* c_proceed;
 
 C1: /*	[Initialize.] Set LAST(p) <- ⋀ and TRUTH(p) <- 0 for each proposition p.
 		Also set l <- s <- 0, so that MEM and the stack are initially empty. Then
 		for each clause c, having the form (36), set CONCLUSION(c) <- v. If k = 0
 		and TRUTH(v) = 0, simply set TRUTH(v) <- 1, S_s <- v, and s <- s+1. But
 		if k > 0, set MEM[l+j] <- u_j for 1 ≤ j ≤ k, COUNT(c) <- k, l <- l + k,
-		PREV(v) <- LAST(u_k), and LAST(u_k) <- c.
+		PREV(c) <- LAST(u_k), and LAST(u_k) <- c.
 	*/
 	nRet = extract();
 
-	cout<<"l:"<<l<<"  s:"<<s<<endl;
+	for (auto cs: C)
+	{
+		if (cs.count == 0)
+		{
+			auto v = P.find(cs.conclusion);
+			if (v->truth == 0)
+			{
+				//cout<<v->pro<<endl;
+				const_cast<int&> (v->truth) = 1;
+				SS.push_back(*v);
+				s++;
+			}
+			//cout<<s.wholeClause<<endl;
+		}
+		else
+		{
+			auto uk = MEM[cs.start + cs.count];
+			//cout<<uk->pro<<endl;
+			cs.prev = uk->last;
+			(const_cast<CLAUSE*&> (uk->last)) = &cs;
+		}
+	}
+
+	//cout<<C.size()<<endl;
+	//cout<<P.size()<<endl;
+
+	//cout<<"l:"<<l<<"  s:"<<s<<endl;
 
 	//cout<<"Number of clauses: "<<C.size()<<endl;
 	//auto print = [](const PROPOSITION& med) { std::cout<<med.pro<<endl;};
 	//for_each (P.begin(), P.end(), print);
+	//cout<<"Size of P:"<<P.size()<<endl;
 	
 	//auto print = [](const std::set<PROPOSITION>::const_iterator& it) { std::cout<<it->pro<<endl;};
 	//for_each (++MEM.begin(), MEM.end(), print);
@@ -143,11 +174,33 @@ C2:	/*	[Prepare to loop.] Terminate the algorithm if s = 0; the desired core now
 		consists of all propositions whose TRUTH has been set to 1. Otherwise set
 		s <- s-1, p <- S_s, and c <- LAST(p). (We'll update the clauses that await p.)
 	*/
+	//cout<<s<<endl;
+	if (0==s)
+	{
+		cout<<s<<" == 0. Terminate"<<endl;
+		return 0;
+	}
+	else
+	{
+		s--;
+		p = P.find(SS[s].pro);
+		c = p->last;
+	}
 
 
 C3:	/*	[Done with loop?] If c = ⋀, return to C2. Otherwise set k <- COUNT(c) - 1,
 		l <- START(c), and c' <- PREV(c).
 	*/
+	if (NULL == c)
+	{
+		goto C2;
+	}
+	else
+	{
+		k = c->count-1;
+		l = c->start;
+		c_proceed = c->prev;
+	}
 
 
 C4:	/*	[Done with c?] If k = 0, go to C5. Otherwise set p <- MEM[l+k].
@@ -251,9 +304,9 @@ int SimpleParser::extract()
 				string* final = new string("");
 				CLAUSE* pClause = new CLAUSE(*final);
 				pClause->start = l;
-				for (auto& s: tokens)
+				for (auto& cs: tokens)
 				{
-					auto temp = s;
+					auto temp = cs;
 					std::replace(temp.begin(), temp.end(), 'x', ch);
 					//cout<<temp<<" ";
 					//P.insert((std::string&)(*temp));
@@ -322,11 +375,11 @@ int SimpleParser::extract()
 			CLAUSE* pClause = new CLAUSE(*final);
 			pClause->start = l;
 
-			for (auto& s: tokens)
+			for (auto& cs: tokens)
 			{
-				auto temp = s;
+				auto temp = cs;
 				//std::replace(temp.begin(), temp.end(), 'x', ch);
-				//cout<<s;
+				//cout<<cs;
 
 				auto checkp = P.find(temp);
 				if (checkp == P.end())
@@ -393,9 +446,9 @@ int SimpleParser::extract()
 					string* final = new string("");
 					CLAUSE* pClause = new CLAUSE(*final);
 					pClause->start = l;
-					for (auto& s: tokens)
+					for (auto& cs: tokens)
 					{
-						auto temp = s;
+						auto temp = cs;
 						std::replace(temp.begin(), temp.end(), 'x', chx);
 						std::replace(temp.begin(), temp.end(), 'y', chy);
 						//cout<<temp<<" ";
@@ -459,17 +512,17 @@ int SimpleParser::extract()
 		break;
 		}
 
-		//for (auto& s: tokens)
+		//for (auto& cs: tokens)
 		//{
 		//	int temp = 0;
-		//	int len = s.length();
-			//std::stoi(s)
+		//	int len = cs.length();
+			//std::stoi(cs)
 			
-			//cout<<s<<" => "<<temp<<endl;
+			//cout<<cs<<" => "<<temp<<endl;
 
 			//raw.push_back(make_pair(0, temp));
-			//cout<<s<<" ";
-			//raw[i_index]->insert(std::stoi(s));
+			//cout<<cs<<" ";
+			//raw[i_index]->insert(std::stoi(cs));
 		//}
 		//cout<<endl;
 		//cout<<endl;
