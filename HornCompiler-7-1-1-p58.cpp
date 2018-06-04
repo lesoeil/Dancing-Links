@@ -19,6 +19,8 @@
 	xF => xT	xV => xF	xL => xV			=> Lb			=> 1D
 	Fx => Tx	Vx => Fx	Lx => Vx			=> cL 			=> D1
 
+	compile:
+	g++ -std=c++11 HornCompiler-7-1-1-p58.cpp -o horn
 */
 
 
