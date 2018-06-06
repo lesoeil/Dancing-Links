@@ -20,23 +20,23 @@ public:
 	int get_z_5();
 
 public:
-	int set_x_1(int x1);	// input
+	int set_x_1(bool fault, int value, int x1);	// input
 	int set_x_1_1(bool fault, int value);	// = x_1
 	int set_x_2_1(bool fault, int value);	// = x_1
 	int set_x_3_1(bool fault, int value);	// = x_1_1
 	int set_x_4_1(bool fault, int value);	// = x_1_1
-	int set_x_2(int x2);	// input
+	int set_x_2(bool fault, int value, int x2);	// input
 	int set_x_1_2(bool fault, int value);	// = x_2
 	int set_x_2_2(bool fault, int value);	// = x_2
 	int set_x_3_2(bool fault, int value);	// = x_1_2
 	int set_x_4_2(bool fault, int value);	// = x_1_2
-	int set_y_1(int y1);	// input
+	int set_y_1(bool fault, int value, int y1);	// input
 	int set_y_1_1(bool fault, int value);	// = y_1
 	int set_y_2_1(bool fault, int value);	// = y_1
-	int set_y_2(int y2);	// input
+	int set_y_2(bool fault, int value, int y2);	// input
 	int set_y_1_2(bool fault, int value);	// = y_2
 	int set_y_2_2(bool fault, int value);	// = y_2
-	int set_y_3(int y3);	// input
+	int set_y_3(bool fault, int value, int y3);	// input
 	int set_y_1_3(bool fault, int value);	// = y_3
 	int set_y_2_3(bool fault, int value);	// = y_3
 	int set_z_1(bool fault, int value);	// = x_2_1 ⋀ y_1_1
@@ -150,8 +150,12 @@ int MULT::get_z_5()
 }
 
 
-int MULT::set_x_1(int x1)	// input
+int MULT::set_x_1(bool fault, int value, int x1)	// input
 {
+	if (fault)
+	{
+		x_1 = value;
+	}
 	x_1 = x1;
 
 	return 0;
@@ -213,9 +217,17 @@ int MULT::set_x_4_1(bool fault, int value)	// = x_1_1
 	return 0;
 }
 
-int MULT::set_x_2(int x2)	// input
+int MULT::set_x_2(bool fault, int value, int x2)	// input
 {
-	x_2 = x2;
+	if (fault)
+	{
+		x_2 = value;
+	}
+	else
+	{
+		x_2 = x2;	
+	}
+	
 
 	return 0;
 }
@@ -276,9 +288,17 @@ int MULT::set_x_4_2(bool fault, int value)	// = x_1_2
 	return 0;
 }
 
-int MULT::set_y_1(int y1)	// input
+int MULT::set_y_1(bool fault, int value, int y1)	// input
 {
-	y_1 = y1;
+	if (fault)
+	{
+		y_1 = value;
+	}
+	else
+	{
+		y_1 = y1;	
+	}
+	
 
 	return 0;
 }
@@ -311,9 +331,17 @@ int MULT::set_y_2_1(bool fault, int value)	// = y_1
 	return 0;
 }
 
-int MULT::set_y_2(int y2)	// input
+int MULT::set_y_2(bool fault, int value, int y2)	// input
 {
-	y_2 = y2;
+	if (fault)
+	{
+		y_2 = value;
+	}
+	else
+	{
+		y_2 = y2;	
+	}
+	
 
 	return 0;
 }
@@ -346,9 +374,17 @@ int MULT::set_y_2_2(bool fault, int value)	// = y_2
 	return 0;
 }
 
-int MULT::set_y_3(int y3)	// input
+int MULT::set_y_3(bool fault, int value, int y3)	// input
 {
-	y_3 = y3;
+	if (fault)
+	{
+		y_3 = value;
+	}
+	else
+	{
+		y_3 = y3;	
+	}
+	
 
 	return 0;
 }
@@ -815,6 +851,7 @@ int MULT::set_z_5(bool fault, int value)	// = b_2_3 ⋀ c_2_2
 	return 0;
 }
 
+int calc(bool* fa, int* va, int pattern, int* zf);
 
 int simulate()
 {
@@ -823,26 +860,84 @@ int simulate()
 	int y1;
 	int y2;
 	int y3;
-	bool fa[50];
-	int va[50];
-	MULT* m = new MULT;
-
-	for (int j=0; j<50; j++)
-	{
-		fa[j] = false;
-		va[j] = 1;
-	}
-
 	x1 = 1;
 	x2 = 1;
 	y1 = 0;
 	y2 = 1;
 	y3 = 1;
+	
+
+
+	/*	49. [24] Write a program that determines exactly which of the 100 single-
+		stuck-at faults of the circuit in Fig. 34 are detected by each of the 32 possible
+		input patterns. Also find all the minimum sets of test patterns that will
+		discover every such fault (unless it's not detectable).
+
+	*/
+
+	for (int pattern=0; pattern <32; pattern++)
+	{
+		bool fa[50];
+		int va[50];
+		int z[5];
+		int zf[5];
+
+		for (int j=0; j<50; j++)
+		{
+			fa[j] = false;
+			va[j] = 1;
+		}
+
+		calc(fa, va, pattern, z);
+
+		cout<<pattern<<endl;
+
+		for (int f=0; f<50; f++)
+		{
+			for (int v=0; v<2; v++)
+			{
+				for (int j=0; j<50; j++)
+				{
+					fa[j] = false;
+					va[j] = 1;
+				}
+
+				fa[f] = true;
+				va[f] = v;
+
+				calc(fa, va, pattern, zf);
+				if ( (z[0]==zf[0]) && (z[1]==zf[1]) && (z[2]==zf[2]) 
+				  && (z[3]==zf[3]) && (z[4]==zf[4]))
+				{
+					cout<<"0 ";
+				}
+				else
+				{
+					cout<<"1 ";
+				}
+
+			}
+		}
+
+		cout<<endl;
+	}
+
+	return 0;
+}
+
+int calc(bool* fa, int* va, int pattern, int* zf)
+{
+	int x1 = pattern & 1;
+	int x2 = (pattern>>1) & 1;
+	int y1 = (pattern>>2) & 1;
+	int y2 = (pattern>>3) & 1;
+	int y3 = (pattern>>4) & 1;
+	MULT holder;
+	MULT* m = &holder;
 
 	int i;
-
 	i=0;
-	m->set_x_1(x1);	// input
+	m->set_x_1(fa[i], va[i], x1);	// input
 
 	i=1;
 	m->set_x_1_1(fa[i], va[i]);	// = x_1
@@ -857,7 +952,7 @@ int simulate()
 	m->set_x_4_1(fa[i], va[i]);	// = x_1_1
 	
 	i=5;
-	m->set_x_2(x2);	// input
+	m->set_x_2(fa[i], va[i], x2);	// input
 	
 	i=6;
 	m->set_x_1_2(fa[i], va[i]);	// = x_2
@@ -872,7 +967,7 @@ int simulate()
 	m->set_x_4_2(fa[i], va[i]);	// = x_1_2
 
 	i=10;
-	m->set_y_1(y1);	// input
+	m->set_y_1(fa[i], va[i], y1);	// input
 
 	i=11;
 	m->set_y_1_1(fa[i], va[i]);	// = y_1
@@ -881,7 +976,7 @@ int simulate()
 	m->set_y_2_1(fa[i], va[i]);	// = y_1
 
 	i=13;
-	m->set_y_2(y2);	// input
+	m->set_y_2(fa[i], va[i], y2);	// input
 
 	i=14;
 	m->set_y_1_2(fa[i], va[i]);	// = y_2
@@ -890,7 +985,7 @@ int simulate()
 	m->set_y_2_2(fa[i], va[i]);	// = y_2
 
 	i=16;
-	m->set_y_3(y3);	// input
+	m->set_y_3(fa[i], va[i], y3);	// input
 
 	i=17;
 	m->set_y_1_3(fa[i], va[i]);	// = y_3
@@ -992,7 +1087,13 @@ int simulate()
 	m->set_z_5(fa[i], va[i]);	// = b_2_3 ⋀ c_2_2
 
 
-	cout<<m->get_z_5()<<m->get_z_4()<<m->get_z_3()<<m->get_z_2()<<m->get_z_1()<<endl;
+	zf[0] = m->get_z_1();
+	zf[1] = m->get_z_2();
+	zf[2] = m->get_z_3();
+	zf[3] = m->get_z_4();
+	zf[4] = m->get_z_5();
+
+	//cout<<m->get_z_5()<<m->get_z_4()<<m->get_z_3()<<m->get_z_2()<<m->get_z_1()<<endl;
 
 	return 0;
 }
