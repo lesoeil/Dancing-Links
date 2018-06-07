@@ -156,8 +156,11 @@ int MULT::set_x_1(bool fault, int value, int x1)	// input
 	{
 		x_1 = value;
 	}
-	x_1 = x1;
-
+	else
+	{
+		x_1 = x1;	
+	}
+	
 	return 0;
 }
 
@@ -893,8 +896,9 @@ int simulate()
 		}
 
 		calc(fa, va, pattern, z);
+		//cout<<z[4]<<z[3]<<z[2]<<z[1]<<z[0]<<endl;
 
-		cout<<pattern<<endl;
+		//cout<<pattern<<endl;
 
 		for (int f=0; f<50; f++)
 		{
@@ -910,6 +914,8 @@ int simulate()
 				va[f] = v;
 
 				calc(fa, va, pattern, zf);
+				//cout<<zf[4]<<zf[3]<<zf[2]<<zf[1]<<zf[0]<<endl;
+
 				if ( (z[0]==zf[0]) && (z[1]==zf[1]) && (z[2]==zf[2]) 
 				  && (z[3]==zf[3]) && (z[4]==zf[4]))
 				{
@@ -928,6 +934,7 @@ int simulate()
 		//cout<<endl;
 	}
 
+#if 1
 	for (int s=0; s<100; s++)
 	{
 		int r = 0;
@@ -938,6 +945,7 @@ int simulate()
 
 		cout<<r<<" ";
 	}
+#endif
 
 	return 0;
 }
@@ -949,6 +957,7 @@ int calc(bool* fa, int* va, int pattern, int* zf)
 	int y1 = (pattern>>2) & 1;
 	int y2 = (pattern>>3) & 1;
 	int y3 = (pattern>>4) & 1;
+	//cout<<x1<<" "<<x2<<" "<<y1<<" "<<y2<<" "<<y3<<endl;
 	MULT holder;
 	MULT* m = &holder;
 
@@ -1119,8 +1128,9 @@ int calc(bool* fa, int* va, int pattern, int* zf)
 int main()
 {
 	simulate();
+	cout<<endl;
 
+	//cout<<"Fault testing"<<endl;
 
-
-	cout<<"Fault testing"<<endl;
+	return 0;
 }
