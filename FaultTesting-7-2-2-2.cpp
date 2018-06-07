@@ -875,6 +875,10 @@ int simulate()
 
 	*/
 
+	int record[32][100];
+
+	memset(record, 0, 32*100*sizeof(int));
+
 	for (int pattern=0; pattern <32; pattern++)
 	{
 		bool fa[50];
@@ -909,17 +913,30 @@ int simulate()
 				if ( (z[0]==zf[0]) && (z[1]==zf[1]) && (z[2]==zf[2]) 
 				  && (z[3]==zf[3]) && (z[4]==zf[4]))
 				{
-					cout<<"0 ";
+					//cout<<"0 ";
+					record[pattern][f*2+v] = 0;
 				}
 				else
 				{
-					cout<<"1 ";
+					//cout<<"1 ";
+					record[pattern][f*2+v] = 1;
 				}
 
 			}
 		}
 
-		cout<<endl;
+		//cout<<endl;
+	}
+
+	for (int s=0; s<100; s++)
+	{
+		int r = 0;
+		for (int t=0; t<32; t++)
+		{
+			r |= record[t][s];
+		}
+
+		cout<<r<<" ";
 	}
 
 	return 0;
