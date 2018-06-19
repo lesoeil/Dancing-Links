@@ -112,6 +112,11 @@ int CLAUSE::debugPrint()
 	a solution if and only if the clauses are satisfiable. It records its current progress
 	in an array m_1 ... m_n of "moves," whose significance was explained above.
 */
+
+/*	Exercises
+	124. [21] Spell out the low-level link field operations that are sketched in step B3.
+	125. [20] Modify Algorithm B so that it finds all satisfying assignments of the clauses.
+*/
 int CLAUSE::algoB()
 {
 	int d = -1;
@@ -135,10 +140,46 @@ int CLAUSE::algoB()
 	m.insert(m.begin(), n+1, -1);
 
 B1: /*	[Initialize.] Set d <- 1. */
+	/*	d is a temporary variable/index to hold the depth (the number of liberals) 
+		that the algorithm B will check. At B1, d is initialized to 1, which means 
+		that at the start of this algorithm the 1st literal will be checked/covered.  
+	*/
 	d = 1;
 
 B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d <- 
 		[W_(2d) = 0 or W_(2d+1) != 0] and l <- 2d + m_d. */
+
+	/*	At the start of B2, d will be compared to n, the total number of variables 
+		( number of literals = 2 * number of variables as we know, |l| and ~|l|),
+		if (d > n), then it means that (d-1) >= n strictly different literals have 
+		been covered and all the clauses have been converted to consistent total
+		assignments. That is to say, all clauses hold truth when all variables have 
+		been assigned solid value (either 0 or 1, false or true). 
+
+		else if (d<=n), then it means that we need continue to do the job of finding
+		consistent total assignments.
+	*/
+
+	/*	18-June-2018
+		The only case that we assign m_d to 0 is that:
+			both (W_(2d) != 0) and (W_(2d+1) ==0)
+		which means that there are certain clause watches literal (~|l|), but there 
+		is no clause watching literal |l| at this moment.
+
+		The cases that we assign m_d to 1 is that:
+			either (W_(2d)==0) or (W_(2d+1) != 0)
+		which means that there is no clause watching literal (~|l|) at this moment, 
+		or when there is at least one clause watching literal |l|.
+
+		watching ~|l|	watching |l|	m_d
+			0				0			 1
+			0				1			 1
+			1				0			 0
+			1				1			 1
+
+		The logic seems to be that Algorithm B take the priority to choose |l| first
+		unless there is no clause watching |l| and there is at least clause watching ~|l|
+	*/
 	if (d > n)
 	{
 		cout<<"successfully Finished!"<<endl;
@@ -161,6 +202,8 @@ B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch 
 		literal of C_j. But go to B5 if that can't be done. (See exercise 124.) */
 
 	//cout<<"d: "<<d<<"  l:"<<l<<endl;
+	/*	First we want to make sure that all clauses who watch (~l) 
+	*/
 	watchee = W[l^1];
 	while (watchee)
 	{
@@ -217,6 +260,22 @@ B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch 
 
 		watchee = temp;
 	}
+
+/*	Above is my implementation of 7.2.2.2 Algorithm B.B3 before snooping on the answer to 124.
+*/
+
+/*	Exercises
+	124. [21] Spell out the low-level link field operations that are sketched in step B3.
+*/
+
+/*	Answer to 124.
+	124. Set j <- W_(~l). While j != 0, a literal other than (~l) should be watched in clause j, so
+	we do the following: Set i <- START(j), i' <- START(j-1), j' <- LINK(j), k <- i + 1.
+	While k < i', set l' <- L(k); if l' isn't false (that is, if |l'| > d or l' + m_(|l'|) is even,
+	see (57)), set L(i) <- l', LINK(j) <- W_(l'), W_(l') <- j, j <- j', and exit the loop
+	on k; otherwise set k <- k+1 and continue that loop. If k reaches i', however, we
+	cannot stop watching ~l; so we set W_(~l) <- j, exit the loop on j, and go on to step B5.
+*/
 
 
 B4: /*	[Advance.] Set W_(~l) <- 0, d <- d+1, and return to B2. */
