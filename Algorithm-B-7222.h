@@ -32,6 +32,7 @@ class CLAUSE
 {
 public:
 	CLAUSE(string& data_file);
+	~CLAUSE();
 	int algoB();
 
 private:

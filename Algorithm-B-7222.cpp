@@ -37,6 +37,8 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+	int nRet;
+
 	if ((argc <2) || (argc>=3))
 	{
 		cout<<"Usage: sat datafile"<<endl;
@@ -46,11 +48,12 @@ int main(int argc, char** argv)
 
 	string clause_file(argv[1]);
 
-	auto_ptr<CLAUSE> pClause((new CLAUSE(clause_file)));
-	pClause->algoB();
+	//auto_ptr<CLAUSE> 
+	CLAUSE* pClause((new CLAUSE(clause_file)));
+	nRet = pClause->algoB();
 
 	//cout<<"Hello Algorithm B!"<<endl;
-	return 0;
+	return nRet;
 }
 
 
@@ -61,6 +64,11 @@ CLAUSE::CLAUSE(string& data_file)
 		mClauses(-1),
 		n(-1)
 {}
+
+CLAUSE::~CLAUSE()
+{
+
+}
 
 
 int CLAUSE::debugPrint()
@@ -316,6 +324,15 @@ int CLAUSE::extract()
 
 	fstream fs;
 	fs.open(fileName.c_str(), fstream::in);
+	if ((fs.rdstate() & std::fstream::failbit) != 0)	
+	{
+		cout<<"Fail to open file \""<<fileName<<"\"."<<endl;
+		cout<<"Please check whether file exist or not."<<endl;
+		cout<<"Or whether process calling has the rights to open it or not."<<endl;
+		return -2;
+	}
+
+
 	string line;
 	
 	getline(fs, line);
