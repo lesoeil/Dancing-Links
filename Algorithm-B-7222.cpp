@@ -134,6 +134,9 @@ int CLAUSE::algoB()
 	int nRet = -1;
 	int watchee = -1;
 
+	int temp = -1;
+	int next = -1;
+
 //	00. To read number of literals and 3SAT clauses from file.
 	nRet = extract();
 	if (nRet < 0)
@@ -188,16 +191,22 @@ B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d 
 		The logic seems to be that Algorithm B take the priority to choose |l| first
 		unless there is no clause watching |l| and there is at least clause watching ~|l|
 	*/
+
 	if (d > n)
 	{
-		cout<<"successfully Finished!"<<endl;
+		//cout<<"successfully Finished!"<<endl;
 		for (int i=1; i<d; i++)
 		{
 			cout<<m[i]<<" ";
 		}
 		cout<<endl;
 
-		return 0;
+		/* 	Exercise
+			125. [20] Modify Algorithm B so that it finds all satisfying assignments of the clauses.
+		*/
+		goto B6;
+
+		//return 0;
 	}
 	else
 	{
@@ -287,7 +296,16 @@ B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch 
 
 
 B4: /*	[Advance.] Set W_(~l) <- 0, d <- d+1, and return to B2. */
+	temp = W[l^1];
 	W[l^1] = 0;
+
+	while (temp != 0)
+	{
+		next = LINK[temp];
+		LINK[temp] = 0;
+		temp = next;
+	}
+
 	d = d + 1;
 	goto B2;
 
@@ -303,7 +321,7 @@ B6: /*	[Backtrack.] Terminate unsuccessfully if d = 1 (the clauses are unsatisfi
 		able). Otherwise set d <- d - 1 and to back to B5. */
 	if (d==1)
 	{
-		cout<<"Failed to find. The clauses seems unsatisfiable???"<<endl;
+		//cout<<"Failed to find. The clauses seems unsatisfiable???"<<endl;
 		//debugPrint();
 		return -1;
 	}
