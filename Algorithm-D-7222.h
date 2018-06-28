@@ -4,6 +4,7 @@
 
 #include <vector>
 
+using namespace std;
 
 class CELL
 {
@@ -19,6 +20,7 @@ public:
 	DPLL(string& data_file);
 	int algoD();
 	bool isUnit(int literal);
+	int debugPrint();
 
 private:
 	string fileName;
@@ -32,6 +34,8 @@ private:
 	vector<int> NEXT;	//active ring.
 	int h; //head
 	int t; //tail
+
+
 
 	int extract();
 };

@@ -41,21 +41,77 @@ int main(int argc, char** argv)
 
 
 DPLL::DPLL(string& data_file)
+		:fileName(data_file)
 {
 
 }
 
+int DPLL::debugPrint()
+{
+	/*
+	cout<<"Total number cells: "<<cell.size()<<endl;
+	cout<<"Total number START: "<<START.size()<<endl;
+	cout<<"Total number LINK: "<<LINK.size()<<endl;
+	cout<<"Total number W: "<<W.size()<<endl;
+
+	for (int s=0; s<cell.size(); s++)
+	{
+		cout<<s<<" L: "<<cell[s].L<<endl;
+	}
+	*/
+
+	for (int s=2; s<=2*n+1; s++)
+	{
+		cout<<"Literal: "<<s<<"       -->                   W["<<s<<"]: "<<W[s]<<endl;
+	}
+
+
+	cout<<"Clause "<<0<<":        -->   START["<<0<<"]: "<<START[0]<<" LINK["<<0<<"]: "<<LINK[0]<<endl;
+	for (int c=1; c<=START.size(); c++)
+	{
+		cout<<"Clause "<<c<<": ";
+		for (int s=START[c]; s<START[c-1]; s++)
+		{
+			cout<<cell[s].L<<" ";
+		}
+
+		cout<<" -->   START["<<c<<"]: "<<START[c]<<" LINK["<<c<<"]: "<<LINK[c];
+
+		cout<<endl;
+	}
+
+	/*
+	for(int i=0; i<=START.size(); i++)
+	{
+		cout<<"Clause "<<i<<" -->   START["<<i<<"]: "<<START[i]<<" LINK["<<i<<"]: "<<LINK[i]<<endl;
+	}
+	*/
+
+	return 0;
+}
 
 int DPLL::algoD()
 {
+	int nRet;
+
+	nRet = extract();
+	if (nRet < 0)
+	{
+		cout<<"Open file "<<fileName<<" failed!!!"<<endl;
+		return nRet;
+	}
+
+	debugPrint();
+	return 0;
+
 	int b;
 	int d;
 	int f;
 	int k;
 
-	int h_indices[n+1]; // indices
-	int m[n+1]; // moves
-	int x[n+1]; // value of variables: -1: unset; 0 or 1: set
+	int hP[n+1]; // records current progress
+	int m[n+1];  // moves
+	int x[n+1];  // value of variables: -1: unset; 0 or 1: set
 	
 
 /*
@@ -174,7 +230,7 @@ D5:	/*	[Move on.] Set d <- d+1, h_d <- k <- h. If t = k, set t <- 0; otherwise d
 	*/
 	d = d+1;
 	k = h;
-	h[d] = k;
+	hP[d] = k;
 
 	if (t == k)
 	{
@@ -210,7 +266,7 @@ D7:	/*	[Backtrack.] Set t <- k. While m_d ≥ 2, set k <- h_d, x_k <- -1; if W_(
 
 	while (m[d] >= 2)
 	{
-		k = h[d];
+		k = hP[d];
 		x[k] = -1;
 
 		if ((0 != W[2*k]) || (0 != W[2*k+1]))
@@ -228,7 +284,7 @@ D8:	/*	[Failure?] If d > 0, set m_d <- 3 - m_d, k <- h_d, and return to D6. Othe
 	if (d>0)
 	{
 		m[d] = 3 - m[d];
-		k = h[d];
+		k = hP[d];
 		goto D6;
 	}
 	else
@@ -255,24 +311,23 @@ bool DPLL::isUnit(int literal)
 {
 	int temp = W[literal];
 
+	bool bUnit = false;
+
 	if (0 != temp)
 	{
 		while (0 != temp)
 		{
 			if (START[temp] > START[temp-1])
 			{
-				return false;
+				bUnit = true;
+				break;
 			}
 
 			temp = LINK[temp];
-		}
-		
-	}
-	else
-	{
-		return false;
+		}	
 	}
 
+	return bUnit;
 }
 
 
