@@ -64,10 +64,8 @@ int DPLL::debugPrint()
 	{
 		cout<<"Literal: "<<s<<"       -->                   W["<<s<<"]: "<<W[s]<<endl;
 	}
-
-
-	cout<<"Clause "<<0<<":        -->   START["<<0<<"]: "<<START[0]<<" LINK["<<0<<"]: "<<LINK[0]<<endl;
-	for (int c=1; c<=START.size(); c++)
+	
+	for (int c=START.size(); c>=1; c--)
 	{
 		cout<<"Clause "<<c<<": ";
 		for (int s=START[c]; s<START[c-1]; s++)
@@ -79,6 +77,8 @@ int DPLL::debugPrint()
 
 		cout<<endl;
 	}
+
+	cout<<"Clause "<<0<<":        -->   START["<<0<<"]: "<<START[0]<<" LINK["<<0<<"]: "<<LINK[0]<<endl;
 
 	/*
 	for(int i=0; i<=START.size(); i++)
@@ -102,7 +102,6 @@ int DPLL::algoD()
 	}
 
 	debugPrint();
-	return 0;
 
 	int b;
 	int d;
@@ -112,7 +111,9 @@ int DPLL::algoD()
 	int hP[n+1]; // records current progress
 	int m[n+1];  // moves
 	int x[n+1];  // value of variables: -1: unset; 0 or 1: set
+	int NEXT[n+1];	//active ring.
 	
+	memset(NEXT, 0, (n+1)*sizeof(int));  // Be careful: memset count in unit of bytes !!!!
 
 /*
 	TAOCP 7.2.2.2 Algorithm D (Satisfiability by cyclic DPLL). Given nonempty clauses C_1 ⋀ ... ⋀
@@ -145,15 +146,22 @@ D1:	/*	[Initialize.] Set m_0 <- d <- h <- t <- 0, and do the following for k = n
 			{
 				t = k;
 			}
-		}
-
-		//TODO: Will this be here?
-		if (t != 0)
-		{
-			NEXT[t] = h;
-		}
+		}	
 	}
 
+	//TODO: Will this be here?
+	if (t != 0)
+	{
+		NEXT[t] = h;
+	}
+
+	//Debug Print active ring at the beginning.
+	for (k = 1; k<=n; k++)
+	{
+		cout<<"NEXT["<<k<<"]: "<<NEXT[k]<<endl;
+	}
+
+	//return 0;
 
 
 D2:	/*	[Success?] Terminate if t = 0 (all clauses are satisfied). Otherwise set k <- t.
