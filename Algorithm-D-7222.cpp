@@ -34,7 +34,7 @@ int main(int argc, char** argv)
 	DPLL* pDPLL((new DPLL(clause_file)));
 	nRet = pDPLL->algoD();
 
-	cout<<"Hello Algorithm D !"<<endl;
+	//cout<<"Hello Algorithm D !"<<endl;
 
 	return 0;
 }
@@ -113,6 +113,9 @@ int DPLL::algoD()
 	int x[n+1];  // value of variables: -1: unset; 0 or 1: set
 	int NEXT[n+1];	//active ring.
 	
+	memset(hP, 0, (n+1)*sizeof(int));
+	memset(m, 0, (n+1)*sizeof(int));
+	memset(x, 0,  (n+1)*sizeof(int));
 	memset(NEXT, 0, (n+1)*sizeof(int));  // Be careful: memset count in unit of bytes !!!!
 
 /*
@@ -171,11 +174,19 @@ D2:	/*	[Success?] Terminate if t = 0 (all clauses are satisfied). Otherwise set 
 	{
 		cout<<"Success! All clauses are satisfied"<<endl;
 
+		cout<<"Values of variables:"<<endl;
 		for (int i=1; i<=n; i++)
 		{
 			cout<<x[i]<<" ";
 		}
 		cout<<endl;
+
+		cout<<"Indices h_1 ... h_n:"<<endl;
+		for (int i=1; i<=n; i++)
+		{
+			cout<<hP[i]<<" ";
+		}
+		cout<<endl;		
 
 		return 0;
 	}
@@ -256,6 +267,63 @@ D6:	/*	[Update watches.] Set b <- (m_d + 1) mod 2, x_k <- b, and clear the watch
 	b = (m[d] + 1) % 2;
 	x[k] = b;
 
+
+	{//This scope of code is after snooping answer to exercise 130.
+		l = 2k+b;
+		j = W[l];
+		W[l] = 0;
+
+		while (j != 0)
+		{
+			//(i)
+			j_sharp = LINK[j];
+			i = START[j];
+			p = i+1;
+
+			//(ii)
+			while (L[p] == false)
+			{
+				p = p+1;
+			}
+
+			//(iii)
+			l_sharp = L[p];
+			L[p] = l;
+			L[i] = l_sharp;
+
+			//(iv)
+			p = W[l_sharp];
+			q = W[l_sharp ^ 1];
+
+			if ((p != 0) || (q != 0) || (x[l_sharp / 2] >=0))
+			{
+				goto STEP_VI;
+			}
+
+			// (v)
+			if (t==0)
+			{
+				h = l_sharp & ~1;
+				t = h;
+				NEXT[t] = h;
+			}
+			else
+			{
+				NEXT[l_sharp & ~1] = h;
+				h = l_sharp & ~1;
+				NEXT[t] = h;
+			}
+
+			//(vi)
+			STEP_VI:
+			LINK[j] = p;
+			W[l_sharp] = j;
+
+			//(vii)
+			j = j_sharp;
+		}
+	}
+
 	/*	7.2.2.2 Exercise
 		130. [22] What low-level list processing operations are needed to "clear the watch list
 		for ~(x_k)" in step D6?
@@ -263,8 +331,54 @@ D6:	/*	[Update watches.] Set b <- (m_d + 1) mod 2, x_k <- b, and clear the watch
 	*/
 	//TODO: Clear the watch list for ~(x_k)
 
+/* Below is the code before snoop answer to exercise 130.
+	cout<<"Variable "<<k<<" value: "<<x[k]<<endl;
 
+	debugPrint();
+
+	for (int cw = W[(2*k)^b]; cw !=0; ) //cw = LINK[cw]
+	{
+		int temp = LINK[cw];
+
+		#if 0
+		cout<<"Clause "<<cw<<" before swap :";
+		for (int i = START[cw]; i<=START[cw-1]-1; i++)
+		{
+			cout<<cell[i].L<<" ";
+		}
+		cout<<endl;
+		#endif
+
+
+		for (int i = START[cw]+1; i<=START[cw-1]-1; i++)
+		{
+			if (cell[START[cw]].L < cell[i].L)
+			{
+				swap(cell[START[cw]].L, cell[i].L);
+
+				LINK[cw] = W[cell[START[cw]].L];
+				W[cell[START[cw]].L] = cw;
+				break;
+			}
+		}
+
+		#if 0
+		cout<<"Clause "<<cw<<"  after swap :";
+		for (int i = START[cw]; i<=START[cw-1]-1; i++)
+		{
+			cout<<cell[i].L<<" ";
+		}
+		cout<<endl;
+		#endif
+
+		cw = temp;
+	}
+
+	W[(2*k)^b] = 0;
+
+*/
 	goto D2;
+
 
 D7:	/*	[Backtrack.] Set t <- k. While m_d ≥ 2, set k <- h_d, x_k <- -1; if W_(2k) ≠ 0 or
 		W_(2k+1) ≠ 0, set NEXT(k) <- h, h <- k, NEXT(t) <- h; and set d <- d-1.
@@ -298,11 +412,9 @@ D8:	/*	[Failure?] If d > 0, set m_d <- 3 - m_d, k <- h_d, and return to D6. Othe
 	else
 	{
 		cout<<"The clauses aren't satisfiable."<<endl;
+
+		return -1;
 	}
-
-
-	return 0;
-
 }
 
 
@@ -325,7 +437,7 @@ bool DPLL::isUnit(int literal)
 	{
 		while (0 != temp)
 		{
-			if (START[temp] > START[temp-1])
+			if (cell[START[temp]].L > cell[START[temp-1]-1].L)
 			{
 				bUnit = true;
 				break;
