@@ -110,12 +110,12 @@ int DPLL::algoD()
 
 	int hP[n+1]; // records current progress
 	int m[n+1];  // moves
-	int x[n+1];  // value of variables: -1: unset; 0 or 1: set
+	//int x[n+1];  // value of variables: -1: unset; 0 or 1: set
 	int NEXT[n+1];	//active ring.
 	
 	memset(hP, 0, (n+1)*sizeof(int));
 	memset(m, 0, (n+1)*sizeof(int));
-	memset(x, 0,  (n+1)*sizeof(int));
+	//memset(x, 0,  (n+1)*sizeof(int));
 	memset(NEXT, 0, (n+1)*sizeof(int));  // Be careful: memset count in unit of bytes !!!!
 
 /*
@@ -137,9 +137,10 @@ D1:	/*	[Initialize.] Set m_0 <- d <- h <- t <- 0, and do the following for k = n
 	h = 0;
 	t = 0;
 
+	x.push_back(-1);
 	for (k = n; k >= 1; k--)
 	{
-		x[k] = -1;
+		x.push_back(-1);
 
 		if ((W[2*k] != 0) || (W[2*k+1] != 0))
 		{
@@ -186,7 +187,14 @@ D2:	/*	[Success?] Terminate if t = 0 (all clauses are satisfied). Otherwise set 
 		{
 			cout<<hP[i]<<" ";
 		}
-		cout<<endl;		
+		cout<<endl;
+
+		cout<<"Moves m_0 ... m_n:"<<endl;
+		for (int i=0; i<=n; i++)
+		{
+			cout<<m[i]<<" ";
+		}
+		cout<<endl;
 
 		return 0;
 	}
@@ -269,7 +277,18 @@ D6:	/*	[Update watches.] Set b <- (m_d + 1) mod 2, x_k <- b, and clear the watch
 
 
 	{//This scope of code is after snooping answer to exercise 130.
-		l = 2k+b;
+		int l = -1;
+		int l_sharp = -1;
+		//int k = -1;
+		//int b = -1;
+		int i = -1;
+		int j = -1;
+		int j_sharp = -1;
+		int p = -1;
+		int q = -1;
+
+
+		l = 2*k+b;
 		j = W[l];
 		W[l] = 0;
 
@@ -281,15 +300,15 @@ D6:	/*	[Update watches.] Set b <- (m_d + 1) mod 2, x_k <- b, and clear the watch
 			p = i+1;
 
 			//(ii)
-			while (L[p] == false)
+			while (isLiteralFalse(p))
 			{
 				p = p+1;
 			}
 
 			//(iii)
-			l_sharp = L[p];
-			L[p] = l;
-			L[i] = l_sharp;
+			l_sharp = cell[p].L;
+			cell[p].L = l;
+			cell[i].L = l_sharp;
 
 			//(iv)
 			p = W[l_sharp];
@@ -303,14 +322,14 @@ D6:	/*	[Update watches.] Set b <- (m_d + 1) mod 2, x_k <- b, and clear the watch
 			// (v)
 			if (t==0)
 			{
-				h = l_sharp & ~1;
+				h = l_sharp / 2;
 				t = h;
 				NEXT[t] = h;
 			}
 			else
 			{
-				NEXT[l_sharp & ~1] = h;
-				h = l_sharp & ~1;
+				NEXT[l_sharp / 2] = h;
+				h = l_sharp / 2;
 				NEXT[t] = h;
 			}
 
@@ -427,6 +446,7 @@ D8:	/*	[Failure?] If d > 0, set m_d <- 3 - m_d, k <- h_d, and return to D6. Othe
 	whenever a unit clause is present.
 */
 
+/*	Implementation before snooping at answer to exercise. Below seems wrong.
 bool DPLL::isUnit(int literal)
 {
 	int temp = W[literal];
@@ -449,7 +469,53 @@ bool DPLL::isUnit(int literal)
 
 	return bUnit;
 }
+*/
 
+/*	This one is by following answer to exercise 129.	
+*/
+
+bool DPLL::isUnit(int l)
+{
+	int j = W[l];
+	int p = -1;
+
+	while (j != 0)
+	{
+		STEP_i:
+		p = START[j] + 1;
+
+		STEP_ii:
+		if (p == START[j-1])
+		{
+			return true;
+		}
+
+		STEP_iii:
+		if (isLiteralFalse(p))
+		{
+			p = p+1;
+			goto STEP_ii;
+		}
+
+		STEP_iv:
+		j = LINK[j];
+	}
+
+	return false;
+}
+
+
+bool DPLL::isLiteralFalse(int p)
+{
+	if (x[(cell[p].L)/2] == (cell[p].L & 1))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 
 int DPLL::extract()

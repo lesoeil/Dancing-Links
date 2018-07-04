@@ -19,8 +19,8 @@ class DPLL
 public:
 	DPLL(string& data_file);
 	int algoD();
-	bool isUnit(int literal);
-	int debugPrint();
+	bool isUnit(int l);
+	bool isLiteralFalse(int literal);
 
 private:
 	string fileName;
@@ -35,7 +35,8 @@ private:
 	int h; //head
 	int t; //tail
 
-
+	vector<int> x;  // value of variables: -1: unset; 0 or 1: set
 
 	int extract();
+	int debugPrint();
 };
