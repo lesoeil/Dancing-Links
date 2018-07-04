@@ -31,7 +31,7 @@ private:
 	int mClauses;	// number of 3SAT clauses
 	int n;	// size of variables
 
-	//vector<int> NEXT;	//active ring.
+	vector<int> NEXT;	//active ring.
 	int h; //head
 	int t; //tail
 
@@ -39,4 +39,5 @@ private:
 
 	int extract();
 	int debugPrint();
+	int debugPrintActiveRing();
 };

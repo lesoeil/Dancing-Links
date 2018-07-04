@@ -17,6 +17,9 @@
 
 using namespace std;
 
+//#define DEBUG_PRINT
+#undef DEBUG_PRINT
+
 int main(int argc, char** argv)
 {
 	int nRet;
@@ -111,12 +114,17 @@ int DPLL::algoD()
 	int hP[n+1]; // records current progress
 	int m[n+1];  // moves
 	//int x[n+1];  // value of variables: -1: unset; 0 or 1: set
-	int NEXT[n+1];	//active ring.
+	//int NEXT[n+1];	//active ring.
+	for (int s=0; s<=n; s++)
+	{
+		NEXT.push_back(-1);	
+	}
 	
-	memset(hP, 0, (n+1)*sizeof(int));
-	memset(m, 0, (n+1)*sizeof(int));
+	
+	memset(hP, -1, (n+1)*sizeof(int));
+	memset(m, -1, (n+1)*sizeof(int));
 	//memset(x, 0,  (n+1)*sizeof(int));
-	memset(NEXT, 0, (n+1)*sizeof(int));  // Be careful: memset count in unit of bytes !!!!
+	//memset(NEXT, -1, (n+1)*sizeof(int));  // Be careful: memset count in unit of bytes !!!!
 
 /*
 	TAOCP 7.2.2.2 Algorithm D (Satisfiability by cyclic DPLL). Given nonempty clauses C_1 ⋀ ... ⋀
@@ -131,6 +139,9 @@ D1:	/*	[Initialize.] Set m_0 <- d <- h <- t <- 0, and do the following for k = n
 		set NEXT(k) <- h, h <- k, and if t = 0 also set t <- k. Finally, if t ≠ 0,
 		complete the active ring by setting NEXT(t) <- h.
 	*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter D1"<<endl;
+	#endif
 
 	m[0] = 0;
 	d = 0;
@@ -170,6 +181,9 @@ D1:	/*	[Initialize.] Set m_0 <- d <- h <- t <- 0, and do the following for k = n
 
 D2:	/*	[Success?] Terminate if t = 0 (all clauses are satisfied). Otherwise set k <- t.
 	*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter D2"<<endl;
+	#endif
 
 	if (t == 0)
 	{
@@ -201,6 +215,8 @@ D2:	/*	[Success?] Terminate if t = 0 (all clauses are satisfied). Otherwise set 
 	else
 	{
 		k = t;
+
+		debugPrintActiveRing();
 	}
 
 D3:	/*	[Look for unit clauses.] Set h <- NEXT(k) and use the subroutine in exer-
@@ -208,6 +224,10 @@ D3:	/*	[Look for unit clauses.] Set h <- NEXT(k) and use the subroutine in exer-
 		to D7. If f = 1 or 2, set m_(d+1) <- f+3, t <- k, and go to D5. Otherwise, if
 		h ≠ t, set k <- h and repeat this step.
 	*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter D3"<<endl;
+	#endif
+
 	h = NEXT[k];
 
 	f = 0;
@@ -242,6 +262,10 @@ D3:	/*	[Look for unit clauses.] Set h <- NEXT(k) and use the subroutine in exer-
 
 D4:	/*	[Two-way branch.] Set h <- NEXT(t) and m_(d+1) <- [W_(2h) = 0 or W_(2h+1) ≠ 0]
 	*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter D4"<<endl;
+	#endif
+
 	h = NEXT[t];
 	if ((0==W[2*h]) || (0!=W[2*h+1]))
 	{
@@ -255,6 +279,10 @@ D4:	/*	[Two-way branch.] Set h <- NEXT(t) and m_(d+1) <- [W_(2h) = 0 or W_(2h+1)
 D5:	/*	[Move on.] Set d <- d+1, h_d <- k <- h. If t = k, set t <- 0; otherwise delete
 		variable k from the ring by setting NEXT(t) <- h <- NEXT(k).
 	*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter D5"<<endl;
+	#endif
+
 	d = d+1;
 	k = h;
 	hP[d] = k;
@@ -272,6 +300,10 @@ D5:	/*	[Move on.] Set d <- d+1, h_d <- k <- h. If t = k, set t <- 0; otherwise d
 D6:	/*	[Update watches.] Set b <- (m_d + 1) mod 2, x_k <- b, and clear the watch list
 		for ~(x_k) (see exercise 130). Return to D2.
 	*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter D6"<<endl;
+	#endif
+
 	b = (m[d] + 1) % 2;
 	x[k] = b;
 
@@ -402,6 +434,9 @@ D6:	/*	[Update watches.] Set b <- (m_d + 1) mod 2, x_k <- b, and clear the watch
 D7:	/*	[Backtrack.] Set t <- k. While m_d ≥ 2, set k <- h_d, x_k <- -1; if W_(2k) ≠ 0 or
 		W_(2k+1) ≠ 0, set NEXT(k) <- h, h <- k, NEXT(t) <- h; and set d <- d-1.
 	*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter D7"<<endl;
+	#endif
 
 	t = k;
 
@@ -415,13 +450,18 @@ D7:	/*	[Backtrack.] Set t <- k. While m_d ≥ 2, set k <- h_d, x_k <- -1; if W_(
 			NEXT[k] = h;
 			h = k;
 			NEXT[t] = h;
-			d = d-1;
 		}
+
+		d = d-1;
 	}
 
 D8:	/*	[Failure?] If d > 0, set m_d <- 3 - m_d, k <- h_d, and return to D6. Otherwise
 		terminate the algorithm (because the clause aren't satisfiable.)
 	*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter D8"<<endl;
+	#endif
+
 	if (d>0)
 	{
 		m[d] = 3 - m[d];
@@ -515,6 +555,30 @@ bool DPLL::isLiteralFalse(int p)
 	{
 		return false;
 	}
+}
+
+
+//Debug Print for active ring h, NEXT[h],  ... , t
+int DPLL::debugPrintActiveRing()
+{
+	int ar = -1;
+	ar = h;
+
+	if (ar !=0)
+	{
+		cout<<ar<<" ";
+	}
+			
+	ar = NEXT[h];
+	while (ar != h)
+	{
+		cout<<ar<<" ";
+		ar = NEXT[ar];
+	}
+			
+	cout<<endl;
+
+	return 0;
 }
 
 
