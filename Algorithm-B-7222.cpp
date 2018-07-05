@@ -142,6 +142,8 @@ int CLAUSE::algoB()
 	int temp = -1;
 	int next = -1;
 
+	int findings = 0;
+
 //	00. To read number of literals and 3SAT clauses from file.
 	nRet = extract();
 	if (nRet < 0)
@@ -206,6 +208,7 @@ B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d 
 
 	if (d > n)
 	{
+		findings++;
 		//cout<<"successfully Finished!"<<endl;
 		for (int i=1; i<=n; i++)
 		{
@@ -407,9 +410,19 @@ B6: /*	[Backtrack.] Terminate unsuccessfully if d = 1 (the clauses are unsatisfi
 
 	if (d==1)
 	{
-		//cout<<"Failed to find. The clauses seems unsatisfiable???"<<endl;
-		//debugPrint();
-		return -1;
+		if (findings > 0)
+		{
+			cout<<findings<<" solutions are found: Congratulations!!! ^_^"<<endl;
+			//debugPrint();
+			return 0;
+		}
+		else
+		{
+			cout<<"0 solution is found: Maybe the clauses are unsatisfiable???"<<endl;
+			//debugPrint();
+			return -1;	
+		}
+		
 	}
 	else
 	{
