@@ -90,9 +90,8 @@ int CLAUSE::debugPrint()
 		cout<<"Literal: "<<s<<"       -->                   W["<<s<<"]: "<<W[s]<<endl;
 	}
 
-
-	cout<<"Clause "<<0<<":        -->   START["<<0<<"]: "<<START[0]<<" LINK["<<0<<"]: "<<LINK[0]<<endl;
-	for (int c=1; c<=START.size(); c++)
+	//cout<<"Clause "<<0<<":        -->   START["<<0<<"]: "<<START[0]<<" LINK["<<0<<"]: "<<LINK[0]<<endl;
+	for (int c=START.size(); c>=1; c--)
 	{
 		cout<<"Clause "<<c<<": ";
 		for (int s=START[c]; s<START[c-1]; s++)
@@ -104,6 +103,8 @@ int CLAUSE::debugPrint()
 
 		cout<<endl;
 	}
+
+	cout<<"Clause "<<0<<":        -->   START["<<0<<"]: "<<START[0]<<" LINK["<<0<<"]: "<<LINK[0]<<endl;
 
 	/*
 	for(int i=0; i<=START.size(); i++)
@@ -125,6 +126,10 @@ int CLAUSE::debugPrint()
 	124. [21] Spell out the low-level link field operations that are sketched in step B3.
 	125. [20] Modify Algorithm B so that it finds all satisfying assignments of the clauses.
 */
+
+//#define DEBUG_PRINT
+#undef DEBUG_PRINT
+
 int CLAUSE::algoB()
 {
 	int d = -1;
@@ -155,10 +160,17 @@ B1: /*	[Initialize.] Set d <- 1. */
 		that the algorithm B will check. At B1, d is initialized to 1, which means 
 		that at the start of this algorithm the 1st literal will be checked/covered.  
 	*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter B1"<<endl;
+	#endif
+
 	d = 1;
 
 B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d <- 
 		[W_(2d) = 0 or W_(2d+1) != 0] and l <- 2d + m_d. */
+	#ifdef DEBUG_PRINT
+	cout<<"Enter B2"<<endl;
+	#endif
 
 	/*	At the start of B2, d will be compared to n, the total number of variables 
 		( number of literals = 2 * number of variables as we know, |l| and ~|l|),
@@ -195,9 +207,17 @@ B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d 
 	if (d > n)
 	{
 		//cout<<"successfully Finished!"<<endl;
-		for (int i=1; i<d; i++)
+		for (int i=1; i<=n; i++)
 		{
-			cout<<m[i]<<" ";
+			//cout<<m[i]<<" "; 
+			if ((0==m[i]) || (2==m[i]) ||(4==m[i]))
+			{
+				cout<<"1 ";
+			}
+			else if ((1==m[i]) || (3==m[i]) ||(5==m[i]))
+			{
+				cout<<"0 ";
+			}
 		}
 		cout<<endl;
 
@@ -218,9 +238,13 @@ B2: /*	[Rejoice or choose.] If d > n, terminate successfully. Otherwise set m_d 
 B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch another
 		literal of C_j. But go to B5 if that can't be done. (See exercise 124.) */
 
+	#ifdef DEBUG_PRINT
+	cout<<"Enter B3"<<endl;
+	#endif
 	//cout<<"d: "<<d<<"  l:"<<l<<endl;
 	/*	First we want to make sure that all clauses who watch (~l) 
 	*/
+	/*
 	watchee = W[l^1];
 	while (watchee)
 	{
@@ -277,6 +301,7 @@ B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch 
 
 		watchee = temp;
 	}
+	*/
 
 /*	Above is my implementation of 7.2.2.2 Algorithm B.B3 before snooping on the answer to 124.
 */
@@ -289,13 +314,64 @@ B3: /*	[Remove ~l if possible.] For all j such that ~l is watched in C_j, watch 
 	124. Set j <- W_(~l). While j != 0, a literal other than (~l) should be watched in clause j, so
 	we do the following: Set i <- START(j), i' <- START(j-1), j' <- LINK(j), k <- i + 1.
 	While k < i', set l' <- L(k); if l' isn't false (that is, if |l'| > d or l' + m_(|l'|) is even,
-	see (57)), set L(i) <- l', LINK(j) <- W_(l'), W_(l') <- j, j <- j', and exit the loop
+	see (57)), set L(i) <- l', L(k) <- (~l), LINK(j) <- W_(l'), W_(l') <- j, j <- j', and exit the loop
 	on k; otherwise set k <- k+1 and continue that loop. If k reaches i', however, we
 	cannot stop watching ~l; so we set W_(~l) <- j, exit the loop on j, and go on to step B5.
 */
+	{
+		int i = -1;
+		int i_sharp = -1;
+
+		int j = -1;
+		int j_sharp = -1;
+
+		int k = -1;
+
+		int l_sharp = -1;
+
+		j = W[l^1];
+
+		while (j != 0)
+		{
+			i = START[j];
+			i_sharp = START[j-1];
+			j_sharp = LINK[j];
+			k = i+1;
+
+			while (k < i_sharp)
+			{
+				l_sharp = cell[k].L;
+
+				if ( ((l_sharp / 2) >d) || (((l_sharp+m[l_sharp/2]) %2) ==0) )
+				{
+					cell[i].L = l_sharp;
+					cell[k].L = l^1;
+					LINK[j] = W[l_sharp];
+					W[l_sharp] = j;
+					j = j_sharp;
+					break;
+				}
+				else
+				{
+					k = k+1;
+					continue;
+				}
+			}
+
+			if (k == i_sharp)
+			{
+				W[l^1] = j;
+				goto B5;
+			}
+		}
+	}
 
 
 B4: /*	[Advance.] Set W_(~l) <- 0, d <- d+1, and return to B2. */
+	#ifdef DEBUG_PRINT
+	cout<<"Enter B4"<<endl;
+	#endif
+	/* Seems wrong.
 	temp = W[l^1];
 	W[l^1] = 0;
 
@@ -305,11 +381,17 @@ B4: /*	[Advance.] Set W_(~l) <- 0, d <- d+1, and return to B2. */
 		LINK[temp] = 0;
 		temp = next;
 	}
+	*/
 
+	W[l^1] = 0;
 	d = d + 1;
 	goto B2;
 
 B5: /*	[Try again.] If m_d < 2, set m_d <- 3 - m_d, l <- 2d + (m_d & 1), and go to B3.*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter B5"<<endl;
+	#endif
+
 	if (m[d] < 2)
 	{
 		m[d] = 3 - m[d];
@@ -319,6 +401,10 @@ B5: /*	[Try again.] If m_d < 2, set m_d <- 3 - m_d, l <- 2d + (m_d & 1), and go 
 
 B6: /*	[Backtrack.] Terminate unsuccessfully if d = 1 (the clauses are unsatisfi-
 		able). Otherwise set d <- d - 1 and to back to B5. */
+	#ifdef DEBUG_PRINT
+	cout<<"Enter B6"<<endl;
+	#endif
+
 	if (d==1)
 	{
 		//cout<<"Failed to find. The clauses seems unsatisfiable???"<<endl;
@@ -330,9 +416,6 @@ B6: /*	[Backtrack.] Terminate unsuccessfully if d = 1 (the clauses are unsatisfi
 		d = d-1;
 		goto B5;
 	}
-
-
-	return 0;
 }
 
 

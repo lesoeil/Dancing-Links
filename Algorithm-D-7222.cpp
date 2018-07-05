@@ -170,11 +170,13 @@ D1:	/*	[Initialize.] Set m_0 <- d <- h <- t <- 0, and do the following for k = n
 		NEXT[t] = h;
 	}
 
+	#ifdef DEBUG_PRINT
 	//Debug Print active ring at the beginning.
 	for (k = 1; k<=n; k++)
 	{
 		cout<<"NEXT["<<k<<"]: "<<NEXT[k]<<endl;
 	}
+	#endif
 
 	//return 0;
 
@@ -216,7 +218,7 @@ D2:	/*	[Success?] Terminate if t = 0 (all clauses are satisfied). Otherwise set 
 	{
 		k = t;
 
-		debugPrintActiveRing();
+		//debugPrintActiveRing();
 	}
 
 D3:	/*	[Look for unit clauses.] Set h <- NEXT(k) and use the subroutine in exer-
