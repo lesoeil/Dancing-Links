@@ -49,6 +49,8 @@ int main(int argc, char** argv)
 	return 0;
 }
 
+//#define DEBUG_PRINT
+#undef DEBUG_PRINT
 
 int CLAUSE::algoA()
 {
@@ -74,18 +76,26 @@ int CLAUSE::algoA()
 	int a = -1;// the number of active clauses.
 	int d = -1;// the depth-plus-one in an implicit search tree.
 	int l = -1;
-	int mt[d+1];
-	memset(mt, 0, d+1);
+	int mt[n+1];
+	memset(mt, 0, n+1);
 
 A1:
 /*	A1. [Initialize.] Set a <- m and d <- 1. (Here a represents the number of active
 		clauses, and d represents the depth-plus-one in an implicit search tree.)		*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter A1"<<endl;
+	#endif
+
 	a = m;
 	d = 1;
 
 A2:
 /*	A2. [Choose.] Set l <- 2d. If C(l) <= C(l+1), set l <- l+1. Then set m_d <-
 		(l & 1) + 4[C(l XOR 1)=0]. (See below.) Terminate successfully if C(l) =a.		*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter A2"<<endl;
+	#endif
+
 	l = 2*d;
 	if (cell[l].C <= cell[l+1].C)
 	{
@@ -109,9 +119,17 @@ A2:
 		//Successfully finish.
 		cout<<"A2: Successfully Finish."<<endl;
 		//cout<<"l: "<<l<<" a: "<<a<<" d: "<<d<<endl;
-		for (int s=1; s<=d; s++)
+		for (int s=1; s<=n; s++)
 		{
-			cout<<mt[s]<<" ";
+			//cout<<mt[s]<<" ";
+			if ((0==mt[s]) || (2==mt[s]) || (4==mt[s]))
+			{
+				cout<<"1 ";
+			}
+			else if ((1==mt[s]) || (3==mt[s]) || (5==mt[s]))
+			{
+				cout<<"0 ";
+			}
 		}
 		cout<<endl;
 		return 0;
@@ -120,6 +138,10 @@ A2:
 A3:
 /*	A3. [Remove ~l.] Delete ~l from all active clause; but goto A5 if that would make
 		a clause empty. (We want to ignore ~l, because we're making l true.)			*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter A3"<<endl;
+	#endif
+
 	if ((l & 1)==1)
 	{
 		l_inv = l-1;
@@ -153,6 +175,10 @@ A3:
 A4:
 /*	A4. [Deactivate l's clauses.] Suppress all clauses that contain l. (Those clauses
 		are now satisfied.) Them set a <- a - C(l), d <- d+1, and return A2.			*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter A4"<<endl;
+	#endif
+
 	suppress = cell[l].B;
 	while (suppress != l)
 	{
@@ -177,6 +203,10 @@ A4:
 
 A5:
 /*	A5. [Try again.] If m_d < 2, set m_d <- 3 - m_d, l <- 2d + (m_d & 1), and go to A3. */
+	#ifdef DEBUG_PRINT
+	cout<<"Enter A5"<<endl;
+	#endif
+
 	if (mt[d] < 2)
 	{
 		mt[d] = 3-mt[d];
@@ -187,6 +217,10 @@ A5:
 A6:
 /*	A6. [Backtrack.] Terminate unsuccessfully if d = 1 (the clauses are unsatisfi-
 		able). Otherwise set d <- d - 1 and l <- 2d + (m_d & 1).						*/
+	#ifdef DEBUG_PRINT
+	cout<<"Enter A6"<<endl;
+	#endif
+
 	if (1==d)
 	{
 		cout<<"A6: Fail to find the solution."<<endl;
@@ -202,6 +236,9 @@ A7:
 /*	A7. [Reactivate l's clauses.] Set a <- a + C(l), and unsuppress all clauses that
 		contain l. (Those clauses are now unsatisfied, because l is no longer true.)	*/
 	//a = a+cell[l].C;
+	#ifdef DEBUG_PRINT
+	cout<<"Enter A7"<<endl;
+	#endif
 
 	suppress = cell[l].B;
 	while (suppress != l)
@@ -223,6 +260,10 @@ A8:
 /*	A8. [Unremove ~l.] Reinstate ~l in all the active clauses that contain it. Then go
 		back to A5.
 */
+	#ifdef DEBUG_PRINT
+	cout<<"Enter A8"<<endl;
+	#endif
+
 	check = cell[l_inv].B;
 	while (check != l_inv)
 	{
@@ -329,7 +370,7 @@ int CLAUSE::extract()
 
 
 	int sidx = 2+2*n;
-	for(int i=0; i<raw.size(); i++)
+	for(int i=0; i<=raw.size(); i++)
 	{
 		START.push_back(0);
 		SIZE.push_back(0);
