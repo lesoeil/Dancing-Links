@@ -4,13 +4,26 @@
 
 */
 
-#include <iostream>
-
+#include "Algorithm-L-7222.h"
 
 using namespace std;
 
 int main(int argc, char** argv)
 {
+	int nRet;
+
+	if ((argc <2) || (argc>=3))
+	{
+		cout<<"Usage: algoL datafile"<<endl;
+		cout<<"datafile is the file name of raw data including n and 3SAT (2SAT)."<<endl;
+		return 0;
+	}
+
+	string clause_file(argv[1]);
+
+	//auto_ptr<CLAUSE> 
+	DPLLAD* pDP((new DPLLAD(clause_file)));
+	nRet = pDP->AlgorithmL();
 
 	cout<<"Hello, Algorithm L (Satisfiability by DPLL with lookahead)"<<endl;
 
@@ -19,15 +32,21 @@ int main(int argc, char** argv)
 }
 
 
+DPLLAD::DPLLAD(string& data_file)
+		:fileName(data_file)
+{
+
+}
+
 /*	Algorithm L (Satisfiability by DPLL with lookahead). Given nonempty clauses
 	C_1 ⋀ ... ⋀ C_m of size <= 3, on n > 0 Boolean variables x_1 ... x_n, this algorithm 
 	finds a solution if and only if the clauses are satisfiable. Its family of cooperating
 	data structures is discussed in the text.
 
 */
-int AlgorithmL()
+int DPLLAD::AlgorithmL()
 {
-
+	extract();
 
 L1: /*	[Initialize.] Record all binary clauses in the BIMP array and all ternary
 		clauses in the TIMP array. Let U the number of distinct variables in unit
@@ -136,8 +155,74 @@ L15:	/* [Backtrack.] Terminate unsuccessfully if d = 0. Otherwise set d <- d - 1
 	literal for branching. In case (iii) it might also discover new binary clause.
 */
 
-int AlgorithmX()
+int DPLLAD::AlgorithmX()
 {
+
+X1:	/* [Satisfied?] If F = n, terminate happily (no variables are free).
+	*/
+
+
+X2:	/*	[Compile rough heuristics.] Set N = n - F and use (65) to compute a 
+		rough score h(l) for each free literal l.
+	*/
+
+
+X3:	/*	[Preselect candidates.] Let C be the current number of free variables that 
+		are "participants," and put them into the CAND array. If C = 0, set
+		C <- N and put all free variables into CAND; terminate happily, however, 
+		if all clauses are satisfied (see exercise 152). Give each variable x in CAND 
+		the rating r(x) = h(x)h(~x). Then while C > 2C_(max) (see (66)), delete all 
+		elements of CAND whose rating exceeds the mean rating; but terminate this 
+		loop if no element are actually deleted. Finally, if C > C_(max), reduce C to 
+		C_(max) by retaining only top-ranked candidates. (See exercise 153.)
+	*/
+
+
+X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j] 
+		and LO[j] for 0 <= j < S and by PARENt pointers (see exercise 155).
+	*/
+
+
+X5:	/*	[Prepare to explore.] Set U' <- j' <- BASE <- j <- 0 and CONFLICT <- X13.
+	*/
+
+
+X6:	/*	[Choose l for lookahead.] Set l <- LL[j] and T <- BASE + LO[j]. Set 
+		H(l) <- H(PARENT(l)), where H(⋀) = 0. If l is not fixed in context T, go to 
+		X8. Otherwise, if l is fixed false but not proto false, do step X12 with l <- ~l.
+	*/
+
+X7:	/*	[Move to next.] If U > U', set U' <- U and j' <- j. Then set j <- j+1. If 
+		j = S, set j <- 0 and BASE <- BASE + 2S. Terminate normally if j = j', or 
+		if j = 0 and BASE +  2S >= PT. Otherwise return to X6.
+	*/
+
+X8:	/*	[Compute sharper heuristic.] Perform (72). Then if w > 0, set H(l_0) <- 
+		H(l_0) + w and go to X10.
+	*/
+
+X9:	/*	[Exploit an autarky.] If H(l_0) = 0, do step X12 with l <- l_0. Otherwise gen-
+		erate the new binary clause l_0 ∨ ~PARENT(l_0). (Exercise 166 explains why.)
+	*/
+
+X10:	/*	[Optionally look deeper.] Perform Algorithm Y below.
+		*/
+
+X11:	/*	[Exploit necessary assignments.] Do step X12 for all literals l ∈ BIMP(~l_0) 
+			that are fixed true but not proto true. Then go to X7. (See exercise 167.)
+		*/
+
+
+X12:	/*	[Force l.] Set FORCE[U] <- l, U <- U+1, T' <- T, and perform (72) with 
+			T <- PT. Then set T <- T'. (This step is a subroutine, used by other steps.)
+		*/
+
+
+X13:	/*	[Recover from conflict.] If T < PT, do step X12 with l <- ~l_0 and go to X7.
+			Otherwise terminate with a contradiction.
+		*/
+
+
 	return 0;
 }
 
@@ -147,7 +232,158 @@ int AlgorithmX()
 	deeply. Parameters β and Y are explained above. Initially DFAIL(l) = 0 for all l.
 
 */
-int AlgorithmY()
+int DPLLAD::AlgorithmY()
 {
+
+Y1:	/*	[Filter.] Terminate if DFAIL(l_0) = ISTAMP, or if T + 2S(Y + 1) > PT.
+		Otherwise, if H(l_0) <= t, set t <- βt and terminate.
+	*/
+
+
+Y2:	/*	[Initialize.] Set BASE <- T - 2, LBASE <- BASE + 2S*Y, DT <- LBASE + LO[j], 
+		i <- ^j' <- ^j <- 0, E <- F, and CONFLICT <- Y8. Perform (62) with l <- l_0 
+		and T <- Dt.
+	*/
+
+Y3:	/*	[Choose l for double look.] Set l <- LL[j] and T <- BASE + LO[j]. If l is not 
+		fixed in context T, go to Y5. Otherwise, if l is fixed false but not Dfalse, do 
+		step Y7 with l <- ~l.
+	*/
+
+
+Y4:	/*	[Move to next.] Set ^j <- ^j + 1. If ^j = S, set ^j <- 0 and BASE <- BASE + 2S.
+		Go to Y6 if ^j' = ^j, or if ^j = 0 and BASE = LBASE. Otherwise return to Y3.
+	*/
+
+
+Y5:	/*	[Look ahead.] Perform (73), and return to Y4 (if no conflict arises).
+	*/
+
+
+Y6:	/*	[Finish.] Generate new binary clauses (~l_0 ∨ W_k) for 0 <= k < i. Then set 
+		BASE <- LBASE, T <- Dt, t <- H(l_0), DFAIL(l_0) <- ISTAMP, CONFLICT <- 
+		X13, and terminate.
+	*/
+
+
+Y7:	/*	[Make ^l_0 false.] Set ^j' <- ^j, T' <- T, and perform (73) with l <- ^l_0 and 
+		T <- DT. Then set T <- T', W_i <- ^l_0, i <- i+1. (This step is a subroutine.)
+	*/
+
+
+Y8:	/*	[Recover from conflict.] If T < DT, do step Y7 with l <- ~LL[^j] and go 
+		to Y4. Otherwise set CONFLICT <- X13 and exit to X13.
+*/
+
+	return 0;
+}
+
+
+int DPLLAD::extract()
+{
+	//cout<<fileName<<endl;
+
+	fstream fs;
+	fs.open(fileName.c_str(), fstream::in);
+	if ((fs.rdstate() & std::fstream::failbit) != 0)	
+	{
+		cout<<"Fail to open file \""<<fileName<<"\"."<<endl;
+		cout<<"Please check whether file exist or not."<<endl;
+		cout<<"Or whether process calling has the rights to open it or not."<<endl;
+		return -2;
+	}
+
+
+	string line;
+	
+	getline(fs, line);
+	//cout<<line<<endl;
+
+	istringstream buf(line);
+	istream_iterator<string> beg(buf);
+	istream_iterator<string> end;
+
+	vector<string> tokens(beg, end);
+
+	for (auto& s: tokens)
+	{
+		//cout<<s<<" ";
+		n = std::stoi(s);
+		//cout<<"number of literals n is:"<<n<<endl;
+	}
+	//cout<<endl;
+
+	vector<set<int, less<int>>* > raw;
+	int i_index=0;
+
+	while (getline(fs, line))
+	{
+		istringstream buf(line);
+		istream_iterator<string> beg(buf);
+		istream_iterator<string> end;
+
+		vector<string> tokens(beg, end);
+		if (tokens.size()<=0)
+		{
+			continue;
+		}
+
+		set<int, less<int>>* its = new set<int, less<int>>; 
+		raw.push_back(its);
+		
+		for (auto& s: tokens)
+		{
+			//cout<<s<<" ";
+			raw[i_index]->insert(std::stoi(s));
+		}
+		//cout<<endl;
+		i_index++;
+	}
+
+	//cout<<"i_index: "<<i_index<<endl;
+	m = i_index;
+
+	//cout<<"raw.size(): "<<raw.size()<<endl;
+	//set<int>::const_iterator it;
+	for (int i=0; i<=1; i++)
+	{
+		
+	}
+	
+
+	int tail[2+2*n];
+	for (int i=2; i<2*n+2; i++)
+	{
+		cout<<(*raw[i]).size()<<": ";
+		for (auto x: *raw[i])
+		{
+			cout<<x<<" ";
+		}
+		cout<<endl;
+	}
+
+
+
+	int sidx = 2+2*n;
+	for(int i=0; i<raw.size(); i++)
+	{
+	
+	}
+
+	for (int i=raw.size()-1; i>=0; i--)
+	{
+		//int j = 0;
+
+		for (auto val: *raw[i])
+		{
+	
+			sidx++;
+			//j++;cout<<j<<":";
+			//cout<<val<<" ";
+		}
+		
+		//cout<<endl;
+	}
+
 	return 0;
 }
