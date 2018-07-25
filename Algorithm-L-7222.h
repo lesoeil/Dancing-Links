@@ -26,6 +26,7 @@ public:
 class PAIRLINK
 {
 public:
+	PAIRLINK(int x, int y, PAIRLINK* p);
 	int v;
 	int w;
 	PAIRLINK* LINK;

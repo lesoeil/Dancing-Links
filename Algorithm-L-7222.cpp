@@ -318,10 +318,12 @@ int DPLLAD::extract()
 		TIMP.push_back(list<PAIRLINK*>());
 	}
 
+	/*
 	for (int i=0; i<2*n+2; i++)
 	{
 		cout<<"TIMP["<<i<<"].size(): "<<TIMP[i].size()<<endl;
 	}
+	*/
 
 	vector<set<int, less<int>>* > raw;
 	int i_index=0;
@@ -370,8 +372,62 @@ int DPLLAD::extract()
 			cout<<x<<" ";
 		}
 		cout<<endl;
+		
+		if (1 == (*raw[i]).size())
+		{
+
+		}
+		else if (2 == (*raw[i]).size())
+		{
+
+		}
+		else if (3 == (*raw[i]).size())
+		{
+			int temp[3];
+			int j = 0;
+
+			for (auto x: *raw[i])
+			{
+				//cout<<"x: "<<x<<" ";
+				temp[j] = x;
+				//cout<<"temp["<<i<<"]: "<<temp[i]<<" ";
+				j++;
+			}
+
+			int u = temp[0];
+			int v = temp[1];
+			int w = temp[2];
+
+			//cout<<"u:"<<u<<"  v:"<<v<<"  w:"<<w<<endl;
+
+	   		PAIRLINK* u_sharp = new PAIRLINK(v,w, NULL);
+	   		PAIRLINK* v_sharp = new PAIRLINK(w,u, NULL);
+	   		PAIRLINK* w_sharp = new PAIRLINK(u,v, NULL);
+
+	   		u_sharp->LINK = v_sharp;
+	   		v_sharp->LINK = w_sharp;
+	   		w_sharp->LINK = u_sharp;
+
+	   		TIMP[u^1].push_back(u_sharp);
+	   		TIMP[v^1].push_back(v_sharp);
+	   		TIMP[w^1].push_back(w_sharp);
+		}
+		else
+		{
+
+		}
+
 	}
 
+
+	for (int i=2; i<2*n+2; i++)
+	{
+		cout<<"TIMP["<<i<<"].size(): "<<TIMP[i].size()<<endl;
+		for (auto x: TIMP[i])
+		{
+			cout<<x->v<<" "<<x->w<<" "<<x->LINK<<endl;
+		}
+	}
 
 
 	int sidx = 2+2*n;
@@ -396,4 +452,13 @@ int DPLLAD::extract()
 	}
 
 	return 0;
+}
+
+
+PAIRLINK::PAIRLINK(int x, int y, PAIRLINK* p):
+v(x),
+w(y),
+LINK(p)
+{
+
 }
