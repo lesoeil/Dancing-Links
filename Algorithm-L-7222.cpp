@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 	DPLLAD* pDP((new DPLLAD(clause_file)));
 	nRet = pDP->AlgorithmL();
 
-	cout<<"Hello, Algorithm L (Satisfiability by DPLL with lookahead)"<<endl;
+	//cout<<"Hello, Algorithm L (Satisfiability by DPLL with lookahead)"<<endl;
 
 	return 0;
 
@@ -312,6 +312,16 @@ int DPLLAD::extract()
 		//cout<<"number of literals n is:"<<n<<endl;
 	}
 	//cout<<endl;
+
+	for (int i=0; i<2*n+2; i++)
+	{
+		TIMP.push_back(list<PAIRLINK*>());
+	}
+
+	for (int i=0; i<2*n+2; i++)
+	{
+		cout<<"TIMP["<<i<<"].size(): "<<TIMP[i].size()<<endl;
+	}
 
 	vector<set<int, less<int>>* > raw;
 	int i_index=0;

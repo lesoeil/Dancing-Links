@@ -23,6 +23,14 @@ public:
 	int l;
 };
 
+class PAIRLINK
+{
+public:
+	int v;
+	int w;
+	PAIRLINK* LINK;
+};
+
 
 class DPLLAD
 {
@@ -56,7 +64,7 @@ private:
 		so that the currently active ternary clauses containing u always appear in the 
 		first TSIZE(~u) positions that have been allocated to TIMP(~u).
 	*/
-	vector<list<pair<LITERAL, LITERAL>>> TIMP;
+	vector<list<PAIRLINK*>> TIMP;
 	vector<int> TSIZE;
 
 
