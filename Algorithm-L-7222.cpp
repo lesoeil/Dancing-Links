@@ -316,14 +316,19 @@ int DPLLAD::extract()
 	for (int i=0; i<2*n+2; i++)
 	{
 		TIMP.push_back(list<PAIRLINK*>());
+		TSIZE.push_back(0);
+		BIMP.push_back(set<int>());
+		BSIZE.push_back(0);
 	}
 
-	/*
+	#if 0
 	for (int i=0; i<2*n+2; i++)
 	{
 		cout<<"TIMP["<<i<<"].size(): "<<TIMP[i].size()<<endl;
+		cout<<"BIMP["<<i<<"].size(): "<<BIMP[i].size()<<endl;
 	}
-	*/
+	#endif
+	
 
 	vector<set<int, less<int>>* > raw;
 	int i_index=0;
@@ -363,8 +368,8 @@ int DPLLAD::extract()
 	}
 	
 
-	int tail[2+2*n];
-	for (int i=2; i<2*n+2; i++)
+	//int tail[2+2*n];
+	for (int i=0; i<m; i++)
 	{
 		cout<<(*raw[i]).size()<<": ";
 		for (auto x: *raw[i])
@@ -375,11 +380,33 @@ int DPLLAD::extract()
 		
 		if (1 == (*raw[i]).size())
 		{
+			int u;
 
+			for (auto x: *raw[i])
+			{
+				u = x;
+			}
+
+			FORCE.insert(u);
 		}
 		else if (2 == (*raw[i]).size())
 		{
+			int temp[2];
+			int j = 0;
 
+			for (auto x: *raw[i])
+			{
+				//cout<<"x: "<<x<<" ";
+				temp[j] = x;
+				//cout<<"temp["<<i<<"]: "<<temp[i]<<" ";
+				j++;
+			}
+
+			int u = temp[0];
+			int v = temp[1];
+
+			BIMP[u^1].insert(v);
+			BIMP[v^1].insert(u);
 		}
 		else if (3 == (*raw[i]).size())
 		{
@@ -419,16 +446,14 @@ int DPLLAD::extract()
 
 	}
 
-
 	for (int i=2; i<2*n+2; i++)
 	{
-		cout<<"TIMP["<<i<<"].size(): "<<TIMP[i].size()<<endl;
-		for (auto x: TIMP[i])
-		{
-			cout<<x->v<<" "<<x->w<<" "<<x->LINK<<endl;
-		}
+		TSIZE[i] = TIMP[i].size();
+		BSIZE[i] = BIMP[i].size();
+		U = FORCE.size();
 	}
 
+	debugPrint();
 
 	int sidx = 2+2*n;
 	for(int i=0; i<raw.size(); i++)
@@ -461,4 +486,40 @@ w(y),
 LINK(p)
 {
 
+}
+
+
+int DPLLAD::debugPrint()
+{
+	for (int i=2; i<2*n+2; i++)
+	{
+		cout<<"TIMP["<<i<<"].size(): "<<TIMP[i].size()<<endl;
+		for (auto x: TIMP[i])
+		{
+			cout<<x->v<<" "<<x->w<<" "<<x->LINK<<endl;
+		}
+	}
+
+	for (int i=2; i<2*n+2; i++)
+	{
+		cout<<"BIMP["<<i<<"].size(): "<<BIMP[i].size()<<endl;
+		cout<<"Literals in BIMP["<<i<<"]: ";
+		for (auto x: BIMP[i])
+		{
+			cout<<x<<" ";
+		}
+		cout<<endl;
+	}
+
+	{
+		cout<<"FORCE.size(): "<<FORCE.size()<<endl;
+		cout<<"Literals in FORCE: ";
+		for (auto x: FORCE)
+		{
+			cout<<x<<" ";
+		}
+		cout<<endl;
+	}
+
+	return 0;
 }

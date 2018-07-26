@@ -69,16 +69,30 @@ private:
 	vector<int> TSIZE;
 
 
-	vector<list<LITERAL>> BIMP;
+	/*	A literal l is forced true when it appears in a clause C whose other literals 
+		have been false, namely when the set of currently assigned literals L has re-
+		duced C to the unit clause C|L = (l). Such unit clauses arise from the reduction 
+		of binary clauses. Algorithm L therefore keeps track of the binary clauses (u V v) 
+		that are relevant to the current subproblem F|L. This information is kept 
+		in a so-called "bimp table" BIMP(l) for every literal l, which is a list of other 
+		literals l' whose truth is implied by the truth of l. Indeed, instead of simply 
+		including binary clauses within the whole list of given clauses, as Algorithm A, 
+		B, and D do, Algorithm L stores the relevant facts about (u V v) directly, in a 
+		ready-to-use way, by listing u in BIMP(~v) and v in BIMP(~u). Each of the 2n 
+		tables BIMP(l) is represented internally as sequential list of length BSIZE(l), 
+		with memory allocated dynamically via the buddy system (see exercise 134).
+	*/
+	vector<set<int>> BIMP;
 	vector<int> BSIZE;
 
 	vector<int> IST;
 
 	int ISTAMP;
 
-	vector<LITERAL> FORCE; //record
+	set<int> FORCE; //record
 	int U; //number of distinct variables in unit clauses
 
 	int extract();
+	int debugPrint();
 
 };
