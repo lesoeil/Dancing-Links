@@ -1,4 +1,6 @@
 /*	Algorithm-L-7222.cpp
+
+	Most of the comments are texts copied from TAOCP F6A 7.2.2.2
 	
 	Jacob Yang 22-July-2018 21:25
 
@@ -46,7 +48,7 @@ DPLLAD::DPLLAD(string& data_file)
 */
 int DPLLAD::AlgorithmL()
 {
-	extract();
+	
 
 L1: /*	[Initialize.] Record all binary clauses in the BIMP array and all ternary
 		clauses in the TIMP array. Let U the number of distinct variables in unit
@@ -56,12 +58,64 @@ L1: /*	[Initialize.] Record all binary clauses in the BIMP array and all ternary
 		ISTAMP <- 0. (Thinkd = depth, F = fixed variables, I = ISTACK size.)
 	*/
 
+	/* Read clauses from dat file: Fill FORCE, BIMP and TIMP. Assign U, BSIZE and TSIZE. */
+	extract();
+
+	/* TODO: Terminate unsuccessfully if two unit clauses contradict each other. */
+	for (auto x: FORCE)
+	{
+		if (FORCE.find(x^1) != FORCE.end())
+		{
+			cout<<"Conflict liberals "<<x<<" and "<<(x^1)<<" found in unit literals FORCE!"<<endl;
+			cout<<"Terminate unsuccessfully!!!"<<endl;
+			return -1;
+		}
+	}
+
+	// VAR and INX
+	INX.push_back(-1);
+	for (int k=0; k<n; k++)
+	{
+		VAR.push_back(k+1);
+		INX.push_back(k);
+
+		BRANCH.push_back(-1);
+	}
+
+
+	// d, F, I, ISTAMP
+	d = 0;
+	F = 0;
+	I = 0;
+	ISTAMP = 0;
+
 
 L2:	/*	[New node.] Set BRANCH[d] <- -1. If U = 0, invoke Algorithm X below
 		(which looks ahead for simplifications and also gathers data about how to 
 		make the next branch). Terminate happily if Algorithm X finds all clauses
 		satisfied; go to L15 if Algorithm X discovers a conflict; go to L5 if U > 0.
 	*/
+	BRANCH[d] = -1;
+
+	if (U==0)
+	{	
+		bool bFindConflict = false;
+		bFindConflict = AlgorithmX();
+		if (bFindConflict)
+		{
+			goto L15;
+		}
+		else
+		{
+			// Terminate happily since Algorithm X finds all clauses satisfied.
+			cout<<"Congratulations!!! All clauses are satisfiled! ^_^"<<endl;
+			return 0;
+		}
+	}
+	else if (U > 0)
+	{
+		goto L5;
+	}
 
 
 
@@ -155,7 +209,7 @@ L15:	/* [Backtrack.] Terminate unsuccessfully if d = 0. Otherwise set d <- d - 1
 	literal for branching. In case (iii) it might also discover new binary clause.
 */
 
-int DPLLAD::AlgorithmX()
+bool DPLLAD::AlgorithmX()
 {
 
 X1:	/* [Satisfied?] If F = n, terminate happily (no variables are free).
@@ -223,7 +277,7 @@ X13:	/*	[Recover from conflict.] If T < PT, do step X12 with l <- ~l_0 and go to
 		*/
 
 
-	return 0;
+	return false;
 }
 
 

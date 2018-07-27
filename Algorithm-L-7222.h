@@ -1,4 +1,6 @@
-/* Algorithm-L-7222.h
+/*	Algorithm-L-7222.h
+
+	Most of the comments are texts copied from TAOCP F6A 7.2.2.2
 */
 
 #include <iostream>
@@ -40,7 +42,7 @@ public:
 	DPLLAD(string& data_file);
 
 	int AlgorithmL();
-	int AlgorithmX();
+	bool AlgorithmX();
 	int AlgorithmY();
 
 private:
@@ -48,7 +50,25 @@ private:
 	int n; // number of variables 1..n
 	int m; // number of clauses
 
+	int d; // depth
+	int F; // fixed variables
+	int I; // ISTACK size
+	int ISTAMP;
+
+	vector<int> BRANCH;
+
 	vector<unsigned int> VAL;
+
+	/*	There is an array VAR, which contains a permutation of {1,...,n},
+		with VAR[k] = x if and only if INX[x] = k. Furthermore VAR[k] is a 
+		"free variable" -- not fixed in context RT -- if and only if 
+		0 <= k < N. This setup makes it convenient to keep track of the 
+		variables that are currently free: A variable becomes fixed by 
+		swapping it to the end of the free list and decreasing N; then 
+		we can free it later by simply increasing N, without swapping.
+	*/
+	vector<int> VAR;
+	vector<int> INX;
 
 	/*	Every literal l has a sequential list TIMP(l) of length TSIZE(l),
 		consisting of pairs p_1 = (u_1, v_1), p_2 = (u_2, v_2), ..., 
@@ -86,8 +106,6 @@ private:
 	vector<int> BSIZE;
 
 	vector<int> IST;
-
-	int ISTAMP;
 
 	set<int> FORCE; //record
 	int U; //number of distinct variables in unit clauses
