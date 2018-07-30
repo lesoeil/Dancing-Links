@@ -211,14 +211,26 @@ L15:	/* [Backtrack.] Terminate unsuccessfully if d = 0. Otherwise set d <- d - 1
 
 bool DPLLAD::AlgorithmX()
 {
+	bool bConflict = true;
+	int N = 0;
 
 X1:	/* [Satisfied?] If F = n, terminate happily (no variables are free).
 	*/
+
+	if (F == n)
+	{
+		cout<<"F: "<<F<<" is equal to n: "<<n<<endl;
+		cout<<"No variables are free. Terminate happily."<<endl;
+		bConflict = true;
+		return bConflict;
+	}
 
 
 X2:	/*	[Compile rough heuristics.] Set N = n - F and use (65) to compute a 
 		rough score h(l) for each free literal l.
 	*/
+	N = n - F;
+	//cout<<"N: "<<N<<"   n: "<<n<<"  F: "<<F<<endl;
 
 
 X3:	/*	[Preselect candidates.] Let C be the current number of free variables that 
