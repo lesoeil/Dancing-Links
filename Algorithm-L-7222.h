@@ -67,6 +67,8 @@ private:
 		swapping it to the end of the free list and decreasing N; then 
 		we can free it later by simply increasing N, without swapping.
 	*/
+
+	int N;
 	vector<int> VAR;
 	vector<int> INX;
 
@@ -112,5 +114,8 @@ private:
 
 	int extract();
 	int debugPrint();
+	int refineHeuristic();
+	bool isFreeLiteral(int l);
+	int getVariable(int literal);
 
 };

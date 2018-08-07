@@ -212,7 +212,7 @@ L15:	/* [Backtrack.] Terminate unsuccessfully if d = 0. Otherwise set d <- d - 1
 bool DPLLAD::AlgorithmX()
 {
 	bool bConflict = true;
-	int N = 0;
+
 
 X1:	/* [Satisfied?] If F = n, terminate happily (no variables are free).
 	*/
@@ -230,8 +230,9 @@ X2:	/*	[Compile rough heuristics.] Set N = n - F and use (65) to compute a
 		rough score h(l) for each free literal l.
 	*/
 	N = n - F;
-	//cout<<"N: "<<N<<"   n: "<<n<<"  F: "<<F<<endl;
+	cout<<"N: "<<N<<"   n: "<<n<<"  F: "<<F<<endl;
 
+	refineHeuristic();//Temporary placement
 
 X3:	/*	[Preselect candidates.] Let C be the current number of free variables that 
 		are "participants," and put them into the CAND array. If C = 0, set
@@ -344,6 +345,69 @@ Y8:	/*	[Recover from conflict.] If T < DT, do step Y7 with l <- ~LL[^j] and go
 	return 0;
 }
 
+#define DEBUG_PRINT
+
+int DPLLAD::getVariable(int l)
+{
+	if ((l>=2) && (l < (2*n+1)))
+	{
+		return l/2;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+bool DPLLAD::isFreeLiteral(int l)
+{
+	int x = getVariable(l);
+
+	if (x <0)
+	{
+		return false;
+	}
+
+	if ((INX[x] >= 0) && (INX[x] < N))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+int DPLLAD::refineHeuristic()
+{
+	cout<<"Hello Heuristic Refine !"<<endl;
+
+	vector<double> h;
+	for (int i=0; i<2*n+1; i++)
+	{
+		h.push_back(1.0);
+	}
+
+	cout<<"N: "<<N<<endl;
+	double h_ave = 0;
+
+
+/*
+	for (int i=0; i<2*n+1; i++)
+	{
+		cout<<h[i]<<" ";
+	}
+	cout<<endl;
+
+	for (int k=0; k<n; k++)
+	{
+		cout<<k<<":  VAR["<<k<<"]: "<<VAR[k]<<"  INX["<<VAR[k]<<"]: "<<INX[VAR[k]]<<endl;
+	}
+*/
+
+
+	return 0;
+}
 
 int DPLLAD::extract()
 {
