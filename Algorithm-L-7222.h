@@ -115,6 +115,7 @@ private:
 	int extract();
 	int debugPrint();
 	int refineHeuristic();
+	int regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i, double* ph_ave_i);
 	bool isFreeLiteral(int l);
 	int getVariable(int literal);
 

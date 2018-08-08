@@ -349,7 +349,7 @@ Y8:	/*	[Recover from conflict.] If T < DT, do step Y7 with l <- ~LL[^j] and go
 
 int DPLLAD::getVariable(int l)
 {
-	if ((l>=2) && (l < (2*n+1)))
+	if ((l>=2) && (l <= (2*n+1)))
 	{
 		return l/2;
 	}
@@ -410,8 +410,26 @@ int DPLLAD::refineHeuristic()
 
 	cout<<"N: "<<N<<endl;
 	double h_ave = 1.0;
-	double alpha = 3.5;
+	
+	double h_ave_i = 0;
 
+	cout<<"Refine Round 1:"<<endl;
+	regression(&h, &h_ave, &h_i, &h_ave_i);
+
+	cout<<endl<<endl<<"Refine Round 2:"<<endl;
+	regression(&h_i, &h_ave_i, &h, &h_ave);
+
+
+	cout<<endl<<endl<<"Refine Round 3:"<<endl;
+	regression(&h, &h_ave, &h_i, &h_ave_i);
+
+	cout<<endl<<endl<<"Refine Round 4:"<<endl;
+	regression(&h_i, &h_ave_i, &h, &h_ave);
+
+
+	cout<<endl<<endl<<"Refine Round 5:"<<endl;
+	regression(&h, &h_ave, &h_i, &h_ave_i);
+/*
 	for (int l=2; l<=2*n+1; l++)
 	{
 		if (isFreeLiteral(l))
@@ -431,11 +449,17 @@ int DPLLAD::refineHeuristic()
 			{
 				h_i[l] += h[uv->v] * h[uv->w] / (h_ave * h_ave);
 			}
+
+			cout<<"h\'("<<l<<"): "<<h_i[l]<<endl;
+			h_ave_new += h_i[l];
 		}
 
-		cout<<"h\'("<<l<<"): "<<h_i[l]<<endl;
+		//cout<<"h\'("<<l<<"): "<<h_i[l]<<endl;
 	}
 
+	cout<<"h_ave_new: "<<h_ave_new / (2*N) <<endl;
+
+*/
 
 
 /*
@@ -445,6 +469,45 @@ int DPLLAD::refineHeuristic()
 	}
 */
 
+
+	return 0;
+}
+
+int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i, double* ph_ave_i)
+{
+	double alpha = 3.5;
+	*ph_ave_i = 0;
+
+	for (int l=2; l<=2*n+1; l++)
+	{
+		if (isFreeLiteral(l))
+		{
+			(*ph_i)[l] = 0.1;
+
+			for (auto u: BIMP[l])
+			{
+				if (isFreeLiteral(u))
+				{
+					(*ph_i)[l] += alpha * (*ph)[u] / (*ph_ave);
+				}
+
+			}
+
+			for (auto uv : TIMP[l])
+			{
+				(*ph_i)[l] += (*ph)[uv->v] * (*ph)[uv->w] / ((*ph_ave) * (*ph_ave));
+			}
+
+			cout<<"h\'("<<l<<"): "<<(*ph_i)[l]<<endl;
+			*ph_ave_i += (*ph_i)[l];
+		}
+
+		
+		//cout<<"h\'("<<l<<"): "<<h_i[l]<<endl;
+	}
+
+	*ph_ave_i /= 2*N;
+	cout<<"h_ave_i: "<<*ph_ave_i<<endl;
 
 	return 0;
 }
