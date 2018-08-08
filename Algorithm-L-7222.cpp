@@ -378,19 +378,27 @@ bool DPLLAD::isFreeLiteral(int l)
 	}
 }
 
+
+/*	Exercise
+	145. [23] Starting with h(l) = 1 for each of the 18 literals l in waerden(3,3;9), find
+	successively refined estimates h'(l), h"(l), ... , using (65) with respect to the 32 ternary
+	clause (9). Then, assuming that x_5 has been set false as in exercise 136, and that the 
+	resulting binary clauses 13, 19, 28, 34, 37, 46, 67, 79 have been included in the BIMP
+	tables, do the same for the 16 literals that remain at depth d = 1.
+*/
+
 int DPLLAD::refineHeuristic()
 {
 	cout<<"Hello Heuristic Refine !"<<endl;
 
 	vector<double> h;
-	for (int i=0; i<2*n+1; i++)
+	vector<double> h_i;
+
+	for (int i=0; i<=2*n+1; i++)
 	{
 		h.push_back(1.0);
+		h_i.push_back(0.0);
 	}
-
-	cout<<"N: "<<N<<endl;
-	double h_ave = 0;
-
 
 /*
 	for (int i=0; i<2*n+1; i++)
@@ -398,7 +406,39 @@ int DPLLAD::refineHeuristic()
 		cout<<h[i]<<" ";
 	}
 	cout<<endl;
+*/
 
+	cout<<"N: "<<N<<endl;
+	double h_ave = 1.0;
+	double alpha = 3.5;
+
+	for (int l=2; l<=2*n+1; l++)
+	{
+		if (isFreeLiteral(l))
+		{
+			h_i[l] = 0.1;
+
+			for (auto u: BIMP[l])
+			{
+				if (isFreeLiteral(u))
+				{
+					h_i[l] += alpha * h[u] / h_ave;
+				}
+
+			}
+
+			for (auto uv : TIMP[l])
+			{
+				h_i[l] += h[uv->v] * h[uv->w] / (h_ave * h_ave);
+			}
+		}
+
+		cout<<"h\'("<<l<<"): "<<h_i[l]<<endl;
+	}
+
+
+
+/*
 	for (int k=0; k<n; k++)
 	{
 		cout<<k<<":  VAR["<<k<<"]: "<<VAR[k]<<"  INX["<<VAR[k]<<"]: "<<INX[VAR[k]]<<endl;
