@@ -413,21 +413,102 @@ int DPLLAD::refineHeuristic()
 	
 	double h_ave_i = 0;
 
-	cout<<"Refine Round 1:"<<endl;
+	cout<<endl<<"Depth "<<d<<" Refine Round 1:"<<endl;
 	regression(&h, &h_ave, &h_i, &h_ave_i);
 
-	cout<<endl<<endl<<"Refine Round 2:"<<endl;
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round 2:"<<endl;
 	regression(&h_i, &h_ave_i, &h, &h_ave);
 
 
-	cout<<endl<<endl<<"Refine Round 3:"<<endl;
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round 3:"<<endl;
 	regression(&h, &h_ave, &h_i, &h_ave_i);
 
-	cout<<endl<<endl<<"Refine Round 4:"<<endl;
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round 4:"<<endl;
 	regression(&h_i, &h_ave_i, &h, &h_ave);
 
 
-	cout<<endl<<endl<<"Refine Round 5:"<<endl;
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round 5:"<<endl;
+	regression(&h, &h_ave, &h_i, &h_ave_i);
+
+	// assume x_5 set to fales
+	//cout<<"BIMP when x_5 is set to false:"<<endl;
+	int x_rm = 2*5+1;
+	for (auto uv : TIMP[x_rm])
+	{
+		//cout<<uv->v<<" "<<uv->w<<endl;
+		BIMP[(uv->v)^1].insert(uv->w);
+		BIMP[(uv->w)^1].insert(uv->v);
+	}
+
+
+	int k_little = INX[(x_rm)/2];
+	int k_big = N-1;
+
+	int x_little = x_rm / 2;
+	int x_big = VAR[N-1];
+
+
+	INX[x_little] = k_big;
+	INX[x_big] = k_little;
+
+	VAR[k_little] = x_big;
+	VAR[k_big] = x_little;
+
+	N -=1;
+	d = 1;
+
+
+	for (int l=2; l<=2*n+1; l++)
+	{
+		//BIMP[l].erase(x_rm);
+		//BIMP[l].erase(x_rm^1);
+	}
+
+	h_ave_i = 0;
+
+	/*
+	for (auto x: h_i)
+	{
+		h_ave_i +=x;
+	}
+	
+
+	for (int l=2; l<=2*n+1; l++)
+	{
+		if (isFreeLiteral(l))
+		{
+			h_ave_i += h_i[l];
+		}
+	}
+
+	h_ave_i /= 2*N;
+	*/
+
+
+	for (int i=0; i<=2*n+1; i++)
+	{
+		h[i] = 1.0;
+		h_i[i] = 0.0;
+	}
+
+	h_ave = 1.0;
+	
+
+	cout<<endl<<"Depth "<<d<<" Refine Round 1:"<<endl;
+	regression(&h, &h_ave, &h_i, &h_ave_i);
+
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round 2:"<<endl;
+	regression(&h_i, &h_ave_i, &h, &h_ave);
+
+
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round 3:"<<endl;
+	regression(&h, &h_ave, &h_i, &h_ave_i);
+
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round 4:"<<endl;
+	regression(&h_i, &h_ave_i, &h, &h_ave);
+
+
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round 5:"<<endl;
 	regression(&h, &h_ave, &h_i, &h_ave_i);
 /*
 	for (int l=2; l<=2*n+1; l++)
@@ -484,6 +565,7 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
 		{
 			(*ph_i)[l] = 0.1;
 
+			
 			for (auto u: BIMP[l])
 			{
 				if (isFreeLiteral(u))
@@ -495,7 +577,11 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
 
 			for (auto uv : TIMP[l])
 			{
-				(*ph_i)[l] += (*ph)[uv->v] * (*ph)[uv->w] / ((*ph_ave) * (*ph_ave));
+				if ((isFreeLiteral(uv->v)) && (isFreeLiteral(uv->w))) //test code
+				{
+					(*ph_i)[l] += (*ph)[uv->v] * (*ph)[uv->w] / ((*ph_ave) * (*ph_ave));	
+				}
+ 				
 			}
 
 			cout<<"h\'("<<l<<"): "<<(*ph_i)[l]<<endl;
