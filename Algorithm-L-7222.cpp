@@ -435,17 +435,22 @@ int DPLLAD::refineHeuristic()
 	int x_rm = 2*5+1;
 	for (auto uv : TIMP[x_rm])
 	{
-		//cout<<uv->v<<" "<<uv->w<<endl;
+		cout<<uv->v<<" "<<uv->w<<endl;
 		BIMP[(uv->v)^1].insert(uv->w);
 		BIMP[(uv->w)^1].insert(uv->v);
 	}
 
+	
+	/*for (int i=0; i<=N; i++)
+	{
+		cout<<"INX["<<i<<"]:"<<INX[i]<<" VAR["<<INX[i]<<"]:"<<VAR[INX[i]]<<endl;
+	}*/
 
 	int k_little = INX[(x_rm)/2];
 	int k_big = N-1;
 
-	int x_little = x_rm / 2;
-	int x_big = VAR[N-1];
+	int x_little = VAR[k_little];// x_rm / 2;
+	int x_big = VAR[k_big];
 
 
 	INX[x_little] = k_big;
@@ -454,8 +459,14 @@ int DPLLAD::refineHeuristic()
 	VAR[k_little] = x_big;
 	VAR[k_big] = x_little;
 
+	/*for (int i=0; i<=N; i++)
+	{
+		cout<<"INX["<<i<<"]:"<<INX[i]<<" VAR["<<INX[i]<<"]:"<<VAR[INX[i]]<<endl;
+	}*/
+
+
 	N -=1;
-	d = 1;
+	d++;// = 1;
 
 
 	for (int l=2; l<=2*n+1; l++)
@@ -472,7 +483,7 @@ int DPLLAD::refineHeuristic()
 		h_ave_i +=x;
 	}
 	
-
+	
 	for (int l=2; l<=2*n+1; l++)
 	{
 		if (isFreeLiteral(l))
@@ -485,6 +496,7 @@ int DPLLAD::refineHeuristic()
 	*/
 
 
+
 	for (int i=0; i<=2*n+1; i++)
 	{
 		h[i] = 1.0;
@@ -492,7 +504,8 @@ int DPLLAD::refineHeuristic()
 	}
 
 	h_ave = 1.0;
-	
+
+
 
 	cout<<endl<<"Depth "<<d<<" Refine Round 1:"<<endl;
 	regression(&h, &h_ave, &h_i, &h_ave_i);
@@ -563,6 +576,7 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
 	{
 		if (isFreeLiteral(l))
 		{
+			//cout<<"Free Literal: "<<l<<endl;
 			(*ph_i)[l] = 0.1;
 
 			
@@ -571,6 +585,11 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
 				if (isFreeLiteral(u))
 				{
 					(*ph_i)[l] += alpha * (*ph)[u] / (*ph_ave);
+
+					if (l==3)
+					{
+						cout<<"BIMP: "<<l<<" "<<u<<endl;
+					}
 				}
 
 			}
@@ -579,7 +598,12 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
 			{
 				if ((isFreeLiteral(uv->v)) && (isFreeLiteral(uv->w))) //test code
 				{
-					(*ph_i)[l] += (*ph)[uv->v] * (*ph)[uv->w] / ((*ph_ave) * (*ph_ave));	
+					//(*ph_i)[l] += ((*ph)[uv->v] * (*ph)[uv->w] / ((*ph_ave) * (*ph_ave)));
+					(*ph_i)[l] += (((*ph)[uv->v])/(*ph_ave)) * (((*ph)[uv->w])/(*ph_ave));
+					if (l==3)
+					{
+						cout<<"TIMP: "<<l<<" "<<uv->v<<" "<<uv->w<<endl;
+					}
 				}
  				
 			}
@@ -593,7 +617,7 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
 	}
 
 	*ph_ave_i /= 2*N;
-	cout<<"h_ave_i: "<<*ph_ave_i<<endl;
+	cout<<"N: "<<N<<"  h_ave_i: "<<*ph_ave_i<<endl;
 
 	return 0;
 }
