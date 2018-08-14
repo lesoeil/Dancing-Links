@@ -213,6 +213,9 @@ bool DPLLAD::AlgorithmX()
 {
 	bool bConflict = true;
 
+	int C = 0; // current number of free variables that are "participants"
+	set<int> CAND;
+
 
 X1:	/* [Satisfied?] If F = n, terminate happily (no variables are free).
 	*/
@@ -243,6 +246,40 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 		loop if no element are actually deleted. Finally, if C > C_(max), reduce C to 
 		C_(max) by retaining only top-ranked candidates. (See exercise 153.)
 	*/
+
+	/*	A participant is a variable such that either x or ~x has played the role of u 
+		or v in step L8, at some node above us in the search tree.
+	*/
+	C = 0;
+	for (int l=2; l<=2*n+1; l++)
+	{
+		if (isFreeLiteral(l))
+		{	
+			for (auto u: BIMP[l])
+			{
+				if (isFreeLiteral(u))
+				{
+					CAND.insert(u/2);
+					C++;
+				}
+
+			}
+		}
+	}
+
+	if (C == 0)
+	{
+		for (int l=2; l<=2*n+1; l++)
+		{
+			if (isFreeLiteral(l))
+			{
+				CAND.insert(l/2);
+			}
+		}
+
+		C = N;
+	}
+
 
 
 X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j] 
@@ -388,6 +425,52 @@ bool DPLLAD::isFreeLiteral(int l)
 */
 
 int DPLLAD::refineHeuristic()
+{
+	cout<<"Hello Heuristic Refine !"<<endl;
+
+	
+	vector<double> h_i;
+
+	for (int i=0; i<=2*n+1; i++)
+	{
+		h.push_back(0.0);
+		h_i.push_back(1.0);
+	}
+
+/*
+	for (int i=0; i<2*n+1; i++)
+	{
+		cout<<h[i]<<" ";
+	}
+	cout<<endl;
+*/
+
+	cout<<"N: "<<N<<endl;
+	h_ave = 0.0;
+	
+	double h_ave_i = 1.0;
+
+	int count=1;
+
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
+	regression(&h_i, &h_ave_i, &h, &h_ave);
+
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
+	regression(&h, &h_ave, &h_i, &h_ave_i);
+
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
+	regression(&h_i, &h_ave_i, &h, &h_ave);
+
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
+	regression(&h, &h_ave, &h_i, &h_ave_i);	
+
+	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
+	regression(&h_i, &h_ave_i, &h, &h_ave);
+
+	return 0;
+}
+
+int DPLLAD::solveExercise145()
 {
 	cout<<"Hello Heuristic Refine !"<<endl;
 
@@ -586,10 +669,10 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
 				{
 					(*ph_i)[l] += alpha * (*ph)[u] / (*ph_ave);
 
-					if (l==3)
+					/*if (l==3)
 					{
 						cout<<"BIMP: "<<l<<" "<<u<<endl;
-					}
+					}*/
 				}
 
 			}
@@ -600,10 +683,10 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
 				{
 					//(*ph_i)[l] += ((*ph)[uv->v] * (*ph)[uv->w] / ((*ph_ave) * (*ph_ave)));
 					(*ph_i)[l] += (((*ph)[uv->v])/(*ph_ave)) * (((*ph)[uv->w])/(*ph_ave));
-					if (l==3)
+					/* if (l==3)
 					{
 						cout<<"TIMP: "<<l<<" "<<uv->v<<" "<<uv->w<<endl;
-					}
+					}*/
 				}
  				
 			}
