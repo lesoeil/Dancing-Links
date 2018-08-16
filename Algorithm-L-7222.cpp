@@ -200,6 +200,37 @@ L15:	/* [Backtrack.] Terminate unsuccessfully if d = 0. Otherwise set d <- d - 1
 }
 
 
+		class my_pair
+		{
+		public:
+			my_pair(int a, double b);
+			int x;
+			double ratings;
+			
+		};
+
+		my_pair::my_pair(int a, double b)
+				:x(a),
+				 ratings(b)
+		{
+
+		};
+
+		bool operator<(const my_pair& v1, const my_pair& v2)
+		{
+			if (v1.ratings == v2.ratings)
+			{
+				return (v1.x < v2.x);
+			}
+			else
+			{
+				return (v1.ratings < v2.ratings);
+			}
+
+
+			
+		}
+
 /*	Algorithm X (Lookahead for Algorithm L). This algorithm, which is invoked
 	in step L2 of Algorithm L, uses the data structures of that algorithm together 
 	with additional arrays of its own to explore properties of the current subproblem.
@@ -214,6 +245,10 @@ bool DPLLAD::AlgorithmX()
 	bool bConflict = true;
 
 	int C = 0; // current number of free variables that are "participants"
+	
+	int C_0 = 30;
+	int C_1 = 600;
+	int C_max = 0;
 	set<int> CAND;
 
 
@@ -250,7 +285,7 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 	/*	A participant is a variable such that either x or ~x has played the role of u 
 		or v in step L8, at some node above us in the search tree.
 	*/
-	C = 0;
+	//C = 0;
 	for (int l=2; l<=2*n+1; l++)
 	{
 		if (isFreeLiteral(l))
@@ -280,10 +315,82 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 		C = N;
 	}
 
+	if (d > 0)
+	{
+		C_max = (C_0 > C_1/d)? C_0 : C_1/d;
+	}
+	else
+	{
+		C_max = C_0;	
+	}
 
+	//cout<<"X3: depth: "<<d<<" C_max: "<<C_max<<"  C:"<<C<<endl;
+	vector<double> ratings;
+	double ave_rating = 0;
+	for (int i=0; i<=n+1; i++)
+	{
+		ratings.push_back(0);
+	}
+
+	for (auto x : CAND)
+	{
+		ratings[x] = h[2*x] * h[2*x+1];
+		ave_rating += ratings[x];
+		cout<<"ratings["<<x<<"] = "<<h[2*x] * h[2*x+1]<<endl;;
+	}
+
+	ave_rating /= C;
+	cout<<"ave_rating: "<<ave_rating<<endl;
+
+	while (C > 2*C_max)
+	{
+		for (auto x: CAND)
+		{
+			if (ratings[x] > ave_rating)
+			{
+				CAND.erase(x);
+			}
+		}
+
+		C = CAND.size();
+
+		ave_rating = 0.0;
+		for (auto x : CAND)
+		{
+			ratings[x] = h[2*x] * h[2*x+1];
+			ave_rating += ratings[x];
+			cout<<"ratings["<<x<<"] = "<<h[2*x] * h[2*x+1]<<endl;;
+		}
+
+		ave_rating /= C;
+	}
+
+
+	cout<<"X3: depth: "<<d<<" C_max: "<<C_max<<"  C:"<<C<<endl;
+
+	//pair<class T1, class T2, less<T2> > my_pair;
+	set<my_pair> sort_rating;
+	for (auto x: CAND)
+	{
+		sort_rating.insert(*(new my_pair(x, ratings[x])));
+	}
+
+	for (auto y: sort_rating)
+	{
+		cout<<"x: "<<y.x<<"   ratings: "<<y.ratings<<endl;
+
+	}
+
+	
+
+
+	if (C > C_max)
+	{
+
+	}
 
 X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j] 
-		and LO[j] for 0 <= j < S and by PARENt pointers (see exercise 155).
+		and LO[j] for 0 <= j < S and by PARENT pointers (see exercise 155).
 	*/
 
 
