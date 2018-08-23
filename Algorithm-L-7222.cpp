@@ -82,6 +82,11 @@ L1: /*	[Initialize.] Record all binary clauses in the BIMP array and all ternary
 		BRANCH.push_back(-1);
 	}
 
+	for (int i=0; i<=2*n+1; i++)
+	{
+		h.push_back(0.0);
+	}
+
 
 	// d, F, I, ISTAMP
 	d = 0;
@@ -271,6 +276,8 @@ X2:	/*	[Compile rough heuristics.] Set N = n - F and use (65) to compute a
 	cout<<"N: "<<N<<"   n: "<<n<<"  F: "<<F<<endl;
 
 	refineHeuristic();//Temporary placement
+	assignLiteral(2*5+1); // Temporary code, to remove/generalize
+	refineHeuristic();//Temporary placement
 
 X3:	/*	[Preselect candidates.] Let C be the current number of free variables that 
 		are "participants," and put them into the CAND array. If C = 0, set
@@ -375,19 +382,28 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 		sort_rating.insert(*(new my_pair(x, ratings[x])));
 	}
 
+
 	for (auto y: sort_rating)
 	{
 		cout<<"x: "<<y.x<<"   ratings: "<<y.ratings<<endl;
 
+		if (CAND.size() > C_max)
+		{
+			CAND.erase(y.x);
+			cout<<"CAND.remove("<<y.x<<")"<<endl;
+		}
 	}
 
-	
+	C = CAND.size();
 
-
-	if (C > C_max)
+	/*
+	cout<<"After remove"<<endl;
+	for (auto y: CAND)
 	{
-
+		cout<<"CAND: "<<y<<endl;
 	}
+	*/
+	
 
 X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j] 
 		and LO[j] for 0 <= j < S and by PARENT pointers (see exercise 155).
@@ -538,11 +554,15 @@ int DPLLAD::refineHeuristic()
 	
 	vector<double> h_i;
 
-	for (int i=0; i<=2*n+1; i++)
+	if (d<=1)
 	{
-		h.push_back(0.0);
-		h_i.push_back(1.0);
+		for (int i=0; i<=2*n+1; i++)
+		{
+			h[i] = 0;
+			h_i.push_back(1.0);
+		}
 	}
+	
 
 /*
 	for (int i=0; i<2*n+1; i++)
@@ -573,6 +593,50 @@ int DPLLAD::refineHeuristic()
 
 	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
 	regression(&h_i, &h_ave_i, &h, &h_ave);
+
+	return 0;
+}
+
+	
+int DPLLAD::assignLiteral(int x_rm)
+{
+	// assume x_5 set to fales
+	//cout<<"BIMP when x_5 is set to false:"<<endl;
+	//int x_rm = 2*5+1;
+	for (auto uv : TIMP[x_rm])
+	{
+		cout<<uv->v<<" "<<uv->w<<endl;
+		BIMP[(uv->v)^1].insert(uv->w);
+		BIMP[(uv->w)^1].insert(uv->v);
+	}
+
+	
+	/*for (int i=0; i<=N; i++)
+	{
+		cout<<"INX["<<i<<"]:"<<INX[i]<<" VAR["<<INX[i]<<"]:"<<VAR[INX[i]]<<endl;
+	}*/
+
+	int k_little = INX[(x_rm)/2];
+	int k_big = N-1;
+
+	int x_little = VAR[k_little];// x_rm / 2;
+	int x_big = VAR[k_big];
+
+
+	INX[x_little] = k_big;
+	INX[x_big] = k_little;
+
+	VAR[k_little] = x_big;
+	VAR[k_big] = x_little;
+
+	/*for (int i=0; i<=N; i++)
+	{
+		cout<<"INX["<<i<<"]:"<<INX[i]<<" VAR["<<INX[i]<<"]:"<<VAR[INX[i]]<<endl;
+	}*/
+
+
+	N -=1;
+	d++;// = 1;
 
 	return 0;
 }

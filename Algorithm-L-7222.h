@@ -122,4 +122,5 @@ private:
 	bool isFreeLiteral(int l);
 	int getVariable(int literal);
 	int solveExercise145();
+	int assignLiteral(int x_rm);
 };
