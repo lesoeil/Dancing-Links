@@ -396,18 +396,45 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 
 	C = CAND.size();
 
-	/*
-	cout<<"After remove"<<endl;
-	for (auto y: CAND)
-	{
-		cout<<"CAND: "<<y<<endl;
-	}
-	*/
-	
-
 X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j] 
 		and LO[j] for 0 <= j < S and by PARENT pointers (see exercise 155).
 	*/
+
+	cout<<"After remove"<<endl;
+	for (auto y: CAND)
+	{
+		//cout<<"CAND: "<<y<<endl;
+		for (auto node :BIMP[2*y])
+		{
+			cout<<2*y<<" --> "<<node<<endl;
+		}
+
+		for (auto node :BIMP[2*y+1])
+		{
+			cout<<2*y+1<<" --> "<<node<<endl;
+		}
+
+	}
+
+
+	cout<<"After choose only last element of sets:"<<endl<<endl;
+
+	for (auto y: CAND)
+	{
+		//cout<<"CAND: "<<y<<endl;
+		if (BIMP[2*y].size()>=1)
+		{
+			auto node = *(BIMP[2*y]).rbegin();
+			cout<<2*y<<" --> "<<node<<endl;
+		}
+
+		if (BIMP[2*y+1].size()>=1)
+		{
+			auto node = *(BIMP[2*y+1]).rbegin();
+			cout<<2*y+1<<" --> "<<node<<endl;
+		}
+
+	}
 
 
 X5:	/*	[Prepare to explore.] Set U' <- j' <- BASE <- j <- 0 and CONFLICT <- X13.
