@@ -419,6 +419,9 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 
 	cout<<"After choose only last element of sets:"<<endl<<endl;
 
+	set<int> parent;
+	map<int, set<int>> children;
+
 	for (auto y: CAND)
 	{
 		//cout<<"CAND: "<<y<<endl;
@@ -426,15 +429,93 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 		{
 			auto node = *(BIMP[2*y]).rbegin();
 			cout<<2*y<<" --> "<<node<<endl;
+			children[node].insert(2*y);
+
+			for (auto x: BIMP[2*y])
+			{
+				parent.insert(x);
+			}
 		}
 
 		if (BIMP[2*y+1].size()>=1)
 		{
 			auto node = *(BIMP[2*y+1]).rbegin();
 			cout<<2*y+1<<" --> "<<node<<endl;
+			children[node].insert(2*y+1);
+
+			for (auto x: BIMP[2*y+1])
+			{
+				parent.insert(x);
+			}
 		}
 
 	}
+
+
+	map<int, int> postorder_pos;
+	int pos=0;
+	for (auto x: parent)
+	{
+		for (auto y: children[x])
+		{
+			postorder_pos[y] = ++pos;
+		}
+
+		postorder_pos[x] = ++pos;
+	}
+
+	cout<<"preorder     ";
+	for (auto x: parent)
+	{
+		cout<<std::setw(4)<<x;
+
+		for (auto y: children[x])
+		{
+			cout<<std::setw(4)<<y;
+		}
+	}
+	cout<<endl;
+
+
+	cout<<"2*postorder  ";
+	for (auto x: parent)
+	{
+		cout<<std::setw(4)<<(postorder_pos[x])*2;
+
+		for (auto y: children[x])
+		{
+			cout<<std::setw(4)<<(postorder_pos[y])*2;
+		}
+	}
+	cout<<endl;
+
+/*
+	for (auto x: parent)
+	{
+		cout<<"Parent: "<<x<<" ==> Children: ";
+
+		for (auto y: children[x])
+		{
+			cout<<y<<" ";	
+		}
+		cout<<endl;
+	}
+
+*/
+
+/*
+	for (auto x: children)
+	{
+		cout<<"Parent: "<<x.first<<" ==> Children: ";
+		for (auto y: x.second)
+		{
+			cout<<y<<" ";
+		}
+		cout<<endl;
+	}
+*/
+
+	//cout<<"Value of C is: "<<C<<endl;
 
 
 X5:	/*	[Prepare to explore.] Set U' <- j' <- BASE <- j <- 0 and CONFLICT <- X13.
