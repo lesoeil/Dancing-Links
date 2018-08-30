@@ -256,6 +256,10 @@ bool DPLLAD::AlgorithmX()
 	int C_max = 0;
 	set<int> CAND;
 
+	vector<int> LL;
+	vector<int> LO;
+	map<int, int> PARENT;
+
 
 X1:	/* [Satisfied?] If F = n, terminate happily (no variables are free).
 	*/
@@ -419,7 +423,7 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 
 	cout<<"After choose only last element of sets:"<<endl<<endl;
 
-	set<int> parent;
+	set<int> nonLeaf;
 	map<int, set<int>> children;
 
 	for (auto y: CAND)
@@ -430,10 +434,11 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 			auto node = *(BIMP[2*y]).rbegin();
 			cout<<2*y<<" --> "<<node<<endl;
 			children[node].insert(2*y);
+			PARENT[2*y] = node;
 
 			for (auto x: BIMP[2*y])
 			{
-				parent.insert(x);
+				nonLeaf.insert(x);
 			}
 		}
 
@@ -442,10 +447,11 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 			auto node = *(BIMP[2*y+1]).rbegin();
 			cout<<2*y+1<<" --> "<<node<<endl;
 			children[node].insert(2*y+1);
+			PARENT[2*y+1] = node;
 
 			for (auto x: BIMP[2*y+1])
 			{
-				parent.insert(x);
+				nonLeaf.insert(x);
 			}
 		}
 
@@ -454,7 +460,7 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 
 	map<int, int> postorder_pos;
 	int pos=0;
-	for (auto x: parent)
+	for (auto x: nonLeaf)
 	{
 		for (auto y: children[x])
 		{
@@ -464,35 +470,65 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 		postorder_pos[x] = ++pos;
 	}
 
-	cout<<"preorder     ";
-	for (auto x: parent)
+	//cout<<"preorder     ";
+	for (auto x: nonLeaf)
+	{
+		//cout<<std::setw(4)<<x;
+		LL.push_back(x);
+
+		for (auto y: children[x])
+		{
+			//cout<<std::setw(4)<<y;
+			LL.push_back(y);
+		}
+	}
+	//cout<<endl;
+
+
+	//cout<<"2*postorder  ";
+	for (auto x: nonLeaf)
+	{
+		//cout<<std::setw(4)<<(postorder_pos[x])*2;
+		LO.push_back((postorder_pos[x])*2);
+
+		for (auto y: children[x])
+		{
+			//cout<<std::setw(4)<<(postorder_pos[y])*2;
+			LO.push_back((postorder_pos[y])*2);
+		}
+	}
+	//cout<<endl;
+
+	for (auto x: LL)
 	{
 		cout<<std::setw(4)<<x;
-
-		for (auto y: children[x])
-		{
-			cout<<std::setw(4)<<y;
-		}
 	}
 	cout<<endl;
 
-
-	cout<<"2*postorder  ";
-	for (auto x: parent)
+	for (auto x: LO)
 	{
-		cout<<std::setw(4)<<(postorder_pos[x])*2;
-
-		for (auto y: children[x])
-		{
-			cout<<std::setw(4)<<(postorder_pos[y])*2;
-		}
+		cout<<std::setw(4)<<x;
 	}
 	cout<<endl;
+
+
+	for (auto x: LL)
+	{
+		if (PARENT.find(x) == PARENT.end())
+		{
+			PARENT[x] = -1;
+		}
+	}
+
+	for (auto x: PARENT)
+	{
+		cout<<x.first<<" =>"<<x.second<<endl;
+	}
 
 /*
-	for (auto x: parent)
+	for (auto x: nonLeaf)
 	{
-		cout<<"Parent: "<<x<<" ==> Children: ";
+		cout<<"nonLeaf: "<<x<<" ==> Children: ";
 
 		for (auto y: children[x])
 		{
@@ -506,7 +542,7 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 /*
 	for (auto x: children)
 	{
-		cout<<"Parent: "<<x.first<<" ==> Children: ";
+		cout<<"nonLeaf: "<<x.first<<" ==> Children: ";
 		for (auto y: x.second)
 		{
 			cout<<y<<" ";
