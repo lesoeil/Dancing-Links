@@ -119,10 +119,14 @@ private:
 
 	vector<double> h;
 	double h_ave;
-	int refineHeuristic();
-	int regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i, double* ph_ave_i);
-	bool isFreeLiteral(int l);
+
+	vector<double> H;
+
 	int getVariable(int literal);
-	int solveExercise145();
+	bool isFreeLiteral(int l);
+	int refineHeuristic();
 	int assignLiteral(int x_rm);
+	int solveExercise145();
+	int regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i, double* ph_ave_i);
+	int solveHeuristic();
 };

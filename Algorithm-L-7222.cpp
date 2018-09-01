@@ -260,9 +260,21 @@ bool DPLLAD::AlgorithmX()
 	vector<int> LO;
 	map<int, int> PARENT;
 
+	int j = 0;
+	int j_apos = 0;
+	int U_apos = 0;
+	int BASE = 0;
+
+	auto CONFLICT= &&X5;
+	auto RET_FROM_X12 = &&X12;
+
+	int l = 0;
+	int T = 0;
+
 
 X1:	/* [Satisfied?] If F = n, terminate happily (no variables are free).
 	*/
+	cout<<"Enter X1:"<<endl;
 
 	if (F == n)
 	{
@@ -276,12 +288,17 @@ X1:	/* [Satisfied?] If F = n, terminate happily (no variables are free).
 X2:	/*	[Compile rough heuristics.] Set N = n - F and use (65) to compute a 
 		rough score h(l) for each free literal l.
 	*/
+	cout<<"Enter X2:"<<endl;
+
 	N = n - F;
 	cout<<"N: "<<N<<"   n: "<<n<<"  F: "<<F<<endl;
 
 	refineHeuristic();//Temporary placement
+	solveHeuristic();
+
 	assignLiteral(2*5+1); // Temporary code, to remove/generalize
 	refineHeuristic();//Temporary placement
+	solveHeuristic();
 
 X3:	/*	[Preselect candidates.] Let C be the current number of free variables that 
 		are "participants," and put them into the CAND array. If C = 0, set
@@ -296,6 +313,8 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 	/*	A participant is a variable such that either x or ~x has played the role of u 
 		or v in step L8, at some node above us in the search tree.
 	*/
+	cout<<"Enter X3:"<<endl;
+
 	//C = 0;
 	for (int l=2; l<=2*n+1; l++)
 	{
@@ -403,6 +422,7 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j] 
 		and LO[j] for 0 <= j < S and by PARENT pointers (see exercise 155).
 	*/
+	cout<<"Enter X4:"<<endl;
 
 	cout<<"After remove"<<endl;
 	for (auto y: CAND)
@@ -516,7 +536,7 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 	{
 		if (PARENT.find(x) == PARENT.end())
 		{
-			PARENT[x] = -1;
+			PARENT[x] = 0;
 		}
 	}
 
@@ -556,42 +576,77 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 
 X5:	/*	[Prepare to explore.] Set U' <- j' <- BASE <- j <- 0 and CONFLICT <- X13.
 	*/
+	cout<<"Enter X5:"<<endl;
+
+	U_apos = 0;
+	j_apos = 0;
+	BASE = 0;
+	j = 0;
+
+	CONFLICT = &&X13;
 
 
 X6:	/*	[Choose l for lookahead.] Set l <- LL[j] and T <- BASE + LO[j]. Set 
 		H(l) <- H(PARENT(l)), where H(⋀) = 0. If l is not fixed in context T, go to 
 		X8. Otherwise, if l is fixed false but not proto false, do step X12 with l <- ~l.
 	*/
+	cout<<"Enter X6:"<<endl;
+
+	l = LL[j];
+	T = BASE + LO[j];
+	H[l] = H[PARENT[l]];
+
+	RET_FROM_X12 = &&X6;//Temporary code
+
+	if (!isFreeLiteral(l))
+	{
+		goto X8;
+	}
+	else if ((FORCE.find(l/2+1)) != FORCE.end() )//&& ())
+	{
+		//cout<<"Come Here!!!"<<endl;
+		RET_FROM_X12 = &&X6;
+		goto X12;
+	}
 
 X7:	/*	[Move to next.] If U > U', set U' <- U and j' <- j. Then set j <- j+1. If 
 		j = S, set j <- 0 and BASE <- BASE + 2S. Terminate normally if j = j', or 
 		if j = 0 and BASE +  2S >= PT. Otherwise return to X6.
 	*/
+	cout<<"Enter X7:"<<endl;
 
 X8:	/*	[Compute sharper heuristic.] Perform (72). Then if w > 0, set H(l_0) <- 
 		H(l_0) + w and go to X10.
 	*/
+	cout<<"Enter X8:"<<endl;
 
 X9:	/*	[Exploit an autarky.] If H(l_0) = 0, do step X12 with l <- l_0. Otherwise gen-
 		erate the new binary clause l_0 ∨ ~PARENT(l_0). (Exercise 166 explains why.)
 	*/
+	cout<<"Enter X9:"<<endl;
 
 X10:	/*	[Optionally look deeper.] Perform Algorithm Y below.
 		*/
+	cout<<"Enter X10:"<<endl;
 
 X11:	/*	[Exploit necessary assignments.] Do step X12 for all literals l ∈ BIMP(~l_0) 
 			that are fixed true but not proto true. Then go to X7. (See exercise 167.)
 		*/
+	cout<<"Enter X11:"<<endl;
 
 
 X12:	/*	[Force l.] Set FORCE[U] <- l, U <- U+1, T' <- T, and perform (72) with 
 			T <- PT. Then set T <- T'. (This step is a subroutine, used by other steps.)
 		*/
+	cout<<"Enter X12:"<<endl;
+
+	goto *RET_FROM_X12;
 
 
 X13:	/*	[Recover from conflict.] If T < PT, do step X12 with l <- ~l_0 and go to X7.
 			Otherwise terminate with a contradiction.
 		*/
+	cout<<"Enter X13:"<<endl;
 
 
 	return false;
@@ -784,6 +839,7 @@ int DPLLAD::assignLiteral(int x_rm)
 
 	return 0;
 }
+
 
 int DPLLAD::solveExercise145()
 {
@@ -1016,6 +1072,43 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
 
 	*ph_ave_i /= 2*N;
 	cout<<"N: "<<N<<"  h_ave_i: "<<*ph_ave_i<<endl;
+
+	return 0;
+}
+
+
+int DPLLAD::solveHeuristic()
+{
+	if (H.size() == 0)
+	{
+		//cout<<"Heuristic score has not been initialized yet!"<<endl;
+		for (int i=0; i<=2*n+1; i++)
+		{
+			H.push_back(0);
+		}
+	}
+
+	for (int i=2; i<=2*n+1; i++)
+	{
+		if (isFreeLiteral(i))
+		{
+			H[i] = 0;
+			for (auto uv : TIMP[i])
+			{
+				if ((isFreeLiteral(uv->v)) && (isFreeLiteral(uv->w))) //test code
+				{
+					H[i] += h[uv->v]* h[uv->w];
+				}
+ 				
+			}
+		}
+	}
+
+
+	for (auto x: H)
+	{
+		cout<<x<<endl;
+	}
 
 	return 0;
 }
