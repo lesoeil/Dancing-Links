@@ -296,7 +296,18 @@ X2:	/*	[Compile rough heuristics.] Set N = n - F and use (65) to compute a
 	refineHeuristic();//Temporary placement
 	solveHeuristic();
 
+	//cout<<"Exercise 136: Before x_5 is set to zero. Start:"<<endl;
+	//getTIMP(2*3+1);
+	//cout<<"Exercise 136: Before x_5 is set to zero. END."<<endl;
+
 	assignLiteral(2*5+1); // Temporary code, to remove/generalize
+
+	//cout<<"Exercise 136: After x_5 is set to zero. Start:"<<endl;
+	//getTIMP(2*3+1);
+	//cout<<"Exercise 136: After x_5 is set to zero. END."<<endl;
+
+	//return 0;
+
 	refineHeuristic();//Temporary placement
 	solveHeuristic();
 
@@ -804,7 +815,7 @@ int DPLLAD::assignLiteral(int x_rm)
 	//int x_rm = 2*5+1;
 	for (auto uv : TIMP[x_rm])
 	{
-		cout<<uv->v<<" "<<uv->w<<endl;
+		//cout<<uv->v<<" "<<uv->w<<endl;
 		BIMP[(uv->v)^1].insert(uv->w);
 		BIMP[(uv->w)^1].insert(uv->v);
 	}
@@ -1108,6 +1119,33 @@ int DPLLAD::solveHeuristic()
 	for (auto x: H)
 	{
 		cout<<x<<endl;
+	}
+
+	return 0;
+}
+
+int DPLLAD::getTIMP(int literal)
+{
+	if ((literal < 2) || (literal > 2*n+1))
+	{
+		cout<<"Input literal "<<literal<<" is out of range [2.."<<2*n+1<<"]"<<endl;
+		return -1;
+	}
+
+
+	if (isFreeLiteral(literal))
+	{
+		for (auto uv : TIMP[literal])
+		{
+			if ((isFreeLiteral(uv->v)) && (isFreeLiteral(uv->w))) //test code
+			{
+				cout<<uv->v<<" "<<uv->w<<endl;;
+			}
+		}
+	}
+	else
+	{
+		cout<<"Literal "<<literal<<" is not free!!! Is already in force[] list"<<endl;
 	}
 
 	return 0;

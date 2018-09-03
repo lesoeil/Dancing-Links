@@ -129,4 +129,5 @@ private:
 	int solveExercise145();
 	int regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i, double* ph_ave_i);
 	int solveHeuristic();
+	int getTIMP(int literal);
 };
