@@ -111,7 +111,7 @@ private:
 
 	vector<int> IST;
 
-	set<int> FORCE; //record
+	vector<int> FORCE; //record
 	int U; //number of distinct variables in unit clauses
 
 	int extract();

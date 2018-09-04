@@ -58,13 +58,15 @@ L1: /*	[Initialize.] Record all binary clauses in the BIMP array and all ternary
 		ISTAMP <- 0. (Thinkd = depth, F = fixed variables, I = ISTACK size.)
 	*/
 
+	cout<<"Enter L1:"<<endl;
+
 	/* Read clauses from dat file: Fill FORCE, BIMP and TIMP. Assign U, BSIZE and TSIZE. */
 	extract();
 
 	/* TODO: Terminate unsuccessfully if two unit clauses contradict each other. */
 	for (auto x: FORCE)
 	{
-		if (FORCE.find(x^1) != FORCE.end())
+		if ((std::find(FORCE.begin(), FORCE.end(), x^1)) != FORCE.end())
 		{
 			cout<<"Conflict liberals "<<x<<" and "<<(x^1)<<" found in unit literals FORCE!"<<endl;
 			cout<<"Terminate unsuccessfully!!!"<<endl;
@@ -100,6 +102,8 @@ L2:	/*	[New node.] Set BRANCH[d] <- -1. If U = 0, invoke Algorithm X below
 		make the next branch). Terminate happily if Algorithm X finds all clauses
 		satisfied; go to L15 if Algorithm X discovers a conflict; go to L5 if U > 0.
 	*/
+	cout<<"Enter L2:"<<endl;
+
 	BRANCH[d] = -1;
 
 	if (U==0)
@@ -110,7 +114,9 @@ L2:	/*	[New node.] Set BRANCH[d] <- -1. If U = 0, invoke Algorithm X below
 		{
 			goto L15;
 		}
-		else
+
+		//cout<<"F: "<<F<<"    n: "<<n<<endl;
+		if (F>=n)// (F>=n) means that X finds all clauses satisfied. Actually F == n when satisfied.
 		{
 			// Terminate happily since Algorithm X finds all clauses satisfied.
 			cout<<"Congratulations!!! All clauses are satisfiled! ^_^"<<endl;
@@ -128,15 +134,18 @@ L3:	/*	[Choose l.] Select a literal l that's desirable for branching (see exerci
 		168). If l = 0, set d <- d+1 and return L2. Otherwise set DEC[d] <- l,
 		BACKF[d] <- F, BACKI[d] <- I, and BRANCH[d] <- 0.
 	*/
+	cout<<"Enter L3:"<<endl;
 
 
 L4:	/*	[Try l.] Set U <- 1, FORCE[0] <- l.
 	*/
+	cout<<"Enter L4:"<<endl;
 
 L5:	/*	[Accept near truths.] Set T <- NT, G <- E <- F, ISTAMP <- ISTAMP + 1,
 		and CONFLICT <- L11. Perform the binary propagation routine (62) for
 		l <- FORCE[0], ..., l <- FORCE[U - 1]; then set U <- 0.
 	*/
+	cout<<"Enter L5:"<<endl;
 
 
 
@@ -144,12 +153,14 @@ L6:	/*	[Choose a nearby true L.] (At this point the stacked literals R_k are "re
 		true" for 0 <= k < G, and "nearby true" for G <= k < E. We want them all 
 		to be really true.) If G = E, goto L10. Otherwise set L <- R_G, G <- G+1.
 	*/
+	cout<<"Enter L6:"<<endl;
 
 
 L7:	/*	[Promote L to real truth.] Set X <- |L| and VAR[X] <- RT + L & 1. Remove
 		variable X from the free list and from all TIMP pairs (see exercise 137). Do
 		step L8 for all pairs (u,v) in TIMP(L), then return to L6.
 	*/
+	cout<<"Enter L7:"<<endl;
 
 
 L8:	/*	[Consider u ∨ v.] (We have deduced that u or v must be true; five cases
@@ -158,6 +169,7 @@ L8:	/*	[Consider u ∨ v.] (We have deduced that u or v must be true; five cases
 		but v isn't fixed, perform (62) with l <- v. If v is fixed false but u isn't 
 		fixed, perform (62) with l <- u. If neither u nor v is fixed, do step L9.
 	*/
+	cout<<"Enter L8:"<<endl;
 
 
 L9:	/*	[Exploit u ∨ v.] If ~v ∈ BIMP(~u), perform (62) with l <- u (because ~u 
@@ -168,37 +180,43 @@ L9:	/*	[Exploit u ∨ v.] If ~v ∈ BIMP(~u), perform (62) with l <- u (because 
 		improve this step by deducing further implications called "compensation 
 		resolvents.")
 	*/
-
+	cout<<"Enter L9:"<<endl;
 
 
 L10:	/* [Accept real truths.] Set F <- E. If BRANCH[d] >= 0, set d <- d+1 and go 
 			to L2. Otherwise go to L3 if d > 0, to L2 if d = 0.
 		*/
+	cout<<"Enter L10:"<<endl;
 
 
 L11:	/* [Unfix near truths.] While E > G, set E <- E-1 and VAL[|R_E|] <- 0.
 		*/
+	cout<<"Enter L11:"<<endl;
 
 
 L12:	/* [Unfix real truths.] While E > F, do the following: Set E <- E - 1 and 
 			X <- |R_E|; reactivate the TIMP pairs that involve X and restore X to the 
 			free list (see exercise 137); set VAL[X] <- 0.
 		*/
+	cout<<"Enter L12:"<<endl;
 
 
 L13:	/*	[Downdate BIMPs.] If BRANCH[d] >= 0, do the following while I > BACKI[d]:
 			Set I <- I - 1 and BSIZE(l) <- s, where ISTACK[I] = (l,s).
 		*/
+	cout<<"Enter L13:"<<endl;
 
 
 L14:	/* [Try again?] (We've discovered that DEC[d] doesn't work.) If BRANCH[d] = 
 			0, set l <- DEC[d], DEC[d] <- l <- ~l, BRANCH[d] <- 1, and go back to L4.
 		*/
+	cout<<"Enter L14:"<<endl;
 
 
 L15:	/* [Backtrack.] Terminate unsuccessfully if d = 0. Otherwise set d <- d - 1,
 			E <- F, F <- BACKF[d], and return to L12.
 		*/
+	cout<<"Enter L15:"<<endl;
 
 
 	return 0;
@@ -291,7 +309,7 @@ X2:	/*	[Compile rough heuristics.] Set N = n - F and use (65) to compute a
 	cout<<"Enter X2:"<<endl;
 
 	N = n - F;
-	cout<<"N: "<<N<<"   n: "<<n<<"  F: "<<F<<endl;
+	//cout<<"N: "<<N<<"   n: "<<n<<"  F: "<<F<<endl;
 
 	refineHeuristic();//Temporary placement
 	solveHeuristic();
@@ -300,7 +318,7 @@ X2:	/*	[Compile rough heuristics.] Set N = n - F and use (65) to compute a
 	//getTIMP(2*3+1);
 	//cout<<"Exercise 136: Before x_5 is set to zero. END."<<endl;
 
-	assignLiteral(2*5+1); // Temporary code, to remove/generalize
+	//assignLiteral(2*5+1); // Temporary code, to remove/generalize
 
 	//cout<<"Exercise 136: After x_5 is set to zero. Start:"<<endl;
 	//getTIMP(2*3+1);
@@ -308,8 +326,8 @@ X2:	/*	[Compile rough heuristics.] Set N = n - F and use (65) to compute a
 
 	//return 0;
 
-	refineHeuristic();//Temporary placement
-	solveHeuristic();
+	//refineHeuristic();//Temporary placement
+	//solveHeuristic();
 
 X3:	/*	[Preselect candidates.] Let C be the current number of free variables that 
 		are "participants," and put them into the CAND array. If C = 0, set
@@ -377,11 +395,11 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 	{
 		ratings[x] = h[2*x] * h[2*x+1];
 		ave_rating += ratings[x];
-		cout<<"ratings["<<x<<"] = "<<h[2*x] * h[2*x+1]<<endl;;
+		//cout<<"ratings["<<x<<"] = "<<h[2*x] * h[2*x+1]<<endl;;
 	}
 
 	ave_rating /= C;
-	cout<<"ave_rating: "<<ave_rating<<endl;
+	//cout<<"ave_rating: "<<ave_rating<<endl;
 
 	while (C > 2*C_max)
 	{
@@ -400,14 +418,14 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 		{
 			ratings[x] = h[2*x] * h[2*x+1];
 			ave_rating += ratings[x];
-			cout<<"ratings["<<x<<"] = "<<h[2*x] * h[2*x+1]<<endl;;
+			//cout<<"ratings["<<x<<"] = "<<h[2*x] * h[2*x+1]<<endl;;
 		}
 
 		ave_rating /= C;
 	}
 
 
-	cout<<"X3: depth: "<<d<<" C_max: "<<C_max<<"  C:"<<C<<endl;
+	//cout<<"X3: depth: "<<d<<" C_max: "<<C_max<<"  C:"<<C<<endl;
 
 	//pair<class T1, class T2, less<T2> > my_pair;
 	set<my_pair> sort_rating;
@@ -419,23 +437,26 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 
 	for (auto y: sort_rating)
 	{
-		cout<<"x: "<<y.x<<"   ratings: "<<y.ratings<<endl;
+		//cout<<"x: "<<y.x<<"   ratings: "<<y.ratings<<endl;
 
 		if (CAND.size() > C_max)
 		{
 			CAND.erase(y.x);
-			cout<<"CAND.remove("<<y.x<<")"<<endl;
+			//cout<<"CAND.remove("<<y.x<<")"<<endl;
 		}
 	}
 
 	C = CAND.size();
+
+	return false;//temporary code. To be removed later on when all X has been finished.
 
 X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j] 
 		and LO[j] for 0 <= j < S and by PARENT pointers (see exercise 155).
 	*/
 	cout<<"Enter X4:"<<endl;
 
-	cout<<"After remove"<<endl;
+	//cout<<"After remove"<<endl;
+	#if 0
 	for (auto y: CAND)
 	{
 		//cout<<"CAND: "<<y<<endl;
@@ -450,9 +471,10 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 		}
 
 	}
+	#endif
 
 
-	cout<<"After choose only last element of sets:"<<endl<<endl;
+	//cout<<"After choose only last element of sets:"<<endl<<endl;
 
 	set<int> nonLeaf;
 	map<int, set<int>> children;
@@ -463,7 +485,7 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 		if (BIMP[2*y].size()>=1)
 		{
 			auto node = *(BIMP[2*y]).rbegin();
-			cout<<2*y<<" --> "<<node<<endl;
+			//cout<<2*y<<" --> "<<node<<endl;
 			children[node].insert(2*y);
 			PARENT[2*y] = node;
 
@@ -476,7 +498,7 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 		if (BIMP[2*y+1].size()>=1)
 		{
 			auto node = *(BIMP[2*y+1]).rbegin();
-			cout<<2*y+1<<" --> "<<node<<endl;
+			//cout<<2*y+1<<" --> "<<node<<endl;
 			children[node].insert(2*y+1);
 			PARENT[2*y+1] = node;
 
@@ -613,7 +635,7 @@ X6:	/*	[Choose l for lookahead.] Set l <- LL[j] and T <- BASE + LO[j]. Set
 	{
 		goto X8;
 	}
-	else if ((FORCE.find(l/2+1)) != FORCE.end() )//&& ())
+	else if ((std::find(FORCE.begin(), FORCE.end(), l/2+1)) != FORCE.end() )//&& ())
 	{
 		//cout<<"Come Here!!!"<<endl;
 		RET_FROM_X12 = &&X6;
@@ -759,7 +781,7 @@ bool DPLLAD::isFreeLiteral(int l)
 
 int DPLLAD::refineHeuristic()
 {
-	cout<<"Hello Heuristic Refine !"<<endl;
+	//cout<<"Hello Heuristic Refine !"<<endl;
 
 	
 	vector<double> h_i;
@@ -782,26 +804,26 @@ int DPLLAD::refineHeuristic()
 	cout<<endl;
 */
 
-	cout<<"N: "<<N<<endl;
+	//cout<<"N: "<<N<<endl;
 	h_ave = 0.0;
 	
 	double h_ave_i = 1.0;
 
 	int count=1;
 
-	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
+	//cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
 	regression(&h_i, &h_ave_i, &h, &h_ave);
 
-	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
+	//cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
 	regression(&h, &h_ave, &h_i, &h_ave_i);
 
-	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
+	//cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
 	regression(&h_i, &h_ave_i, &h, &h_ave);
 
-	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
+	//cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
 	regression(&h, &h_ave, &h_i, &h_ave_i);	
 
-	cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
+	//cout<<endl<<endl<<"Depth "<<d<<" Refine Round "<<count++<<":"<<endl;
 	regression(&h_i, &h_ave_i, &h, &h_ave);
 
 	return 0;
@@ -1073,7 +1095,7 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
  				
 			}
 
-			cout<<"h\'("<<l<<"): "<<(*ph_i)[l]<<endl;
+			//cout<<"h\'("<<l<<"): "<<(*ph_i)[l]<<endl;
 			*ph_ave_i += (*ph_i)[l];
 		}
 
@@ -1082,7 +1104,7 @@ int DPLLAD::regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i,
 	}
 
 	*ph_ave_i /= 2*N;
-	cout<<"N: "<<N<<"  h_ave_i: "<<*ph_ave_i<<endl;
+	//cout<<"N: "<<N<<"  h_ave_i: "<<*ph_ave_i<<endl;
 
 	return 0;
 }
@@ -1115,11 +1137,12 @@ int DPLLAD::solveHeuristic()
 		}
 	}
 
-
+	#if 0
 	for (auto x: H)
 	{
 		cout<<x<<endl;
 	}
+	#endif
 
 	return 0;
 }
@@ -1243,12 +1266,14 @@ int DPLLAD::extract()
 	//int tail[2+2*n];
 	for (int i=0; i<m; i++)
 	{
+		#if 0
 		cout<<(*raw[i]).size()<<": ";
 		for (auto x: *raw[i])
 		{
 			cout<<x<<" ";
 		}
 		cout<<endl;
+		#endif
 		
 		if (1 == (*raw[i]).size())
 		{
@@ -1259,7 +1284,7 @@ int DPLLAD::extract()
 				u = x;
 			}
 
-			FORCE.insert(u);
+			FORCE.push_back(u);
 		}
 		else if (2 == (*raw[i]).size())
 		{
@@ -1325,7 +1350,7 @@ int DPLLAD::extract()
 		U = FORCE.size();
 	}
 
-	debugPrint();
+	//debugPrint();
 
 	int sidx = 2+2*n;
 	for(int i=0; i<raw.size(); i++)
