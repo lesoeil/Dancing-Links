@@ -122,6 +122,9 @@ private:
 
 	vector<double> H;
 
+	vector<int> LL;
+	vector<int> LO;
+
 	int getVariable(int literal);
 	bool isFreeLiteral(int l);
 	int refineHeuristic();

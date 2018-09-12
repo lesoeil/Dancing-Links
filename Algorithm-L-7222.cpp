@@ -135,6 +135,33 @@ L3:	/*	[Choose l.] Select a literal l that's desirable for branching (see exerci
 		BACKF[d] <- F, BACKI[d] <- I, and BRANCH[d] <- 0.
 	*/
 	cout<<"Enter L3:"<<endl;
+	/* Copy from Answer to exercise 168:
+		168. The following method works well in march: Terminate happily if F = n. (At
+		this point in Algorithm L, F is the number of fixed variables, all of which are really
+		true or really false.) Otherwise find l ∈ { LL[0], ... ,LL[S-1]} with l mod 2 = 0
+		and maximum (H(l) + .1)(H(l+1) + .1). If l is fixed, set l <- 0. (In that case,
+		Algorithm X found at least one forced literal, although U is now zero; we want to do
+		another lookahead before branching again.) Otherwise, if H(l) > H(l+1), set l <- l+1.
+		(A subproblem that is less reduced will tend to be more satisfiable.)
+	*/
+	if (F==n)
+	{
+		cout<<"All variables have been fixed with really true or really false."<<endl;
+		return 0;
+	}
+	else
+	{
+		//cout<<"LL.size() is: "<<LL.size()<<endl;
+		
+
+		for (int kk=2; kk<=2*n+1; kk++)
+		{
+			cout<<"H["<<kk<<"]: "<<H[kk]<<endl;
+			//cout<<"LL[]"<<x<<endl;
+		}
+
+		return 0;
+	}
 
 
 L4:	/*	[Try l.] Set U <- 1, FORCE[0] <- l.
@@ -274,8 +301,6 @@ bool DPLLAD::AlgorithmX()
 	int C_max = 0;
 	set<int> CAND;
 
-	vector<int> LL;
-	vector<int> LO;
 	map<int, int> PARENT;
 
 	int j = 0;
@@ -448,8 +473,6 @@ X3:	/*	[Preselect candidates.] Let C be the current number of free variables tha
 
 	C = CAND.size();
 
-	return false;//temporary code. To be removed later on when all X has been finished.
-
 X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j] 
 		and LO[j] for 0 <= j < S and by PARENT pointers (see exercise 155).
 	*/
@@ -552,6 +575,7 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 	}
 	//cout<<endl;
 
+	#if 0
 	for (auto x: LL)
 	{
 		cout<<std::setw(4)<<x;
@@ -563,6 +587,7 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 		cout<<std::setw(4)<<x;
 	}
 	cout<<endl;
+	#endif
 
 
 	for (auto x: LL)
@@ -573,10 +598,14 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 		}
 	}
 
+	#if 0
 	for (auto x: PARENT)
 	{
 		cout<<x.first<<" =>"<<x.second<<endl;
 	}
+	#endif
+
+	return false;//temporary code. To be removed later on when all X has been finished.
 
 /*
 	for (auto x: nonLeaf)
