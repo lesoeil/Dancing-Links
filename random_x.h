@@ -1,0 +1,3 @@
+
+int regexMatch();
+int randomGen();
