@@ -478,6 +478,10 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 	*/
 	cout<<"Enter X4:"<<endl;
 
+	/*	Exercise 7.2.2.2-155. [32] 
+			Sketch an efficient way to construct the lookahead forest in step X4.
+	*/
+
 	//cout<<"After remove"<<endl;
 	#if 0
 	for (auto y: CAND)
@@ -634,6 +638,28 @@ X4:	/*	[Nest the candidates.] Construct a lookahead forest, represented in LL[j]
 */
 
 	//cout<<"Value of C is: "<<C<<endl;
+
+	/* Above is my implementation before snoop at standard answers.*/
+
+	/*	Standard Answer to 155.
+		155. First construct the dependency graph on the 2C candidate literas, by extracting
+		a subset of arcs from the BIMP tables. (This computation needn't be exact, because
+		we're only calculating heuristics; an upper bound can be placed on the number of arcs
+		considered, so that we don't spend too much time here. However, it is important to 
+		have the arc u --> v if and only if ~v --> ~u is also present.)
+			Then apply Tarjan's algorithm [see Section 7.4.1, or SGB pages 512-519]. If a 
+		strong component contains bothl and ~l for some l, terminate with a contradiction.
+		Otherwise, if a strong component contains more than one literal, choose a representa-
+		tive l with maximum h(l); the other literals of that component regard l as their parent.
+		Be careful to ensure that l is a representative if and only if ~l is also a representative.
+			The result will be a sequence of candidate literals l_1 l_2 ... l_s in topological order,
+		with l_i --> l_j only if i > j. Compute the "height" of each l_j, namely the length of the 
+		longest path from l_j to a sink. Then every literal of height h > 0 has a predecessor
+		of height h - 1, and we let one such predecessor be its parent in the subforest. Every
+		literal of height 0 (a sink) has a null parent. Traversal of this subforest in double order
+		(exercise 2.3.1-18) now makes it easy to build the LL table in preorder while filling the 
+		LO table in postorder.
+	*/
 
 
 X5:	/*	[Prepare to explore.] Set U' <- j' <- BASE <- j <- 0 and CONFLICT <- X13.
