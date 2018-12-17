@@ -261,6 +261,41 @@ int main()	//C++ programs start by executing the function
 	int y = 8;
 #endif
 
+
+#if 0
+	//3.5.1 An example: detect repeated words
+	string previous = "";			// previous word; initialized to "not a word"
+	string current;					// current word
+	while (cin>>current) {			// read a stream of words
+		if (previous == current)	// check if the word is the same as last
+		{
+			cout<<"repeated word: "<<current<<'\n';
+		}
+		else
+		{
+			//cout<<"previous word: "<<previous<<"  vs current word: "<<current<<'\n';
+		}
+
+		previous = current;
+	}
+#endif
+
+#if 0
+
+	string s;
+
+	s = "今年１年の世相を４字で振り返る恒例の「創作四字熟語」の優秀・入選５０作品を発表した";
+
+	string t;
+
+	t = "Vélo, sac, appareil photo: bleu en un «Klein» d'œil pour Noël";
+
+	cout<<s<<'\n';
+
+	cout<<t<<'\n';
+
+#endif
+
 	return 0;
 }
 
