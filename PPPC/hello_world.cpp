@@ -264,17 +264,20 @@ int main()	//C++ programs start by executing the function
 
 #if 0
 	//3.5.1 An example: detect repeated words
-	string previous = "";			// previous word; initialized to "not a word"
+	//3.6.1 An exmaple: find repeated words
+	int number_of_words = 0;
+	string previous = " ";			// previous word; initialized to "not a word"
 	string current;					// current word
 	while (cin>>current) {			// read a stream of words
+		++number_of_words;
 		if (previous == current)	// check if the word is the same as last
 		{
-			cout<<"repeated word: "<<current<<'\n';
+			cout<<"word number "<<number_of_words<<" repeated word: "<<current<<'\n';
 		}
-		else
-		{
+		//else
+		//{
 			//cout<<"previous word: "<<previous<<"  vs current word: "<<current<<'\n';
-		}
+		//}
 
 		previous = current;
 	}
@@ -294,6 +297,52 @@ int main()	//C++ programs start by executing the function
 
 	cout<<t<<'\n';
 
+#endif
+	//static const int a=1;
+	//#define a -1
+
+	//string dd("qafdaf");
+	//#define a 'x'
+
+#if 0 //a // (a==2)
+	//int counter;
+	double counter;
+	double post;
+
+	//do
+	cout<<"Please enter an number: \n";
+	while (cin>>counter)
+	{
+		#if 0
+		if (!cin)
+		{
+			//cin.clear();
+			cin.ignore();
+		}
+		#endif
+
+		//cout<<"Please enter an number: \n";
+		//cin>>counter;
+		//cout<<"counter before ++: "<<counter<<'\n';
+
+		post = counter+1;
+
+		cout<<std::to_string(counter)<<'\n';
+		cout<<std::to_string(post)<<'\n';
+
+		if (counter == post)
+		{
+			cout<<"OMG\n";
+		}
+		else
+		{
+			cout<<"Yes it's true: "<<counter<<" != "<<post<<'\n';
+		}
+		//++counter;
+		//cout<<"counter after  ++: "<<counter<<'\n';
+		cout<<"Please enter an number: \n";
+	}
+	//while (cin); //(1);
 #endif
 
 	return 0;
