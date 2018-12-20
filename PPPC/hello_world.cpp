@@ -345,6 +345,71 @@ int main()	//C++ programs start by executing the function
 	//while (cin); //(1);
 #endif
 
+#if 0
+	STRING s = "Goodbye, cruel world! ";
+	cOut<<S<<'\n';
+#endif
+
+#if 0
+	int if = 7;		// error: if is a keyword
+	int string = 7;		// this will lead to trouble
+	cout<<string<<endl;
+#endif
+
+#if 0
+	string s;
+
+	s = "今年１年の世相を４字で振り返る恒例の「創作四字熟語」の優秀・入選５０作品を発表した";
+
+	cout<<s.length()<<'\n';
+
+	cout<<(s.substr(0,3)).c_str()<<'\n';
+	cout<<(s.substr(120,3)).c_str()<<'\n';
+#endif
+
+#if 0
+	int t;
+
+	while (1)
+	{
+		cin>>t;
+		cout<<t<<'\n';
+		if (!cin)
+		{
+			cin.clear();
+		}
+	}
+#endif
+
+#if 0
+	double x;
+	double y = x;
+	double z = 2.0+x;
+	cout<<"x: "<<x<<"  y: "<<y<<"  z: "<<z<<endl;
+#endif
+
+#if 0
+	char c = 'x';
+	int i1 = c;
+	int i2 = 'x';
+	char c2 = i1;
+	char c3 = ' ';
+
+	cout<<c<<' '<<i1<<' '<<i2<<' '<<c2<<'\n';
+
+	if (c3 ==' ')
+	{
+		cout<<"c3 ==''\n";
+	}
+	else
+	{
+		cout<<"c3 !=''\n";
+	}
+
+	int 2018ch;
+#endif
+
+
 	return 0;
 }
 
