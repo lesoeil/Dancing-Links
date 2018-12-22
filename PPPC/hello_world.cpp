@@ -409,6 +409,83 @@ int main()	//C++ programs start by executing the function
 	int 2018ch;
 #endif
 
+#if 0
+	//3.9.1 Safe conversions
+	double d1 = 2.3;
+	while (cin>>d1)
+	{
+		double d2 = d1+2;	// 2 is converted to 2.0 before adding
+
+		d2 = d1*d1;
+
+		if (d1<0)			// 0 is converted to 0.0 before comparison
+		{
+			cout<<"d1 is negative "<<d1<<'\n';
+		}
+		else if (d1 > 0)
+		{
+			cout<<"d1 is positive "<<d1<<'\n';
+		}
+		else
+		{
+			cout<<"d1 is zero "<<d1<<'\n';	
+		}
+		cout<<"d1 in string: "<<std::to_string(d1)<<'\n';
+
+		cout<<"d2 is always non-negative "<<d2<<'\n';
+		cout<<"d2 in string: "<<std::to_string(d2)<<'\n';
+	}
+#endif
+
+#if 0
+	//3.9.2 Unsafe conversions
+	int a = 20000;
+	char c = a;		// try to squeeze a large int to a small char
+	int b = c;
+	if (a!=b)		// != means "not equal"
+		cout<<hex<<"oops!: 0x"<<a<<"!=0x"<<b<<'\n';
+	else
+		cout<<"Wow! We have large characters\n";
+	//cout<<hex<<"0x"<<a<<'\n';
+
+	double d = 0;
+	while (cin>>d) {	// repeat the statement below
+						// as long as we type in numbers
+		unsigned int i = d;		// try to squeeze a double into an int
+		char c = i;		// try to squeeze an int into a char
+		int i2 = c;		// get the integer value of the character
+		cout<<"d=="<<d				// the original double
+			<<" i=="<<i				// converted to int
+			<<" i2=="<<i2			// int value of char
+			<<" char("<<c<<")\n";	// the char
+	}
+
+	double x = 2.7;
+
+	while (cin>>x)
+	{
+		// lots of code
+		int y = x;		// y becomes 2
+
+		cout<<"x: "<<x<<" y:"<<y<<'\n';
+	}
+
+	int a = 1000;
+	char b = a;		// b becomes -24 (on some machines)
+	int c = b;
+	cout<<"a: "<<a<<" b: "<<b<<" c: "<<c<<'\n';
+#endif
+
+	int a;
+	while (cin>>a)
+	{
+		char b = a;
+		char c = -b;
+		int d = b;
+		int e = c;
+		cout<<"a: "<<a<<" b: "<<b<<" c: "<<c<<" c+256:"<<(char)(c+256)<<'\n';
+		cout<<"d: "<<d<<" e: "<<e<<'\n';
+	}
 
 	return 0;
 }
