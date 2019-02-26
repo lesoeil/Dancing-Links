@@ -48,7 +48,7 @@ DPLLAD::DPLLAD(string& data_file)
 */
 int DPLLAD::AlgorithmL()
 {
-	
+	int l=0;	//first used in step L3 to choose l	
 
 L1: /*	[Initialize.] Record all binary clauses in the BIMP array and all ternary
 		clauses in the TIMP array. Let U the number of distinct variables in unit
@@ -108,10 +108,12 @@ L2:	/*	[New node.] Set BRANCH[d] <- -1. If U = 0, invoke Algorithm X below
 
 	if (U==0)
 	{	
+		cout<<"L2: since U==0, invoke AlgorithmX()."<<endl;
 		bool bFindConflict = false;
 		bFindConflict = AlgorithmX();
 		if (bFindConflict)
 		{
+			cout<<"L2: AlgorithmX() find a conflict. "<<endl;
 			goto L15;
 		}
 
@@ -119,15 +121,15 @@ L2:	/*	[New node.] Set BRANCH[d] <- -1. If U = 0, invoke Algorithm X below
 		if (F>=n)// (F>=n) means that X finds all clauses satisfied. Actually F == n when satisfied.
 		{
 			// Terminate happily since Algorithm X finds all clauses satisfied.
-			cout<<"Congratulations!!! All clauses are satisfiled! ^_^"<<endl;
+			cout<<"L2: Congratulations!!! AlgorithmX() finds All clauses are satisfiled! ^_^"<<endl;
 			return 0;
 		}
 	}
 	else if (U > 0)
 	{
+		cout<<"L2: (U>0) goto L5."<<endl;
 		goto L5;
 	}
-
 
 
 L3:	/*	[Choose l.] Select a literal l that's desirable for branching (see exercise
@@ -135,15 +137,7 @@ L3:	/*	[Choose l.] Select a literal l that's desirable for branching (see exerci
 		BACKF[d] <- F, BACKI[d] <- I, and BRANCH[d] <- 0.
 	*/
 	cout<<"Enter L3:"<<endl;
-	/* Copy from Answer to exercise 168:
-		168. The following method works well in march: Terminate happily if F = n. (At
-		this point in Algorithm L, F is the number of fixed variables, all of which are really
-		true or really false.) Otherwise find l ∈ { LL[0], ... ,LL[S-1]} with l mod 2 = 0
-		and maximum (H(l) + .1)(H(l+1) + .1). If l is fixed, set l <- 0. (In that case,
-		Algorithm X found at least one forced literal, although U is now zero; we want to do
-		another lookahead before branching again.) Otherwise, if H(l) > H(l+1), set l <- l+1.
-		(A subproblem that is less reduced will tend to be more satisfiable.)
-	*/
+
 	if (F==n)
 	{
 		cout<<"All variables have been fixed with really true or really false."<<endl;
@@ -151,14 +145,7 @@ L3:	/*	[Choose l.] Select a literal l that's desirable for branching (see exerci
 	}
 	else
 	{
-		//cout<<"LL.size() is: "<<LL.size()<<endl;
-		
-
-		for (int kk=2; kk<=2*n+1; kk++)
-		{
-			cout<<"H["<<kk<<"]: "<<H[kk]<<endl;
-			//cout<<"LL[]"<<x<<endl;
-		}
+		l = chooseLiteral();
 
 		return 0;
 	}
@@ -167,12 +154,20 @@ L3:	/*	[Choose l.] Select a literal l that's desirable for branching (see exerci
 L4:	/*	[Try l.] Set U <- 1, FORCE[0] <- l.
 	*/
 	cout<<"Enter L4:"<<endl;
+	U = 1;
+	FORCE[0] = l;
 
 L5:	/*	[Accept near truths.] Set T <- NT, G <- E <- F, ISTAMP <- ISTAMP + 1,
 		and CONFLICT <- L11. Perform the binary propagation routine (62) for
 		l <- FORCE[0], ..., l <- FORCE[U - 1]; then set U <- 0.
 	*/
 	cout<<"Enter L5:"<<endl;
+	// T = NT;
+	// E = F;
+	// G = F;
+	ISTAMP = ISTAMP + 1;
+	//CONFLICT = L11;
+
 
 
 
@@ -248,6 +243,34 @@ L15:	/* [Backtrack.] Terminate unsuccessfully if d = 0. Otherwise set d <- d - 1
 
 	return 0;
 }
+
+
+/* Copy from Answer to exercise 168:
+		168. The following method works well in march: Terminate happily if F = n. (At
+		this point in Algorithm L, F is the number of fixed variables, all of which are really
+		true or really false.) Otherwise find l ∈ { LL[0], ... ,LL[S-1]} with l mod 2 = 0
+		and maximum (H(l) + .1)(H(l+1) + .1). If l is fixed, set l <- 0. (In that case,
+		Algorithm X found at least one forced literal, although U is now zero; we want to do
+		another lookahead before branching again.) Otherwise, if H(l) > H(l+1), set l <- l+1.
+		(A subproblem that is less reduced will tend to be more satisfiable.)
+
+	To be called in step L3.
+*/
+int DPLLAD::chooseLiteral()
+{
+
+	cout<<"LL.size() is: "<<LL.size()<<endl;
+		
+
+	for (int kk=2; kk<=2*n+1; kk++)
+	{
+			cout<<"H["<<kk<<"]: "<<H[kk]<<endl;
+			//cout<<"LL[]"<<x<<endl;
+	}
+
+	return 0;
+}
+
 
 
 		class my_pair

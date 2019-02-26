@@ -48,6 +48,17 @@ public:
 	int AlgorithmY();
 
 private:
+	int getVariable(int literal);
+	bool isFreeLiteral(int l);
+	int refineHeuristic();
+	int assignLiteral(int x_rm);
+	int solveExercise145();
+	int regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i, double* ph_ave_i);
+	int solveHeuristic();
+	int getTIMP(int literal);
+	int chooseLiteral();//To be called in step L3.
+
+private:
 	string fileName;
 	int n; // number of variables 1..n
 	int m; // number of clauses
@@ -124,13 +135,4 @@ private:
 
 	vector<int> LL;
 	vector<int> LO;
-
-	int getVariable(int literal);
-	bool isFreeLiteral(int l);
-	int refineHeuristic();
-	int assignLiteral(int x_rm);
-	int solveExercise145();
-	int regression(vector<double> *ph, double* ph_ave, vector<double> *ph_i, double* ph_ave_i);
-	int solveHeuristic();
-	int getTIMP(int literal);
 };
