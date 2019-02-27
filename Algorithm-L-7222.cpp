@@ -60,7 +60,7 @@ L1: /*	[Initialize.] Record all binary clauses in the BIMP array and all ternary
 
 	cout<<"Enter L1:"<<endl;
 
-	/* Read clauses from dat file: Fill FORCE, BIMP and TIMP. Assign U, BSIZE and TSIZE. */
+	
 	extract();
 
 	/* TODO: Terminate unsuccessfully if two unit clauses contradict each other. */
@@ -1252,10 +1252,23 @@ int DPLLAD::getTIMP(int literal)
 	return 0;
 }
 
+
+/* Read clauses from dat file: Fill FORCE, BIMP and TIMP. Assign U, BSIZE and TSIZE. */
+/*
+	Input data format:
+	
+	first line:
+	n  (number of variables)
+	
+	following lines:
+	One 3SAT clause for each line
+
+*/
 int DPLLAD::extract()
 {
 	//cout<<fileName<<endl;
 
+	//Open data record.
 	fstream fs;
 	fs.open(fileName.c_str(), fstream::in);
 	if ((fs.rdstate() & std::fstream::failbit) != 0)	
