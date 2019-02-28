@@ -131,6 +131,7 @@ L2:	/*	[New node.] Set BRANCH[d] <- -1. If U = 0, invoke Algorithm X below
 		goto L5;
 	}
 
+	debugPrint();
 
 L3:	/*	[Choose l.] Select a literal l that's desirable for branching (see exercise
 		168). If l = 0, set d <- d+1 and return L2. Otherwise set DEC[d] <- l,
@@ -1482,10 +1483,21 @@ int DPLLAD::debugPrint()
 	for (int i=2; i<2*n+2; i++)
 	{
 		cout<<"TIMP["<<i<<"].size(): "<<TIMP[i].size()<<endl;
+		/*
 		for (auto x: TIMP[i])
 		{
 			cout<<x->v<<" "<<x->w<<" "<<x->LINK<<endl;
 		}
+		*/
+
+		list<PAIRLINK*>::iterator it;
+		for (it=(TIMP[i]).begin(); it != (TIMP[i]).end(); it++)
+		{
+			auto& my_ref = *it;
+			auto* my_addr = &my_ref;
+			cout<<my_addr<<" "<<(*it)->v<<" "<<(*it)->w<<" "<<(*it)->LINK<<endl;;
+		}
+		//cout<<endl;
 	}
 
 	for (int i=2; i<2*n+2; i++)
