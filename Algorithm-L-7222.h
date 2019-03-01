@@ -58,6 +58,22 @@ private:
 	int getTIMP(int literal);
 	int chooseLiteral();//To be called in step L3.
 
+	int algoL_step_1();
+	int algoL_step_2();
+	int algoL_step_3();
+	int algoL_step_4();
+	int algoL_step_5();
+	int algoL_step_6();
+	int algoL_step_7();
+	int algoL_step_8();
+	int algoL_step_9();
+	int algoL_step_10();
+	int algoL_step_11();
+	int algoL_step_12();
+	int algoL_step_13();
+	int algoL_step_14();
+	int algoL_step_15();
+
 private:
 	string fileName;
 	int n; // number of variables 1..n

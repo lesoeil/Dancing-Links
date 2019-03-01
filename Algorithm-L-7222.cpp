@@ -57,44 +57,9 @@ L1: /*	[Initialize.] Record all binary clauses in the BIMP array and all ternary
 		VAR[k] <- k+1 and INX[k+1] <- k for 0 <= k < n; and d <- F <- I <-
 		ISTAMP <- 0. (Thinkd = depth, F = fixed variables, I = ISTACK size.)
 	*/
-
-	cout<<"Enter L1:"<<endl;
-
-	
-	extract();
-
-	/* TODO: Terminate unsuccessfully if two unit clauses contradict each other. */
-	for (auto x: FORCE)
-	{
-		if ((std::find(FORCE.begin(), FORCE.end(), x^1)) != FORCE.end())
-		{
-			cout<<"Conflict liberals "<<x<<" and "<<(x^1)<<" found in unit literals FORCE!"<<endl;
-			cout<<"Terminate unsuccessfully!!!"<<endl;
-			return -1;
-		}
-	}
-
-	// VAR and INX
-	INX.push_back(-1);
-	for (int k=0; k<n; k++)
-	{
-		VAR.push_back(k+1);
-		INX.push_back(k);
-
-		BRANCH.push_back(-1);
-	}
-
-	for (int i=0; i<=2*n+1; i++)
-	{
-		h.push_back(0.0);
-	}
+	algoL_step_1();
 
 
-	// d, F, I, ISTAMP
-	d = 0;
-	F = 0;
-	I = 0;
-	ISTAMP = 0;
 
 
 L2:	/*	[New node.] Set BRANCH[d] <- -1. If U = 0, invoke Algorithm X below
@@ -272,6 +237,119 @@ int DPLLAD::chooseLiteral()
 	return 0;
 }
 
+int DPLLAD::algoL_step_1()
+{
+	cout<<"Enter L1:"<<endl;
+
+	
+	extract();
+
+	/* TODO: Terminate unsuccessfully if two unit clauses contradict each other. */
+	for (auto x: FORCE)
+	{
+		if ((std::find(FORCE.begin(), FORCE.end(), x^1)) != FORCE.end())
+		{
+			cout<<"Conflict liberals "<<x<<" and "<<(x^1)<<" found in unit literals FORCE!"<<endl;
+			cout<<"Terminate unsuccessfully!!!"<<endl;
+			return -1;
+		}
+	}
+
+	// VAR and INX
+	INX.push_back(-1);
+	for (int k=0; k<n; k++)
+	{
+		VAR.push_back(k+1);
+		INX.push_back(k);
+
+		BRANCH.push_back(-1);
+	}
+
+	for (int i=0; i<=2*n+1; i++)
+	{
+		h.push_back(0.0);
+	}
+
+
+	// d, F, I, ISTAMP
+	d = 0;
+	F = 0;
+	I = 0;
+	ISTAMP = 0;
+
+	return 0;
+}
+
+
+int DPLLAD::algoL_step_2()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_3()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_4()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_5()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_6()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_7()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_8()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_9()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_10()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_11()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_12()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_13()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_14()
+{
+	return 0;
+}
+
+int DPLLAD::algoL_step_15()
+{
+	return 0;
+}
 
 
 		class my_pair
@@ -1483,20 +1561,22 @@ int DPLLAD::debugPrint()
 	for (int i=2; i<2*n+2; i++)
 	{
 		cout<<"TIMP["<<i<<"].size(): "<<TIMP[i].size()<<endl;
-		/*
+		
 		for (auto x: TIMP[i])
 		{
-			cout<<x->v<<" "<<x->w<<" "<<x->LINK<<endl;
+			cout<<x<<": "<<x->v<<" "<<x->w<<" "<<x->LINK<<endl;
 		}
-		*/
+		
 
+		/*
 		list<PAIRLINK*>::iterator it;
 		for (it=(TIMP[i]).begin(); it != (TIMP[i]).end(); it++)
 		{
-			auto& my_ref = *it;
-			auto* my_addr = &my_ref;
-			cout<<my_addr<<" "<<(*it)->v<<" "<<(*it)->w<<" "<<(*it)->LINK<<endl;;
+			// auto& my_ref = *it;
+			// auto* my_addr = &my_ref;
+			cout<<*it<<" "<<(*it)->v<<" "<<(*it)->w<<" "<<(*it)->LINK<<endl;;
 		}
+		*/
 		//cout<<endl;
 	}
 
