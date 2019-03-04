@@ -80,10 +80,25 @@ private:
 	int m; // number of clauses
 
 	int d; // depth
+	int G; 
+	int E;	// current stack size of sequential stack R.
 	int F; // fixed variables
 	int I; // ISTACK size
 	int ISTAMP;
 
+	int T;
+	int NT;
+
+	/*	Algorithm L uses a sequential stack R_0, R_1, ..., to record the names of 
+		literals that have received values.
+	*/
+	vector<int> R;
+	int L;
+
+
+	vector<int> DEC;
+	vector<int> BACKF;
+	vector<int> BACKI;
 	vector<int> BRANCH;
 
 	vector<unsigned int> VAL;
