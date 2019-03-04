@@ -90,7 +90,8 @@ L2:	/*	[New node.] Set BRANCH[d] <- -1. If U = 0, invoke Algorithm X below
 			return 0;
 		}
 	}
-	else if (U > 0)
+	
+	if (U > 0)
 	{
 		cout<<"L2: (U>0) goto L5."<<endl;
 		goto L5;
@@ -104,16 +105,20 @@ L3:	/*	[Choose l.] Select a literal l that's desirable for branching (see exerci
 	*/
 	cout<<"Enter L3:"<<endl;
 
-	if (F==n)
+	
+	l = chooseLiteral();
+
+	if (0==l)
 	{
-		cout<<"All variables have been fixed with really true or really false."<<endl;
-		return 0;
+		d = d+1;
+		goto L2;
 	}
 	else
 	{
-		l = chooseLiteral();
-
-		return 0;
+		DEC[d] = l;
+		BACKF[d] = F;
+		BACKI[d] = I;
+		BRANCH[d] = 0;
 	}
 
 
@@ -128,13 +133,11 @@ L5:	/*	[Accept near truths.] Set T <- NT, G <- E <- F, ISTAMP <- ISTAMP + 1,
 		l <- FORCE[0], ..., l <- FORCE[U - 1]; then set U <- 0.
 	*/
 	cout<<"Enter L5:"<<endl;
-	// T = NT;
-	// E = F;
-	// G = F;
+	T = NT;
+	E = F;
+	G = F;
 	ISTAMP = ISTAMP + 1;
 	//CONFLICT = L11;
-
-
 
 
 L6:	/*	[Choose a nearby true L.] (At this point the stacked literals R_k are "really 
@@ -142,6 +145,16 @@ L6:	/*	[Choose a nearby true L.] (At this point the stacked literals R_k are "re
 		to be really true.) If G = E, goto L10. Otherwise set L <- R_G, G <- G+1.
 	*/
 	cout<<"Enter L6:"<<endl;
+
+	if (G==E)
+	{
+		goto L10;
+	}
+	else
+	{
+		L = R[G];
+		G = G+1;
+	}
 
 
 L7:	/*	[Promote L to real truth.] Set X <- |L| and VAR[X] <- RT + L & 1. Remove
