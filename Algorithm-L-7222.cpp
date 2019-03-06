@@ -163,6 +163,24 @@ L7:	/*	[Promote L to real truth.] Set X <- |L| and VAR[X] <- RT + L & 1. Remove
 	*/
 	cout<<"Enter L7:"<<endl;
 
+	X = L / 2;
+	VAR[X] = RT + L & 1;
+
+	/* Remove variable X from the free list and from all TIMP pairs (see exercise 137) */
+
+	/* 7.2.2.2 Exercise
+		137. [24] Spell out in detail the processes of (a) removing a variable X from the free
+		list and from all pairs in TIMP lists (step L7 of Algorithm L), and of (b) restoring it
+		again later (step L12). Exactly how do the data structure change?
+	*/
+
+	/* for all pairs (u,v) in TIMP(L) do step L8 */
+	for (auto x : TIMP[L])
+	{
+		algoL_step_8(L, x->v, x->w);
+	}
+	goto L6;
+
 
 L8:	/*	[Consider u ∨ v.] (We have deduced that u or v must be true; five cases
 		arise.) If either u or v is fixed true (in context T, which equals NT), do
@@ -189,10 +207,34 @@ L10:	/* [Accept real truths.] Set F <- E. If BRANCH[d] >= 0, set d <- d+1 and go
 		*/
 	cout<<"Enter L10:"<<endl;
 
+	F = E;
+	if (BRANCH[d] >= 0)
+	{
+		d = d+1;
+		goto L2;
+	}
+	else
+	{
+		if (d>0)
+		{
+			goto L3;
+		}
+		else if (0==d)
+		{
+			goto L2;
+		}
+	}
+
 
 L11:	/* [Unfix near truths.] While E > G, set E <- E-1 and VAL[|R_E|] <- 0.
 		*/
 	cout<<"Enter L11:"<<endl;
+
+	while (E>G)
+	{
+		E = E-1;
+		VAL[(R[E]/2)] = 0;
+	}
 
 
 L12:	/* [Unfix real truths.] While E > F, do the following: Set E <- E - 1 and 
@@ -201,23 +243,64 @@ L12:	/* [Unfix real truths.] While E > F, do the following: Set E <- E - 1 and
 		*/
 	cout<<"Enter L12:"<<endl;
 
+	while (E>F)
+	{
+		E = E-1;
+		X = (R[E])/2;
+
+		/* exercise 137: reactivate TIMP pairs that involve X and restore X to free list.*/
+		// TODO
+
+		VAL[X] = 0;
+	}
+
 
 L13:	/*	[Downdate BIMPs.] If BRANCH[d] >= 0, do the following while I > BACKI[d]:
 			Set I <- I - 1 and BSIZE(l) <- s, where ISTACK[I] = (l,s).
 		*/
 	cout<<"Enter L13:"<<endl;
 
+	if (BRANCH[d] >=0)
+	{
+		while (I > BACKI[d])
+		{
+			I = I-1;
+			BSIZE[l] = s;
+			// where ISTACK[I] = (l,s)
+		}
+	}
+
 
 L14:	/* [Try again?] (We've discovered that DEC[d] doesn't work.) If BRANCH[d] = 
 			0, set l <- DEC[d], DEC[d] <- l <- ~l, BRANCH[d] <- 1, and go back to L4.
 		*/
 	cout<<"Enter L14:"<<endl;
+	if (0==BRANCH[d])
+	{
+		l = DEC[d];
+		l = l^1;
+		DEC[d] = l;
+		goto L4;
+	}
 
 
 L15:	/* [Backtrack.] Terminate unsuccessfully if d = 0. Otherwise set d <- d - 1,
 			E <- F, F <- BACKF[d], and return to L12.
 		*/
 	cout<<"Enter L15:"<<endl;
+
+	if (0==d)
+	{
+		cout<<"Step L15:Terminate unsuccessfully with d=0."<<endl;
+		return -1;
+	}
+	else
+	{
+		d = d-1;
+		E = F;
+		F = BACKF[d];
+		goto L12;
+	}
 
 
 	return 0;
@@ -324,8 +407,37 @@ int DPLLAD::algoL_step_7()
 	return 0;
 }
 
-int DPLLAD::algoL_step_8()
+int DPLLAD::algoL_step_8(int L, int u, int v)
 {
+	/* L8. [Consider u v v.] (We have deduced that u or v must be true; five cases arise.) */
+
+	/* Case 1: If either u or v is fixed true (in context T, which equals NT), do nothing.*/
+
+
+	/* Case 2: If both u and v are fixed false, go to CONFLICT.*/
+
+
+	/* Case 3: If u is fixed false but v isn't fixed, perform (62) with l <- v. */
+
+
+	/* Case 4: If v is fixed false but u isn't fixed, perform (62) with l <- u.*/
+
+	/*		Algorithm L uses a sequential stack R_0, R_1, ..., to record the names of 
+		literals that have received values. The current stack size, E, satisfies 0 <= E <= n.
+		With those data structures we can use a simple breadth-first search procedure 
+		to propagate the binary consequences of a literal l in context T at high speed:
+							Set H <- E; take account of l;
+							while H < E, set l <- R_H, H <- H + 1, and 				(62)
+								take account of l' for all l' in BIMP(l).
+		Here "take account of l" means "if l is fixed true in context T, do nothing; if l is
+		fixed false in context T, go to step CONFLICT; otherwise set VAL[|l|] <- T+(l&1),
+		R_E <- l, and E <- E+1." The step called CONFLICT is changeable.
+	*/
+
+
+	/* Case 5: If neither u nor v is fixed, do step L9. */
+
+
 	return 0;
 }
 

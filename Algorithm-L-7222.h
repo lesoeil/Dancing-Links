@@ -65,7 +65,7 @@ private:
 	int algoL_step_5();
 	int algoL_step_6();
 	int algoL_step_7();
-	int algoL_step_8();
+	int algoL_step_8(int L, int u, int v);
 	int algoL_step_9();
 	int algoL_step_10();
 	int algoL_step_11();
@@ -79,6 +79,8 @@ private:
 	int n; // number of variables 1..n
 	int m; // number of clauses
 
+	int s;
+
 	int d; // depth
 	int G; 
 	int E;	// current stack size of sequential stack R.
@@ -88,6 +90,9 @@ private:
 
 	int T;
 	int NT;
+
+	int X;
+	int RT;
 
 	/*	Algorithm L uses a sequential stack R_0, R_1, ..., to record the names of 
 		literals that have received values.
