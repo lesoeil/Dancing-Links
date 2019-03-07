@@ -333,6 +333,19 @@ int DPLLAD::chooseLiteral()
 	return 0;
 }
 
+int DPLLAD::propagateBIMP(int literal)
+{
+
+	return 0;
+}
+
+
+int DPLLAD::takeAccount(int literal)
+{
+
+	return 0;
+}
+
 int DPLLAD::algoL_step_1()
 {
 	cout<<"Enter L1:"<<endl;
@@ -1020,6 +1033,18 @@ Y8:	/*	[Recover from conflict.] If T < DT, do step Y7 with l <- ~LL[^j] and go
 }
 
 #define DEBUG_PRINT
+
+/*
+	Input: 	int literal;
+	Output: int variable
+
+	The calculation is:
+	for example variable is n, then the literal originated from variable n will be 
+	l  = 2*n  and
+	l' = 2*n +1 
+
+	So, given l or l', the variable will be l/2 or l'/2
+*/
 
 int DPLLAD::getVariable(int l)
 {

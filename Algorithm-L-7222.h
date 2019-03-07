@@ -4,14 +4,18 @@
 */
 
 #include <iostream>
-#include <vector>
-#include <list>
-#include <utility>
-#include <set>
 #include <fstream>
 #include <sstream>
+
+#include <vector>
+#include <list>
+#include <set>
 #include <map>
+#include <stack>
+
+
 #include <iomanip>
+#include <utility>
 
 using namespace std;
 
@@ -58,6 +62,9 @@ private:
 	int getTIMP(int literal);
 	int chooseLiteral();//To be called in step L3.
 
+	int propagateBIMP(int literal);
+	int takeAccount(int literal);
+
 	int algoL_step_1();
 	int algoL_step_2();
 	int algoL_step_3();
@@ -83,13 +90,13 @@ private:
 
 	int d; // depth
 	int G; 
-	int E;	// current stack size of sequential stack R.
+	
 	int F; // fixed variables
 	int I; // ISTACK size
 	int ISTAMP;
 
-	int T;
-	int NT;
+	int T;	// context T
+	int NT;	// near truth  (2^32 - 4)
 
 	int X;
 	int RT;
@@ -98,6 +105,7 @@ private:
 		literals that have received values.
 	*/
 	vector<int> R;
+	int E;	// current stack size of sequential stack R.
 	int L;
 
 
