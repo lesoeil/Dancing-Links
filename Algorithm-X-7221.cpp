@@ -1,35 +1,32 @@
-/*
+/*	Algorithm-X-7221.cpp
 
-Algorithm-X-7221.cpp
+	Jacob Yang
 
-Jacob Yang
+	30-Apr-2019 Tue 09:52 PM Revise based on previous DancingLinks.cpp
 
-30-Apr-2019 Tue 09:52 PM Revise based on previous DancingLinks.cpp
+	To compile under Mac:
 
-To compile under Mac:
+	g++ -std=c++11 -g Algorithm-X-7221.cpp -o algoX
 
-g++ -std=c++11 -g Algorithm-X-7221.cpp -o algoX
-
-"algoX" can be any valid name for the executable application.
+	"algoX" can be any valid name for the executable application.
 */
 
 /*
-Suppose we have a doubly linked list, in which each node X has a 
+	Suppose we have a doubly linked list, in which each node X has a 
 
-predecessor and successor denoted respectively by LLINK(X) and 
+	predecessor and successor denoted respectively by LLINK(X) and 
 
-RLINK(X).
+	RLINK(X).
 
-Then we know that it's easy to delete X from the list:
+	Then we know that it's easy to delete X from the list:
 
-RLINK(LLINK(X)) <- RLILNK(X),  LLINK(RLINK(X)) <- LLINK(X).		(1)
+	RLINK(LLINK(X)) <- RLILNK(X),  LLINK(RLINK(X)) <- LLINK(X).		(1)
 
-In a backtrack application, we're better off leaving LLINK(X) and 
+	In a backtrack application, we're better off leaving LLINK(X) and 
 
-RLINK(X) unchanged. Then we can undo operation (1) by simply setting
+	RLINK(X) unchanged. Then we can undo operation (1) by simply setting
 
-RLINK(LLINK(X)) <- X,  LLINK(RLINK(X)) <- X.					(2)
-
+	RLINK(LLINK(X)) <- X,  LLINK(RLINK(X)) <- X.					(2)
 */
 
 /*
@@ -126,12 +123,14 @@ int DanceLink::algoX()
 	int j = -1;
 	int p = -1;
 
-//Standard step D1 of Algorithm D (Exact cover via dancing links)
+
 X1:
 /*	[Initialize.] Set the problem up in memory, as in Table 1. (See exercise 8.)
 	Also set N to the number of items, Z to the last spacer address, and l <- 0.
 */
-	N = exact();//Set the problem up in memory
+
+/* */
+	N = extract(danceFile);//Set the problem up in memory
 	Z = dance.size()-1;
 	l = 0;
 	cout<<"N: "<<N<<" Z: "<<Z<<" l:"<<l<<endl;
@@ -146,7 +145,6 @@ X1:
 		cout<<x[s]<<" ";
 	}
 	*/
-#endif
 
 #if 0
 // Modify step X1 so that only the primary items appear in the active list.
@@ -213,13 +211,17 @@ X2:
 		}
 		cout<<endl;
 
-		goto D8;
+		goto X8;
 	}
 
-D3://[Choose i.]
+X3:
+/*	[Choose i.] At this point the items i_1, ..., i_t still need to be covered, where
+	i_1 = RLINK(0), i_(j+1) = RLINK(i_j), RLINK(i_t) = 0. Choose one of them, and
+	call it i. (The MRV heuristic of exercise 9 often works well in practice.)
+*/
 	//TODO: To replace with MRV in exercise 9
 	//i = dance[0]->RLINK;
-
+	//to be replaced with heuristic();
 	{
 	int start = 0;
 
@@ -247,17 +249,24 @@ D3://[Choose i.]
 
 
 	i = min_addr;
-	//cout<<"C3: choose node "<<i<<endl;
+	//cout<<"X3: choose node "<<i<<endl;
 	}
 
-D4://[Cover i.]
+X4:
+/*	[Cover i.] Cover item i using (12), and set x_l <- DLINK(i).
+*/
 	cover(i);
 	//x.push_back(dance[i]->DLINK);
 	x[l] = dance[i]->DLINK;
-D5://[Try x[l] ]
+X5:
+/* 	[Try x_l.] If x_l = i, go to X7 (we've tried all options for i). Otherwise set
+	p <- x_l + 1, and go the following while p ≠ x_l: Set j <- TOP(p); if j ≤ 0,
+	set p <- ULINK(p); otherwise cover(j) and set p <- p+1. (This covers the
+	items ≠ i in the option that contains x_l.) Set l <- l+1 and return to X2.
+*/
 	if ( x[l] == i)
 	{
-		goto D7;
+		goto X7;
 	}
 	else
 	{
@@ -277,10 +286,15 @@ D5://[Try x[l] ]
 		}
 
 		l = l+1;
-		goto D2;
+		goto X2;
 	}
 
-D6://[Try again.]
+D6:
+/*	[Try again.] Set p <- x_l - 1, and do the following while p ≠ x_l: Set j <-
+	TOP(p); if j ≤ 0, set p <- DLINK(p); otherwise uncover(j) and set p <- p-1.
+	(Tis uncovers the items ≠ i in the option that contains x_l, using the reverse
+	of the order in X5.) Set i <- TOP(x_l), x_l <- DLINK(x_l), and return to X5.
+*/
 	p = x[l]-1;
 	while (p != x[l])
 	{
@@ -298,12 +312,16 @@ D6://[Try again.]
 
 	i = dance[x[l]]->TOP;
 	x[l] = dance[x[l]]->DLINK;
-	goto D5;
+	goto X5;
 
-D7://[Backtrack.]
+D7:
+/*	[Backtrack.] Uncover item i using (14).
+*/
 	uncover(i);
 
-D8://[Leave level l.]
+D8:
+/*	[Leave level l.] Terminate if l = 0. Otherwise set l <- l-1 and go to X6.
+*/
 	if (l == 0)
 	{
 		return 0;
@@ -311,7 +329,7 @@ D8://[Leave level l.]
 	else
 	{
 		l = l-1;
-		goto D6;
+		goto X6;
 	}
 
 }

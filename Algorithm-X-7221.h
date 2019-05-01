@@ -32,8 +32,9 @@ public:
 	DanceLink(string& dataFile);
 	~DanceLink() {};
 
-	int algorithmD();
-	int exact();
+	int algoX();
+	int extract(string dancingFile);
+	int heuristic();
 	int cover(int i);
 	int hide(int p);
 	int uncover(int i);
