@@ -219,38 +219,11 @@ X3:
 	i_1 = RLINK(0), i_(j+1) = RLINK(i_j), RLINK(i_t) = 0. Choose one of them, and
 	call it i. (The MRV heuristic of exercise 9 often works well in practice.)
 */
-	//TODO: To replace with MRV in exercise 9
+	// Choose without 
 	//i = dance[0]->RLINK;
-	//to be replaced with heuristic();
-	{
-	int start = 0;
 
-	int min_len = 0;
-	int min_addr = 0;
-	int i_addr = 0;
-	int i_len = 0;
-
-	i_addr = dance[0]->RLINK;
-	i_len = dance[i_addr]->LEN;
-	min_addr = i_addr;
-	min_len = i_len;
-
-	while ((dance[i_addr]->RLINK) != start)
-	{
-		i_addr = dance[i_addr]->RLINK;
-		i_len = dance[i_addr]->LEN;
-
-		if (min_len > i_len)
-		{
-			min_addr = i_addr;
-			min_len = i_len;
-		}
-	}
-
-
-	i = min_addr;
-	//cout<<"X3: choose node "<<i<<endl;
-	}
+	// MRV heuristic of exercise 9
+	i = heuristic();
 
 X4:
 /*	[Cover i.] Cover item i using (12), and set x_l <- DLINK(i).
@@ -289,7 +262,7 @@ X5:
 		goto X2;
 	}
 
-D6:
+X6:
 /*	[Try again.] Set p <- x_l - 1, and do the following while p ≠ x_l: Set j <-
 	TOP(p); if j ≤ 0, set p <- DLINK(p); otherwise uncover(j) and set p <- p-1.
 	(Tis uncovers the items ≠ i in the option that contains x_l, using the reverse
@@ -314,12 +287,12 @@ D6:
 	x[l] = dance[x[l]]->DLINK;
 	goto X5;
 
-D7:
+X7:
 /*	[Backtrack.] Uncover item i using (14).
 */
 	uncover(i);
 
-D8:
+X8:
 /*	[Leave level l.] Terminate if l = 0. Otherwise set l <- l-1 and go to X6.
 */
 	if (l == 0)
@@ -440,19 +413,29 @@ int DanceLink::unhide(int p)
 
 /* 7.2.2.1 DANCING LINKS: EXERCISES  -- First Set
  8. [22] Design an algorithm to set up the initial memory contents of an exact cover
-problem, as needed by Algorithm D and illustrated in Table 1.  The input to your
+problem, as needed by Algorithm X and illustrated in Table 1.  The input to your
 algorithm should consist of a sequence of lines with the following format:
    The very first line lists the names of all items.
    Each remaining line specifies the items of a particular option, one option per line.
 
+Sample:
+
+a b c d e f g
+c e
+a d g
+b c f
+a d f
+b g
+d e g
+
 */
-int DanceLink::exact()
+int DanceLink::extract(string dancingFile)
 {
 	vector<string> name;
 
 	fstream fs;
 	//fs.open("exer8.dat", fstream::in);
-	fs.open(danceFile.c_str(), fstream::in);
+	fs.open(dancingFile.c_str(), fstream::in);
 	string line;
 	
 	getline(fs, line);
@@ -649,4 +632,45 @@ int DanceLink::exact()
 	*/
 
 	return item_count;
+}
+
+int DanceLink::heuristic()
+{
+	/* 7.2.2.1 COMBINATORIAL SEARCHING (F5C: 11 Oct 2017@2319)  Exercise
+	  9. [18] Explain how to branch in step D3 on an item i for which LEN(i) is minimum.
+	If several items have that minimum length, i itself should also be minimum. (This
+	choice is often called the "minimum remaining values" (MRV) heuristic.)
+	*/
+	/* Jacob 2017-10-31 20:37 This is a very simple routine to implement MRV heuristic, 
+		which is used to choose the item to be covered with the minimum length and minimum index.
+		MRV heuristic makes fundanmental changes to processing speed of Algorithm D and Algorithm C.
+		Without MRV heuristic, Algorithm C just can not get first output after several hours.
+		By using MRV heuristic, Algorithm C get the output almost immediately.
+	 */
+	int start = 0;
+
+	int min_len = 0;
+	int min_addr = 0;
+	int i_addr = 0;
+	int i_len = 0;
+
+	i_addr = dance[0]->RLINK;
+	i_len = dance[i_addr]->LEN;
+	min_addr = i_addr;
+	min_len = i_len;
+
+	while ((dance[i_addr]->RLINK) != start)
+	{
+		i_addr = dance[i_addr]->RLINK;
+		i_len = dance[i_addr]->LEN;
+
+		if (min_len > i_len)
+		{
+			min_addr = i_addr;
+			min_len = i_len;
+		}
+	}
+
+
+	return min_addr;
 }
