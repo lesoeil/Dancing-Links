@@ -317,6 +317,18 @@ DanceLink::DanceLink(string& file)
 }
 
 
+/*	To spell out precisely what happens inside the computer's 
+	memory when our algorithm wants to cover a given item i:
+*/
+
+/*	cover(i) =
+	{
+		Set p <- DLINK(i). (Here p,l,and r are local variables.)
+		While p ≠ i, hide(p), then set p <- DLINK(p) and repeat.	(12)
+		Set l <- LLINK(i), r <- RLINK(i),
+			RLINK(l) <- r, LLINK(r) <- l.
+	}
+*/
 int DanceLink::cover(int i)
 {
 	int p = dance[i]->DLINK;
@@ -333,6 +345,17 @@ int DanceLink::cover(int i)
 
 	return 0;
 }
+
+
+/*	hide(p) = 
+	{
+		Set q <- p+1, and repeat the following while q ≠ p:
+			Set x <- TOP(q), u <- ULINK(q), d <- DLINK(q);
+			if x ≤ 0, set q <- u (q was a spacer);				(13)
+			otherwise set DLINK(u) <- d, ULINK(d) <- u,
+				LEN(x) <- LEN(x) - 1, q <- q + 1.
+	}
+*/
 
 int DanceLink::hide(int p)
 {
@@ -363,6 +386,16 @@ int DanceLink::hide(int p)
 	return 0;
 }
 
+
+/*	uncover(i) = 
+	{
+		Set l <- LLINK(i), r <- RLINK(i),
+			RLINK(l) <- i, LLINK(r) <- i.
+		Set p <- ULINK(i).											(14)
+		While p ≠ i, unhide(p), then set p <- ULINK(p) and repeat.
+	}
+*/
+
 int DanceLink::uncover(int i)
 {
 	int l = dance[i]->LLINK;
@@ -381,6 +414,16 @@ int DanceLink::uncover(int i)
 
 	return 0;
 }
+
+/*	unhide(p) = 
+	{
+		Set q <- p-1, and repeat the following while q ≠ p:
+			Set x <- TOP(q), u <- ULINK(q), d <- DLINK(q);
+			if x ≤ 0, set q <- d (q was a spacer);				(15)
+			Otherwise set DLINK(u) <- q, ULINK(d) <- q,
+				LEN(x) <- LEN(x) + 1, q <- q - 1.
+	}
+*/
 
 int DanceLink::unhide(int p)
 {
@@ -429,6 +472,59 @@ b g
 d e g
 
 */
+
+/*	7.2.2.1 Answer to exercise 8:
+	8. (Secondary items, which are introduced in the text after (24), are also handled by 
+	the steps below. Such items should be named after all primary items on the first line, 
+	and separated from them by some distinguishing mark.)
+
+*/
+
+int setUpInit(string filePath)
+{
+
+I1:
+/*	[Read the first line.] Set i <- N_1 <- 0. Then, for each item name α on the first
+	line, set i <- i + 1, NAME(i) <- α, LLINK(i) <- i - 1, RLINK(i-1) <- i. If α names
+	the first secondary item, also set N_1 <- i - 1. (In practice α is limited to at most 8
+	characters, say. One should report an error if α = NAME(j) for some j < i.)
+*/
+
+
+I2:
+/*	[Finish the horizontal list.] Set N <- i. If N_1 = 0 (there were no secondary items),
+	set N_1 <- N. Then set LLINK(N + 1) <- N, RLINK(N) <- N + 1, LLINK(N_1 + 1) <- 
+	N + 1, RLINK(N + 1) <- N_1 + 1, LLINK(0) <- N_1, RLINK(N_1) <- 0. (The active
+	secondary items, if any, are accessible from record N + 1.)
+*/
+
+
+I3:
+/*	[Prepare for options.] Set LEN(i) <- 0 and ULINK(i) <- DLINK(i) <- i for 1 ≤ i ≤ N.
+	(These are the header nodes for the N item lists, which are initially empty.) Then
+	set M <- 0, p <- N + 1, TOP(p) <- 0. (Node p is the first spacer.)
+*/
+
+
+I4:
+/*	[Read an option.] Terminate with Z <- p if no input remains. Otherwise let the next
+	line of input contain the item names α_1 ... α_k, and do the following for i ≤ j ≤ k:
+	Use an algorithm from Chapter 6 to find the index i_j for which NAME(i_j) = α_j.
+	(Report an error if unsuccessful. Complain also if an item name appears more
+	than once in the same option, because a duplicate might make Algorithm X fail
+	spectacularly.) Set LEN(i_j) <- LEN(i_j) + 1, q <- ULINK(i_j), ULINK(p + j) <- q,
+	DLINK(q) <- p + j, DLINK(p + j) <- i_j, ULINK(i_j) <- p + j, TOP(p + j) <- i_j.
+*/
+
+
+I5:
+/*	[Finish an option.] Set M <- M + 1, DLINK(p) <- p + k, p <- p+k+1, TOP(p) <- -M,
+	ULINK(p) <- p - k, and return to step I4. (Node p is the next spacer.)
+*/
+
+
+}
+
 int DanceLink::extract(string dancingFile)
 {
 	vector<string> name;
@@ -563,7 +659,7 @@ int DanceLink::extract(string dancingFile)
 	//}
 
 
-	/*
+#if 1
 	int n=0;
 	cout<<n++<<" ";
 	for (auto& s: tokens)
@@ -578,9 +674,9 @@ int DanceLink::extract(string dancingFile)
 		cout<<s<<" ";
 	}
 	cout<<endl;
-	*/
+#endif
 
-	/*
+#if 0
 	int k = 0;
 	int round=0;
 	for (auto& s: dance)
@@ -629,7 +725,7 @@ int DanceLink::extract(string dancingFile)
 
 		k++;
 	}
-	*/
+#endif
 
 	return item_count;
 }
