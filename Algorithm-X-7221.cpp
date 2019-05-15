@@ -522,6 +522,7 @@ I5:
 	ULINK(p) <- p - k, and return to step I4. (Node p is the next spacer.)
 */
 
+	return 0;
 
 }
 
@@ -659,7 +660,7 @@ int DanceLink::extract(string dancingFile)
 	//}
 
 
-#if 1
+#if 0
 	int n=0;
 	cout<<n++<<" ";
 	for (auto& s: tokens)
@@ -676,9 +677,28 @@ int DanceLink::extract(string dancingFile)
 	cout<<endl;
 #endif
 
-#if 0
+	//cout<<"Total number of item: "<<item_count<<endl;
+
+
 	int k = 0;
 	int round=0;
+
+	for (auto& s: dance)
+	{
+		if ((k>0) && (k<=item_count))
+		{
+			s->LEN = item[tokens[k-1]];
+		}
+
+		k++;
+
+		if (k>item_count)
+		{
+			break;
+		}
+	}
+
+#if 0
 	for (auto& s: dance)
 	{
 		if (s->TOP!=0)
@@ -709,7 +729,7 @@ int DanceLink::extract(string dancingFile)
 			}
 			else if ((k>0) && (k<=item_count))
 			{
-				s->LEN = item[tokens[k-1]];
+				//s->LEN = item[tokens[k-1]];
 				cout<<k<<" "<<s->LEN<<" "<<s->ULINK<<" "<<s->DLINK<<endl;
 				//cout<<tokens[k-1]<<": "<<s->LEN<<" ";
 			}

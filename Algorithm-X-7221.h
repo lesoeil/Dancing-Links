@@ -25,6 +25,11 @@ typedef struct
 	//string name;
 } DanceNode;
 
+typedef struct
+{
+	
+}ItemNode;
+
 
 class DanceLink
 {
