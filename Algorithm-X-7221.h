@@ -27,7 +27,9 @@ typedef struct
 
 typedef struct
 {
-	
+	string NAME;
+	int LLINK;
+	int RLINK;
 }ItemNode;
 
 
@@ -48,6 +50,7 @@ public:
 private:
 	string danceFile;
 	vector<DanceNode*> dance;
+	vector<ItemNode*> items; 
 	map<int, string> item_name;
 	int N;	//number of items
 	int P;	//number of options

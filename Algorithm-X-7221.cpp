@@ -105,10 +105,16 @@ int main(int argc, char* argv[])
 	//DanceLink echo(exer8);
 	//echo.algorithmD();	
 
-	string options(argv[1]);
-	DanceLink queen(options);
-	queen.algoX();
-
+	if (argc < 2)
+	{
+		cout<<"Please enter data file name after command."<<endl;
+		cout<<"For example: "<<argv[0]<<" exer8.dat"<<endl;
+		return -1;
+	}
+	
+	string filename(argv[1]);
+	DanceLink dancing(filename);
+	dancing.algoX();	
 	return 0;
 }
 
@@ -526,6 +532,25 @@ I5:
 
 }
 
+
+/*
+8. [22] Design an algorithm to set up the initial memory contents of an exact cover
+problem, as needed by Algorithm X and illustrated in Table 1. The input to your 
+algorithm should consist of a sequence of lines with the following format:
+	The very first line lists the names of all items.
+	Each remaining line specifies the items of a particular option, one option per line.
+
+**** START OF ******* Sample Data File ****************
+a b c d e f g
+c e
+a d g
+b c f
+a d f
+b g
+d e g
+**** END OF ******* Sample Data File ****************
+
+*/
 int DanceLink::extract(string dancingFile)
 {
 	vector<string> name;
@@ -533,8 +558,16 @@ int DanceLink::extract(string dancingFile)
 	fstream fs;
 	//fs.open("exer8.dat", fstream::in);
 	fs.open(dancingFile.c_str(), fstream::in);
-	string line;
+
+	if (fs.fail())
+	{
+		cerr<<dancingFile<<" file open failed with error "<<strerror(errno)<<'\n';
+		return -1;
+	}
 	
+	
+	string line;
+	//Read first line
 	getline(fs, line);
 	//cout<<line<<endl;
 	istringstream buf(line);
@@ -651,6 +684,8 @@ int DanceLink::extract(string dancingFile)
 	//l = 0;
 	P = i;
 
+
+#if 0
 	map<string, int>::iterator it;
 
 	//cout<<"item : len"<<endl;
@@ -659,8 +694,6 @@ int DanceLink::extract(string dancingFile)
 	//	cout<<it->first<<":"<<it->second<<endl;
 	//}
 
-
-#if 0
 	int n=0;
 	cout<<n++<<" ";
 	for (auto& s: tokens)
