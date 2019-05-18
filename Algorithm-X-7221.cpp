@@ -128,6 +128,7 @@ int DanceLink::algoX()
 	int i = -1;
 	int j = -1;
 	int p = -1;
+	int nRet = -1;
 
 
 X1:
@@ -136,7 +137,12 @@ X1:
 */
 
 /* */
-	N = extract(danceFile);//Set the problem up in memory
+	nRet = extract(danceFile, &N);//Set the problem up in memory
+	if (nRet < 0)
+	{
+		cout<<"Error "<<nRet<<" in parse data file \""<<danceFile<<"\""<<endl;
+		return nRet;
+	}
 	Z = dance.size()-1;
 	l = 0;
 	cout<<"N: "<<N<<" Z: "<<Z<<" l:"<<l<<endl;
@@ -195,28 +201,7 @@ X2:
 	//cout<<"dance[0]->RLINK: "<<dance[0]->RLINK<<endl;
 	if (dance[0]->RLINK == 0)
 	{
-		cout<<"Total level: "<<l<<endl;
-		//Visit solution specified by x[0..l-1]
-		for (int s=0; s<l; s++)
-		{
-			//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
-			cout<<x[s]<<" ";
-		}
-		cout<<endl;
-
-		for  (int s=0; s<l; s++)
-		{
-			int next = x[s];
-			while (((DanceNode*)dance[next])->TOP >0)
-			{
-				cout<<item_name[dance[next]->TOP]<<" ";
-				next = next+1;
-			}
-			//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
-			cout<<endl;
-		}
-		cout<<endl;
-
+		visitSolutiton();
 		goto X8;
 	}
 
@@ -274,23 +259,7 @@ X6:
 	(Tis uncovers the items ≠ i in the option that contains x_l, using the reverse
 	of the order in X5.) Set i <- TOP(x_l), x_l <- DLINK(x_l), and return to X5.
 */
-	p = x[l]-1;
-	while (p != x[l])
-	{
-		j = dance[p]->TOP;
-		if (j<=0)
-		{
-			p = dance[p]->DLINK;
-		}
-		else
-		{
-			uncover(j);
-			p = p-1;
-		}
-	}
-
-	i = dance[x[l]]->TOP;
-	x[l] = dance[x[l]]->DLINK;
+	tryAgain(p, l, j, &i);
 	goto X5;
 
 X7:
@@ -311,6 +280,56 @@ X8:
 		goto X6;
 	}
 
+}
+
+int DanceLink::tryAgain(int p, int l, int j, int* pI)
+{
+	p = x[l]-1;
+	while (p != x[l])
+	{
+		j = dance[p]->TOP;
+		if (j<=0)
+		{
+			p = dance[p]->DLINK;
+		}
+		else
+		{
+			uncover(j);
+			p = p-1;
+		}
+	}
+
+	*pI = dance[x[l]]->TOP;
+	x[l] = dance[x[l]]->DLINK;
+
+	return 0;
+}
+
+int DanceLink::visitSolutiton()
+{
+	cout<<"Total level: "<<l<<endl;
+	//Visit solution specified by x[0..l-1]
+	for (int s=0; s<l; s++)
+	{
+		//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
+		cout<<x[s]<<" ";
+	}
+	cout<<endl;
+
+	for  (int s=0; s<l; s++)
+	{
+		int next = x[s];
+		while (((DanceNode*)dance[next])->TOP >0)
+		{
+			cout<<item_name[dance[next]->TOP]<<" ";
+			next = next+1;
+		}
+		//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
+		cout<<endl;
+	}
+	cout<<endl;
+
+	return 0;
 }
 
 DanceLink::DanceLink(string& file)
@@ -551,8 +570,9 @@ d e g
 **** END OF ******* Sample Data File ****************
 
 */
-int DanceLink::extract(string dancingFile)
+int DanceLink::extract(string dancingFile, int* itemCount)
 {
+	int nRet = -1;
 	vector<string> name;
 
 	fstream fs;
@@ -561,8 +581,9 @@ int DanceLink::extract(string dancingFile)
 
 	if (fs.fail())
 	{
+		nRet = -2;
 		cerr<<dancingFile<<" file open failed with error "<<strerror(errno)<<'\n';
-		return -1;
+		return nRet;
 	}
 	
 	
@@ -579,7 +600,7 @@ int DanceLink::extract(string dancingFile)
 	map<string, int> item_addr;
 	//map<int, string> item_name;
 	//vector<DanceNode*> dance;
-	int item_count = 0;
+	int nItem = 0;
 	
 	DanceNode* pNode = new DanceNode;
 	pNode->LEN = 0;
@@ -597,7 +618,7 @@ int DanceLink::extract(string dancingFile)
 		//cout<<'"'<<s<<'"'<<endl;
 		item[s] = 0;
 		node_addr++;
-		item_count++;
+		nItem++;
 		DanceNode* pNode = new DanceNode;
 		pNode->LEN = 0;
 		pNode->ULINK = node_addr;
@@ -679,7 +700,7 @@ int DanceLink::extract(string dancingFile)
 
 	fs.close();
 
-	//N = item_count;
+	//N = nItem;
 	//Z = node_addr;
 	//l = 0;
 	P = i;
@@ -710,7 +731,7 @@ int DanceLink::extract(string dancingFile)
 	cout<<endl;
 #endif
 
-	//cout<<"Total number of item: "<<item_count<<endl;
+	//cout<<"Total number of item: "<<nItem<<endl;
 
 
 	int k = 0;
@@ -718,14 +739,14 @@ int DanceLink::extract(string dancingFile)
 
 	for (auto& s: dance)
 	{
-		if ((k>0) && (k<=item_count))
+		if ((k>0) && (k<=nItem))
 		{
 			s->LEN = item[tokens[k-1]];
 		}
 
 		k++;
 
-		if (k>item_count)
+		if (k>nItem)
 		{
 			break;
 		}
@@ -760,7 +781,7 @@ int DanceLink::extract(string dancingFile)
 			{
 				cout<<k<<" "<<s->TOP<<" "<<s->ULINK<<" "<<s->DLINK<<" "<<endl;
 			}
-			else if ((k>0) && (k<=item_count))
+			else if ((k>0) && (k<=nItem))
 			{
 				//s->LEN = item[tokens[k-1]];
 				cout<<k<<" "<<s->LEN<<" "<<s->ULINK<<" "<<s->DLINK<<endl;
@@ -780,7 +801,16 @@ int DanceLink::extract(string dancingFile)
 	}
 #endif
 
-	return item_count;
+	if (itemCount == nullptr)
+	{
+		cout<<"The pointer of itemCount for output is nullptr !!!"<<endl;
+		nRet = -3;
+	}
+
+	*itemCount = nItem;
+	nRet = 0;
+
+	return nRet;
 }
 
 int DanceLink::heuristic()

@@ -40,12 +40,14 @@ public:
 	~DanceLink() {};
 
 	int algoX();
-	int extract(string dancingFile);
+	int extract(string dancingFile, int* itemCount);
 	int heuristic();
 	int cover(int i);
 	int hide(int p);
 	int uncover(int i);
 	int unhide(int p);
+	int visitSolutiton();
+	int tryAgain(int p, int l, int j, int* pI);
 
 private:
 	string danceFile;
