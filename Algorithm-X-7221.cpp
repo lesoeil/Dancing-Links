@@ -234,22 +234,7 @@ X5:
 	}
 	else
 	{
-		p = x[l] + 1;
-		while (p != x[l])
-		{
-			j = dance[p]->TOP;
-			if (j<=0)
-			{
-				p = dance[p]->ULINK;
-			}
-			else
-			{
-				cover(j);
-				p = p+1;
-			}
-		}
-
-		l = l+1;
+		x5Cover(&x, &l);
 		goto X2;
 	}
 
@@ -259,7 +244,7 @@ X6:
 	(Tis uncovers the items ≠ i in the option that contains x_l, using the reverse
 	of the order in X5.) Set i <- TOP(x_l), x_l <- DLINK(x_l), and return to X5.
 */
-	tryAgain(p, l, j, &i);
+	x6TryAgain(l, &x, &i);
 	goto X5;
 
 X7:
@@ -282,10 +267,52 @@ X8:
 
 }
 
-int DanceLink::tryAgain(int p, int l, int j, int* pI)
+
+int DanceLink::x5Cover(vector<int>* px, int* pl)
 {
-	p = x[l]-1;
-	while (p != x[l])
+	int p = 0;
+	int j = 0;
+
+	if (px == nullptr)
+	{
+		cout<<"Error: input px is nullptr."<<endl;
+		return -2;
+	}
+	else if (pl == nullptr)
+	{
+		cout<<"Error: input pl is nullptr."<<endl;
+		return -2;
+	}
+
+
+	p = (*px)[*pl] + 1;
+	while (p != (*px)[*pl])
+	{
+		j = dance[p]->TOP;
+		if (j<=0)
+		{
+			p = dance[p]->ULINK;
+		}
+		else
+		{
+			cover(j);
+			p = p+1;
+		}
+	}
+
+	*pl += 1;
+
+	return 0;
+}
+
+
+int DanceLink::x6TryAgain(int l, vector<int>* px, int* pI)
+{
+	int p = -1;
+	int j = -1;
+
+	p = (*px)[l]-1;
+	while (p != (*px)[l])
 	{
 		j = dance[p]->TOP;
 		if (j<=0)
@@ -299,8 +326,8 @@ int DanceLink::tryAgain(int p, int l, int j, int* pI)
 		}
 	}
 
-	*pI = dance[x[l]]->TOP;
-	x[l] = dance[x[l]]->DLINK;
+	*pI = dance[(*px)[l]]->TOP;
+	(*px)[l] = dance[(*px)[l]]->DLINK;
 
 	return 0;
 }

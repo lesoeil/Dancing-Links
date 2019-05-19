@@ -47,7 +47,9 @@ public:
 	int uncover(int i);
 	int unhide(int p);
 	int visitSolutiton();
-	int tryAgain(int p, int l, int j, int* pI);
+	int x6TryAgain(int l, vector<int>* px, int* pI);
+	int x5Cover(vector<int>* px, int* pl);
+
 
 private:
 	string danceFile;
