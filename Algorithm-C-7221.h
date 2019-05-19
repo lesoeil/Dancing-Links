@@ -1,10 +1,8 @@
-/*  Algorithm-X-7221.h
+/*  Jacob 2017-Sep-17 
 
-	Jacob Yang 
+DanceColor.h
 
-	30-Apr-2019
 
-	Revise based on previous DancingLinks.h
 */
 
 #include <iostream>
@@ -18,49 +16,51 @@ typedef struct
 		int LEN;
 		int TOP;
 	};
-	int LLINK;
-	int RLINK;
+
 	int ULINK;
 	int DLINK;
-	//string name;
+	char COLOR;
 } DanceNode;
 
 typedef struct
 {
 	string NAME;
 	int LLINK;
-	int RLINK;
-}ItemNode;
-
+	int RLINK;	
+} DanceRecord;
 
 class DanceLink
 {
 public:
-	DanceLink(string& dataFile);
+	DanceLink(string& fileName);
+	DanceLink(string& fileName, int numOfPrimaryItems);
 	~DanceLink() {};
 
-	int algoX();
-	
+	int algorithmC();
+
 private:
 	string danceFile;
+	vector<DanceRecord*> record;
 	vector<DanceNode*> dance;
-	vector<ItemNode*> items; 
 	map<int, string> item_name;
 	int N;	//number of items
+	int np;	//number of primary items
 	int P;	//number of options
 	int Z;	//last spacer address
 	int l;	//level
+	int count;
 	vector<int> x;
 
-	int extract(string dancingFile, int* itemCount);
-	int heuristic();
+	int exact();
+	int exer8();
 	int cover(int i);
 	int hide(int p);
 	int uncover(int i);
 	int unhide(int p);
-	int visitSolutiton();
-	int x6TryAgain(int l, vector<int>* px, int* pI);
-	int x5Cover(vector<int>* px, int* pl);
+	int commit(int p, int j);
+	int purify(int p);
+	int uncommit(int p, int j);
+	int unpurify(int p);
 };
 
 
