@@ -86,54 +86,64 @@ two secondary items {x,y}, where the options are
 							'q x:A';
 							'r y:B'.									(49)
 
-Notice that COLOR = 0 when no color has been specified. The COLOR 
-fields of header nodes (nodes 1-5 in this example) and spacer nodes (nodes 6, 
-11, 16, 19, 22, 25) need not be initialized because they're never examined.
+Table 2 shows how it would be represented in memory, extending the conventions
+of Table 1. Notice that COLOR = 0 when no color has been specified. The COLOR 
+fields of header nodes (nodes 1-5 in this example) need not be initialized 
+because they're never examined. The COLOR fields of the spacer nodes (nodes 6, 
+11, 16, 19, 22, 25) are unimportant, except that they must be nonnegative.
 
 	It's easy to see how these COLOR fields can be used to get the desired effect:
-When an option is chosen, we "purify" any secondary items that it names, 
-by effectively removing all options that have conflicting colors. One slightly 
-subtle point arises, because we don't want to waste time purifying a list that 
-has already been culled. The trick is to set COLOR(x) <- -1 in every node x 
-that's already known to have the correct color, except in nodes that originally 
-triggered purification.
+When an option is chosen, we "purify" any secondary items that it names, by 
+effectively removing all options that have conflicting colors. One slightly subtle 
+point arises, because we don't want to waste time purifying a list that has already 
+been culled. The trick is to set COLOR(x) <- -1 in every node x that's already 
+known to have the correct color, except in nodes that have already been hidden.
 
-cover'(i) is like cover(i), but it calls hide'(p) instead of hide(p);			(50)
-hide'(p) is hide(p), but it ignores node q when COLOR(q)<0;						(51)
-uncover'(i) is like uncover(i), but it call unhide'(p) instead of unhide(p);	(52)
-unhide'(p) is like unhide(p), but it ignores node q when COLOR(q)<0.			(53)
+	Thus we want to upgrade the original operations cover(i) and hide(p) in (12)
+and (13), as well as their counterparts uncover(i) and unhide(p) in (14) and (15),
+in order to incorporate color controls. The changes are simple:
+
+ cover'(i) is like cover(i), but it calls hide'(p) instead of hide(p);			(50)
+ hide'(p) is like hide(p), but it ignores node q when COLOR(q)<0;				(51)
+ uncover'(i) is like uncover(i), but it call unhide'(p) instead of unhide(p);	(52)
+ unhide'(p) is like unhide(p), but it ignores node q when COLOR(q)<0.			(53)
 
 Our colorful algorithm also introduces two new operations and their inverses:
 
-commit(p,j) = {
-	If COLOR(p) == 0, cover'(j);	
-	if COLOR(p) > 0, purify(p).		}											(54)
+			  
+commit(p,j) = 	{	
+					If COLOR(p) == 0, cover'(j);
+			  		if COLOR(p) > 0, purify(p).										
+			  	}																(54)
 
-purify(p) = {
-	Set c <- COLOR(p), i <- TOP(p), q <- DLINK(i).
-	While q != i, do the following and set q <- DLINK(q):
-		if COLOR(q) != c, hide'(q);
-		otherwise if q != p, COLOR(q) <- -1.	}								(55)
+purify(p) = 	{	
+					Set c <- COLOR(p), i <- TOP(p), q <- DLINK(i).
+					While q ≠ i, do the following and set q <- DLINK(q):
+						if COLOR(q) ≠ c, hide'(q);
+						otherwise COLOR(q) <- -1.
+				}																(55)
 
 uncommit(p,j) = {
-	If COLOR(p) == 0, uncover'(j);
-	if COLOR(p) > 0, unpurify(p).	}											(56)
+					If COLOR(p) == 0, uncover'(j);
+					if COLOR(p) > 0, unpurify(p).
+				}																(56)
 
-unpurify(p) = {
-	Set c <- COLOR(p), i <- TOP(p), q <- ULINK(i).
-	While q != i, do the following and set q <- ULINK(q):
-		if COLOR(q) < 0, COLOR(q) <- c;
-		otherwise if q != p, unhide'(q).	}									(57)
-Otherwise Algorithm C is almost word-for-word identical to Algorithm D.
+unpurify(p) = 	{
+					Set c <- COLOR(p), i <- TOP(p), q <- ULINK(i).
+					While q ≠ i, do the following and set q <- ULINK(q):
+						if COLOR(q) < 0, COLOR(q) <- c;
+						otherwise unhide'(q).
+				}																(57)
+Otherwise Algorithm C is almost word-for-word identical to Algorithm X.
 
 Algorithm C (Exact covering with colors).	This algorithm visits all solutions
-to a given XCC problem, using the same conventions as Algorithm D.
+to a given XCC problem, using the same conventions as Algorithm X.
 
-C1.[Initialize.] Set the problem up in memory, as in Table 2 (see exercise 8).
+C1.[Initialize.] Set the problem up in memory, as in Table 2. (See exercise 8.)
 	Also set N to the number of items, Z to the last spacer address, and l <- 0.
 
 C2.[Enter level l.] If RLINK(0) = 0 (hence all items have been covered), visit the 
-	solution that is specified by x_0 x_1 ... x_(l-1) and go to C8. (See exercise 12.)
+	solution that is specified by x_0 x_1 ... x_(l-1) and go to C8. (See exercise 13.)
 
 C3.[Choose i.] At this point the items i_1, ..., i_t still need to be covered, where 
 	i_1 = RLINK(0), i_(j+1) = RLINK(i_j), RLINK(i_t) = 0. Choose one of them, and 
@@ -142,13 +152,13 @@ C3.[Choose i.] At this point the items i_1, ..., i_t still need to be covered, w
 C4.[Cover i.] Cover item i using (50), and set x_l <- DLINK(i).
 
 C5.[Try x_l.] If x_l = i, go to C7 (we've tried all options for i). Otherwise set
-	p <- x_l + 1, and do the following while p != x_l: Set j <- TOP(p); if j <= 0, set 
-	p <- ULINK(p); otherwise commit(p,j) and sete p <- p+1. (This covers the 
-	items != i in the option that contains p.) Set l <- l+1 and return to C2.
+	p <- x_l + 1, and do the following while p ≠ x_l: Set j <- TOP(p); if j ≤ 0, set 
+	p <- ULINK(p); otherwise commit(p,j) and set p <- p+1. (This covers the 
+	items ≠ i in the option that contains x_l.) Set l <- l+1 and return to C2.
 
-C6.[Try again.] Set p <- x_l - 1, and do the following while p != x_l: Set 
-	j <- TOP(p); if j <= 0, set p <- DLINK(p); otherwise uncommit(p,j) and set 
-	p <- p - 1. (This uncovers the items != i in the option that contains p, using 
+C6.[Try again.] Set p <- x_l - 1, and do the following while p != x_l: Set j <- 
+	TOP(p); if j ≤ 0, set p <- DLINK(p); otherwise uncommit(p,j) and set 
+	p <- p-1. (This uncovers the items ≠ i in the option that contains x_l, using 
 	the reverse order.) Set i <- TOP(x_l), x_l <- DLINK(x_l), and return to C5.
 
 C7.[Backtrack.] Uncover item i using (52).
@@ -159,10 +169,10 @@ C8.[Leave level l.] Terminate if l = 0. Otherwise set l <- l - 1 and go to C6.
 cussed in previous sections. For example, it readily generates word rectangles, 
 as well as intriguing patterns of words that have more intricate structure (see 
 exercise 164-171). We can use it to find all de Bruijn cycles, and their two-
-dimensional counterparts (see exercies ???-???); the extra generality of exact 
-covering options also makes it easy to impose additional constraints for special 
+dimensional counterparts (see exercies 155-158). The extra generality of exact 
+covering options also invites us to impose additional constraints for special 
 applications. Furthermore, Algorithm C facilitates experiments with the tetrad 
-tilese that we studied in Section 2.3.4.3 (see exercises 190 and 191).
+tiles that we studied in Section 2.3.4.3 (see exercises 220 and 221).
 */
 
 /*
