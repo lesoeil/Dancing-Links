@@ -20,28 +20,28 @@ typedef struct
 	int ULINK;
 	int DLINK;
 	char COLOR;
-} DanceNode;
+} ColorNode;
 
 typedef struct
 {
 	string NAME;
 	int LLINK;
 	int RLINK;	
-} DanceRecord;
+} ColorItem;
 
-class DanceLink
+class ColorDancing
 {
 public:
-	DanceLink(string& fileName);
-	DanceLink(string& fileName, int numOfPrimaryItems);
-	~DanceLink() {};
+	ColorDancing(string& fileName);
+	ColorDancing(string& fileName, int numOfPrimaryItems);
+	~ColorDancing() {};
 
 	int algorithmC();
 
 private:
 	string danceFile;
-	vector<DanceRecord*> record;
-	vector<DanceNode*> dance;
+	vector<ColorItem*> record;
+	vector<ColorNode*> dance;
 	map<int, string> item_name;
 	int N;	//number of items
 	int np;	//number of primary items
@@ -61,24 +61,26 @@ private:
 	int purify(int p);
 	int uncommit(int p, int j);
 	int unpurify(int p);
+
+	int c1_init();
 };
 
 
 
 /*
 class DanceLinkNode;
-class DanceItem;
+class ColorItem;
 
 class DanceName
 {
 private:
 	string key;
-	DanceItem* LLINK;
-	DanceItem* RLINK;
+	ColorItem* LLINK;
+	ColorItem* RLINK;
 };
 
 
-class DanceItem
+class ColorItem
 {
 public:
 
@@ -95,7 +97,7 @@ public:
 	//int remove(DanceLinkNode* X);
 
 private:
-	DanceItem* TOP;
+	ColorItem* TOP;
 	DanceLinkNode* ULINK;
 	DanceLinkNode* DLINK;
 };

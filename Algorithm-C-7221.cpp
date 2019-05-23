@@ -244,7 +244,7 @@ algorithm is simply this:
 #include <map>
 #include <stdlib.h>
 
-#include "DanceColor.h"
+#include "Algorithm-C-7221.h"
 
 using namespace std;
 
@@ -263,12 +263,12 @@ int main(int argc, char* argv[])
 		cout<<endl;
 	}	
 	*/
-	//vector<DanceNode*> dance;
+	//vector<ColorNode*> dance;
 	//item_count = exact(&dance);
 
 	//string exer8("exer8.dat");
 
-	//DanceLink echo(exer8);
+	//ColorDancing echo(exer8);
 	//echo.algorithmD();	
 
 	if ((argc <2) || (argc>3))
@@ -286,7 +286,7 @@ int main(int argc, char* argv[])
 		n = atoi(argv[2]);
 	}
 
-	DanceLink queen(options, n);
+	ColorDancing queen(options, n);
 	queen.algorithmC();
 
 	return 0;
@@ -299,7 +299,7 @@ to a given XCC problem, using the same conventions as Algorithm D.
 #undef DEBUGPRINT
 #define DEBUGPRINT
 
-int DanceLink::algorithmC()
+int ColorDancing::algorithmC()
 {
 	int i = -1;
 	int j = -1;
@@ -333,71 +333,8 @@ D1://[Initialize.]
 // Modify step C1 so that only the primary items appear in the active list.
 C1:/*[Initialize.] Set the problem up in memory, as in Table 2 (see exercise 8).
 	 Also set N to the number of items, Z to the last spacer address, and l <- 0.  */
-	
-	//exer8();
-	//return 0;
+	c1_init();
 
-
-	N = exact();//Set the problem up in memory
-	Z = dance.size()-1;
-	l = 0;
-	cout<<"N  : "<<N<<"  (number of items)"<<endl;
-	cout<<"np : "<<np<<"  (number of primary items)"<<endl;
-	cout<<"P  : "<<P<<"  (number of options)"<<endl;
-	cout<<"Z  : "<<Z<<"  (last spacer address)"<<endl;
-	cout<<"l  : "<<l<<"  (start level at D1)"<<endl;
-	cout<<endl;
-
-	for (int s=0; s<P+1; s++)
-	{
-		x.push_back(s);
-	}
-
-	cout<<"Record.size: "<<record.size()<<endl;
-
-	//cout<<"record.size(): "<<record.size()<<endl;
-	
-	//if (np > (record.size()-1))
-	if ( (np > N) || (np<=0))
-	{
-		cout<<"Number of Primary Items np: "<<np<<" is out of range 1.."<<N<<"(total number of items)"<<endl;
-		np = N;
-		cout<<"To make sense, now set num Of primary items to total number of items."<<endl<<endl;
-
-		cout<<"N  (total number of items)  : "<<N<<endl;
-		cout<<"np (number of primary items): "<<np<<endl<<endl;
-	}
-	//r_1, r_2, r_3, r_4, c_1, c_2, c_3, c_4//unsigned int numberOfPrimary = 8;//r_1, r_2, r_3, r_4, c_1, c_2, c_3, c_4
-	record[0]->LLINK = np;
-	record[np]->RLINK = 0;
-
-	if (np<N)
-	{
-		record[np+1]->LLINK = N+1;
-		record[N+1]->RLINK = np+1;
-	}
-
-
-#if	defined(DEBUGPRINT)
-	for (int i=0; i<record.size(); i++)
-	{
-		cout<<"Item: "<<i<<"  NAME:"<<record[i]->NAME<<"  LLINK:"<<record[i]->LLINK<<"  RLINK:"<<record[i]->RLINK<<endl;
-	}
-#endif
-
-#if defined(DEBUGPRINT)
-	for (int i=np+1; i<=N; i++)//record.size(); i++)
-	{
-		cout<<i<<"th item which is "<<i-np<<"th secondary item "<<record[i]->NAME<<" with LEN: "<<dance[i]->LEN<<endl;
-	}
-	cout<<endl;
-#endif
-	/*
-	for (int s=0; s<P+1; s++)
-	{
-		cout<<x[s]<<" ";
-	}
-	*/
 
 C2:/*[Enter level l.] If RLINK(0) = 0 (hence all items have been covered), visit the 
 	 solution that is specified by x_0 x_1 ... x_l-1 and go to C8. (See exercise 12.)
@@ -435,12 +372,12 @@ primary, the only valid solution would be to choose options 'a d g' and 'b c f'.
 			for  (int s=0; s<l; s++)
 			{
 				int next = x[s];
-				while (((DanceNode*)dance[next-1])->TOP >0)
+				while (((ColorNode*)dance[next-1])->TOP >0)
 				{
 					next = next -1;
 				}
 
-				while (((DanceNode*)dance[next])->TOP >0)
+				while (((ColorNode*)dance[next])->TOP >0)
 				{
 					cout<<item_name[dance[next]->TOP]<<" ";
 					next = next+1;
@@ -456,14 +393,14 @@ primary, the only valid solution would be to choose options 'a d g' and 'b c f'.
 			for  (int s=0; s<l; s++)
 			{
 				int next = x[s];
-				while (((DanceNode*)dance[next-1])->TOP >0)
+				while (((ColorNode*)dance[next-1])->TOP >0)
 				{
 					next = next -1;
 				}
 
 				int cord = 0;
 				int start = 100;
-				while (((DanceNode*)dance[next])->TOP >0)
+				while (((ColorNode*)dance[next])->TOP >0)
 				{
 					cout<<item_name[dance[next]->TOP]<<" ";
 					
@@ -522,14 +459,14 @@ primary, the only valid solution would be to choose options 'a d g' and 'b c f'.
 			for  (int s=0; s<l; s++)
 			{
 				int next = x[s];
-				while (((DanceNode*)dance[next-1])->TOP >0)
+				while (((ColorNode*)dance[next-1])->TOP >0)
 				{
 					next = next -1;
 				}
 
 				int cord = 0;
 				int start = 100;
-				while (((DanceNode*)dance[next])->TOP >0)
+				while (((ColorNode*)dance[next])->TOP >0)
 				{
 					cout<<item_name[dance[next]->TOP]<<" ";
 					
@@ -588,14 +525,14 @@ primary, the only valid solution would be to choose options 'a d g' and 'b c f'.
 			for  (int s=0; s<l; s++)
 			{
 				int next = x[s];
-				while (((DanceNode*)dance[next-1])->TOP >0)
+				while (((ColorNode*)dance[next-1])->TOP >0)
 				{
 					next = next -1;
 				}
 
 				int cord = 0;
 				bool bBond = false;
-				while (((DanceNode*)dance[next])->TOP >0)
+				while (((ColorNode*)dance[next])->TOP >0)
 				{
 					cout<<item_name[dance[next]->TOP]<<" ";
 					
@@ -645,14 +582,14 @@ primary, the only valid solution would be to choose options 'a d g' and 'b c f'.
 			for  (int s=0; s<l; s++)
 			{
 				int next = x[s];
-				while (((DanceNode*)dance[next-1])->TOP >0)
+				while (((ColorNode*)dance[next-1])->TOP >0)
 				{
 					next = next -1;
 				}
 
 				int cord = 0;
 				char head;
-				while (((DanceNode*)dance[next])->TOP >0)
+				while (((ColorNode*)dance[next])->TOP >0)
 				{
 					cout<<item_name[dance[next]->TOP]<<" ";
 					
@@ -934,7 +871,7 @@ C8://[Leave level l.]
 	}
 }
 
-DanceLink::DanceLink(string& fileName)
+ColorDancing::ColorDancing(string& fileName)
 {
 	danceFile = fileName;
 	record.clear();
@@ -948,7 +885,7 @@ DanceLink::DanceLink(string& fileName)
 	x.clear();
 }
 
-DanceLink::DanceLink(string& fileName, int numOfPrimaryItems)
+ColorDancing::ColorDancing(string& fileName, int numOfPrimaryItems)
 {
 	danceFile = fileName;
 	record.clear();
@@ -963,7 +900,7 @@ DanceLink::DanceLink(string& fileName, int numOfPrimaryItems)
 }
 
 
-int DanceLink::cover(int i)
+int ColorDancing::cover(int i)
 {
 	int p = dance[i]->DLINK;
 	while (p!=i)
@@ -981,7 +918,7 @@ int DanceLink::cover(int i)
 }
 
 
-int DanceLink::hide(int p)//this is actually hide'(p), while function name not allow '
+int ColorDancing::hide(int p)//this is actually hide'(p), while function name not allow '
 {
 	int x = -1;
 	int u = -1;
@@ -1028,7 +965,7 @@ int DanceLink::hide(int p)//this is actually hide'(p), while function name not a
 	return 0;
 }
 
-int DanceLink::uncover(int i)
+int ColorDancing::uncover(int i)
 {
 	int l = record[i]->LLINK;
 	int r = record[i]->RLINK;
@@ -1047,7 +984,7 @@ int DanceLink::uncover(int i)
 	return 0;
 }
 
-int DanceLink::unhide(int p)
+int ColorDancing::unhide(int p)
 {
 	int q = p-1;
 	int x = -1;
@@ -1095,7 +1032,7 @@ int DanceLink::unhide(int p)
 }
 
 
-int DanceLink::commit(int p, int j)
+int ColorDancing::commit(int p, int j)
 {
 	if (dance[p]->COLOR == 0)
 	{
@@ -1110,7 +1047,7 @@ int DanceLink::commit(int p, int j)
 	return 0;
 }
 
-int DanceLink::purify(int p)
+int ColorDancing::purify(int p)
 {
 	char c = dance[p]->COLOR;
 	int  i = dance[p]->TOP;
@@ -1137,7 +1074,7 @@ int DanceLink::purify(int p)
 }
 
 
-int DanceLink::uncommit(int p, int j)
+int ColorDancing::uncommit(int p, int j)
 {
 	if (dance[p]->COLOR == 0)
 	{
@@ -1152,7 +1089,7 @@ int DanceLink::uncommit(int p, int j)
 	return 0;
 }
 
-int DanceLink::unpurify(int p)
+int ColorDancing::unpurify(int p)
 {
 	char c = dance[p]->COLOR;
 	int  i = dance[p]->TOP;
@@ -1179,7 +1116,7 @@ int DanceLink::unpurify(int p)
 }
 
 /*
-bool DanceLink::touch()
+bool ColorDancing::touch()
 {
 	for (int i=np+1; i<record.size(); i++)
 	{
@@ -1206,6 +1143,77 @@ bool DanceLink::touch()
 }
 */
 
+int ColorDancing::c1_init()
+{
+	//exer8();
+	//return 0;
+
+
+	N = exact();//Set the problem up in memory
+	Z = dance.size()-1;
+	l = 0;
+	cout<<"N  : "<<N<<"  (number of items)"<<endl;
+	cout<<"np : "<<np<<"  (number of primary items)"<<endl;
+	cout<<"P  : "<<P<<"  (number of options)"<<endl;
+	cout<<"Z  : "<<Z<<"  (last spacer address)"<<endl;
+	cout<<"l  : "<<l<<"  (start level at D1)"<<endl;
+	cout<<endl;
+
+	for (int s=0; s<P+1; s++)
+	{
+		x.push_back(s);
+	}
+
+	cout<<"Record.size: "<<record.size()<<endl;
+
+	//cout<<"record.size(): "<<record.size()<<endl;
+	
+	//if (np > (record.size()-1))
+	if ( (np > N) || (np<=0))
+	{
+		cout<<"Number of Primary Items np: "<<np<<" is out of range 1.."<<N<<"(total number of items)"<<endl;
+		np = N;
+		cout<<"To make sense, now set num Of primary items to total number of items."<<endl<<endl;
+
+		cout<<"N  (total number of items)  : "<<N<<endl;
+		cout<<"np (number of primary items): "<<np<<endl<<endl;
+	}
+	//r_1, r_2, r_3, r_4, c_1, c_2, c_3, c_4//unsigned int numberOfPrimary = 8;//r_1, r_2, r_3, r_4, c_1, c_2, c_3, c_4
+	record[0]->LLINK = np;
+	record[np]->RLINK = 0;
+
+	if (np<N)
+	{
+		record[np+1]->LLINK = N+1;
+		record[N+1]->RLINK = np+1;
+	}
+
+
+#if	defined(DEBUGPRINT)
+	for (int i=0; i<record.size(); i++)
+	{
+		cout<<"Item: "<<i<<"  NAME:"<<record[i]->NAME<<"  LLINK:"<<record[i]->LLINK<<"  RLINK:"<<record[i]->RLINK<<endl;
+	}
+#endif
+
+#if defined(DEBUGPRINT)
+	for (int i=np+1; i<=N; i++)//record.size(); i++)
+	{
+		cout<<i<<"th item which is "<<i-np<<"th secondary item "<<record[i]->NAME<<" with LEN: "<<dance[i]->LEN<<endl;
+	}
+	cout<<endl;
+#endif
+	/*
+	for (int s=0; s<P+1; s++)
+	{
+		cout<<x[s]<<" ";
+	}
+	*/
+
+	return 0;
+}
+
+
 /* 7.2.2.1 DANCING LINKS: EXERCISES  -- First Set
  8. [22] Design an algorithm to set up the initial memory contents of an exact cover
 problem, as needed by Algorithm D and illustrated in Table 1.  The input to your
@@ -1219,7 +1227,7 @@ algorithm should consist of a sequence of lines with the following format:
 
 */
 
-int DanceLink::exact()
+int ColorDancing::exact()
 {
 	vector<string> name;
 
@@ -1238,16 +1246,16 @@ int DanceLink::exact()
 	map<string, int> item;
 	map<string, int> item_addr;
 	//map<int, string> item_name;
-	//vector<DanceNode*> dance;
+	//vector<ColorNode*> dance;
 	int item_count = 0;
 	
-	DanceRecord* pHead = new DanceRecord;
+	ColorItem* pHead = new ColorItem;
 	pHead->NAME = string("-");
 	pHead->LLINK = -1;
 	pHead->RLINK = 1;
 	record.push_back(pHead);
 
-	DanceNode* pNode = new DanceNode;
+	ColorNode* pNode = new ColorNode;
 	pNode->LEN = 0;
 	pNode->ULINK = -1;
 	pNode->DLINK = -1;	
@@ -1264,13 +1272,13 @@ int DanceLink::exact()
 		node_addr++;
 		item_count++;
 
-		DanceRecord* pRecord = new DanceRecord;
+		ColorItem* pRecord = new ColorItem;
 		pRecord->NAME = s;
 		pRecord->LLINK = node_addr-1;
 		pRecord->RLINK = node_addr+1;
 		record.push_back(pRecord);
 
-		DanceNode* pNode = new DanceNode;
+		ColorNode* pNode = new ColorNode;
 		pNode->LEN = 0;
 		pNode->ULINK = node_addr;
 		pNode->DLINK = node_addr;
@@ -1286,7 +1294,7 @@ int DanceLink::exact()
 
 	node_addr++;
 
-	DanceRecord* pTail = new DanceRecord;
+	ColorItem* pTail = new ColorItem;
 	pTail->NAME = "-";
 	pTail->LLINK = node_addr-1;
 	pTail->RLINK = 0;
@@ -1294,7 +1302,7 @@ int DanceLink::exact()
 	record[0]->LLINK = node_addr; 
 
 
-	pNode = new DanceNode;
+	pNode = new ColorNode;
 	pNode->TOP = 0;
 	pNode->ULINK = -1;
 	pNode->DLINK = -1;
@@ -1347,7 +1355,7 @@ int DanceLink::exact()
 
 			//cout<<s<<endl;
 
-			DanceNode* pNode = new DanceNode;
+			ColorNode* pNode = new ColorNode;
 			pNode->TOP = item_addr[s];
 			pNode->COLOR = c;
 
@@ -1376,7 +1384,7 @@ int DanceLink::exact()
 		dance[prevSpacer]->DLINK = lastNode;
 
 		node_addr++;
-		DanceNode* pNode = new DanceNode;
+		ColorNode* pNode = new ColorNode;
 		pNode->TOP = -i;
 		pNode->ULINK = firstNode;
 		pNode->DLINK = -1;
@@ -1493,7 +1501,7 @@ for (auto& s: dance)
 
 
 
-int DanceLink::exer8()
+int ColorDancing::exer8()
 {
 	vector<string> name;
 
@@ -1516,7 +1524,7 @@ I1:/*[Read the first line.] Set i <- N_1 <- 0. Then, for each item name a on the
 	int i = 0;
 	int N_1 = 0;	
 	
-	DanceRecord* pHead = new DanceRecord;
+	ColorItem* pHead = new ColorItem;
 	pHead->NAME = string("-");
 	pHead->LLINK = -1;
 	pHead->RLINK = 1;
@@ -1533,7 +1541,7 @@ I1:/*[Read the first line.] Set i <- N_1 <- 0. Then, for each item name a on the
 
 		//cout<<'"'<<s<<'"'<<endl;
 		i = i+1;
-		DanceRecord* pRecord = new DanceRecord;
+		ColorItem* pRecord = new ColorItem;
 		record.push_back(pRecord);
 		record[i]->NAME = s;
 		record[i]->LLINK = i-1;
@@ -1552,7 +1560,7 @@ I2:/*[Finish the horizontal list.] Set N <- i. If N_1 = 0 (there were no seconda
 	}
 
 
-	DanceRecord* pTail = new DanceRecord;
+	ColorItem* pTail = new ColorItem;
 	pTail->NAME = "-";
 	record.push_back(pTail);
 
