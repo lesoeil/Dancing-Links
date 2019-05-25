@@ -248,6 +248,7 @@ algorithm is simply this:
 
 using namespace std;
 
+#if 1
 int main(int argc, char* argv[])
 {
 	//DanceLinkNode x;
@@ -291,6 +292,7 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+#endif
 
 /* 18-Sep-2017 20:32
 Algorithm C (Exact covering with colors). This algorithm visits all solutions 
@@ -305,9 +307,9 @@ int ColorDancing::algorithmC()
 	int j = -1;
 	int p = -1;
 
-	int cut_512 = 0;//count for exercise 251
-	int cut_610a = 0; //count for exercise 255 a)
-	int bc[13] = {0};//To count the number of pentimoes touching boundary in each solution.
+	//int cut_512 = 0;//count for exercise 251
+	//int cut_610a = 0; //count for exercise 255 a)
+	//int bc[13] = {0};//To count the number of pentimoes touching boundary in each solution.
 	int touchX = 0;
 	vector<int> index;
 
@@ -333,7 +335,7 @@ D1://[Initialize.]
 // Modify step C1 so that only the primary items appear in the active list.
 C1:/*[Initialize.] Set the problem up in memory, as in Table 2 (see exercise 8).
 	 Also set N to the number of items, Z to the last spacer address, and l <- 0.  */
-	c1_init();
+	init();
 
 
 C2:/*[Enter level l.] If RLINK(0) = 0 (hence all items have been covered), visit the 
@@ -342,397 +344,7 @@ C2:/*[Enter level l.] If RLINK(0) = 0 (hence all items have been covered), visit
 	//cout<<"dance[0]->RLINK: "<<dance[0]->RLINK<<endl;
 	if (record[0]->RLINK == 0)
 	{
-/*  Update 2017-09-22 For DanceColor.cpp changes for Exercise 18 will be removed since 
-			there is no such requirement for exact cover with color.   And, what's more,
-			at this moment, I have not get correct result for exercise 18 yet! So there 
-			must be bugs in touch() function.....
-
-18. [21] Modify Algorithm D so that it doesn't require the presence of any primary
-items in the options. A valid solution should not contain any purely secondary options;
-but it must intersect every such option. (For example, if only items a and b of (6) were
-primary, the only valid solution would be to choose options 'a d g' and 'b c f'.)
-
-*/
-		//bool bTouch = touch();
-		//if (bTouch)
-		{
-			cout<<"Total level: "<<l<<endl;
-			count++;
-			cout<<"This is the "<<count<<"th solution."<<endl;
-			//Visit solution specified by x[0..l-1]
-			for (int s=0; s<l; s++)
-			{
-				//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
-				cout<<x[s]<<" ";
-			}
-			cout<<endl;
-
-			#if 0 //Original output for dance linking color 27-Nov-2017 Jacob
-
-			for  (int s=0; s<l; s++)
-			{
-				int next = x[s];
-				while (((ColorNode*)dance[next-1])->TOP >0)
-				{
-					next = next -1;
-				}
-
-				while (((ColorNode*)dance[next])->TOP >0)
-				{
-					cout<<item_name[dance[next]->TOP]<<" ";
-					next = next+1;
-				}
-				//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
-				cout<<endl;
-			}
-			cout<<endl;
-			#endif
-
-			#if 0 // 27-Nov-2017 Jacob Below is the version for 5x12 5*k+(12-5)*k
-			int idx[12] = {0};
-			for  (int s=0; s<l; s++)
-			{
-				int next = x[s];
-				while (((ColorNode*)dance[next-1])->TOP >0)
-				{
-					next = next -1;
-				}
-
-				int cord = 0;
-				int start = 100;
-				while (((ColorNode*)dance[next])->TOP >0)
-				{
-					cout<<item_name[dance[next]->TOP]<<" ";
-					
-					int pos;
-					if (cord>0)
-					{
-						//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
-						switch (((item_name[dance[next]->TOP]).c_str())[1])
-						{
-							case '0': pos = 0; break;
-							case '1': pos = 1; break;
-							case '2': pos = 2; break;
-							case '3': pos = 3; break;
-							case '4': pos = 4; break;
-							case '5': pos = 5; break;
-							case '6': pos = 6; break;
-							case '7': pos = 7; break;
-							case '8': pos = 8; break;
-							case '9': pos = 9; break;
-							case 'a': pos = 10; break;
-							case 'b': pos = 11; break;
-						}
-						if (start>pos) start = pos;
-					}
-
-					cord++;
-					next = next+1;
-				}
-				idx[start]++;
-				//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
-				cout<<endl;
-			}
-
-			int check_cut=0;
-			for (int i=0; i<11; i++)
-			{
-				check_cut += idx[i];
-				if (check_cut == (i+1))
-				{
-					cut_512++;
-				}
-			}
-
-			cout<<endl;
-			#endif
-
-			#if 0 // 03-Dec-2017 Jacob Below is the version to count Exer 255 a)
-			/* TAOCP 7.2.2.1 Exercises
-				254. [20] There are 2339 ways to pack the twelve pentominoes into a 6 x 10 box, not
-				counting reflections. What's a good way to find them all, using Algorithm D?
-				255. [23] Continuing exercise 254, explain how to find special kinds of packings:
-					a) Those that decomose into 6 x k and 6 x (10-k).
-
-			*/
-			int idx[10] = {0};
-			for  (int s=0; s<l; s++)
-			{
-				int next = x[s];
-				while (((ColorNode*)dance[next-1])->TOP >0)
-				{
-					next = next -1;
-				}
-
-				int cord = 0;
-				int start = 100;
-				while (((ColorNode*)dance[next])->TOP >0)
-				{
-					cout<<item_name[dance[next]->TOP]<<" ";
-					
-					int pos;
-					if (cord>0)
-					{
-						//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
-						switch (((item_name[dance[next]->TOP]).c_str())[1])
-						{
-							case '0': pos = 0; break;
-							case '1': pos = 1; break;
-							case '2': pos = 2; break;
-							case '3': pos = 3; break;
-							case '4': pos = 4; break;
-							case '5': pos = 5; break;
-							case '6': pos = 6; break;
-							case '7': pos = 7; break;
-							case '8': pos = 8; break;
-							case '9': pos = 9; break;
-						}
-						if (start>pos) start = pos;
-					}
-
-					cord++;
-					next = next+1;
-				}
-				idx[start]++;
-				//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
-				cout<<endl;
-			}
-
-			int check_cut=0;
-
-			for (int i=0; i<=4; i++)
-			{
-				check_cut += idx[i];				
-			}
-			if (check_cut == 6)
-			{
-					cut_610a++;
-			}
-
-			cout<<endl;
-			#endif
-
-			#if 0 // 04-Dec-2017 Jacob Below is the version to count Exer 255 e)
-			/* TAOCP 7.2.2.1 Exercises
-				254. [20] There are 2339 ways to pack the twelve pentominoes into a 6 x 10 box, not
-				counting reflections. What's a good way to find them all, using Algorithm D?
-				255. [23] Continuing exercise 254, explain how to find special kinds of packings:
-					e) Those with the minimum number of pentominoes touching the outer boundary.
-				To be started tomorrow 5-Dec-2017. ^_^
-			*/
-			
-			int countBond = 0;
-			for  (int s=0; s<l; s++)
-			{
-				int next = x[s];
-				while (((ColorNode*)dance[next-1])->TOP >0)
-				{
-					next = next -1;
-				}
-
-				int cord = 0;
-				bool bBond = false;
-				while (((ColorNode*)dance[next])->TOP >0)
-				{
-					cout<<item_name[dance[next]->TOP]<<" ";
-					
-					int pos;
-					if (cord>0)
-					{
-						//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
-						if ( ((((item_name[dance[next]->TOP]).c_str())[0])=='0') ||
-							 ((((item_name[dance[next]->TOP]).c_str())[0])=='5') ||//row == 6
-							 ((((item_name[dance[next]->TOP]).c_str())[1])=='0') ||
-							 ((((item_name[dance[next]->TOP]).c_str())[1])=='9'))//col == 10
-						{
-							bBond = true;
-						}
-						
-					}
-
-					cord++;
-					next = next+1;
-				}
-				
-				if (bBond)
-				{
-					countBond++;
-				}
-				//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
-				cout<<endl;
-			}
-
-			bc[countBond]++;
-			
-			cout<<endl;
-			#endif
-
-			#if 1 // 06-Dec-2017 Jacob Below is the version to count Exer 255 f)
-			/* TAOCP 7.2.2.1 Exercises
-				254. [20] There are 2339 ways to pack the twelve pentominoes into a 6 x 10 box, not
-				counting reflections. What's a good way to find them all, using Algorithm D?
-				255. [23] Continuing exercise 254, explain how to find special kinds of packings:
-					f) X pentomino should touch only the R, S, U and V -- no others.
-
-			*/
-			vector<pair<int, int>> rsuv;
-			vector<pair<int, int>> xb;
-			int Xxsum=0;
-			int Xysum=0;
-			for  (int s=0; s<l; s++)
-			{
-				int next = x[s];
-				while (((ColorNode*)dance[next-1])->TOP >0)
-				{
-					next = next -1;
-				}
-
-				int cord = 0;
-				char head;
-				while (((ColorNode*)dance[next])->TOP >0)
-				{
-					cout<<item_name[dance[next]->TOP]<<" ";
-					
-					if (cord==0)
-					{
-						head = ((item_name[dance[next]->TOP]).c_str())[0];
-					}
-
-					
-
-					if (cord>0)
-					{
-						if ((head=='X') || (head=='R') || (head=='S') || (head=='U') || (head=='V'))
-						{
-							int x;
-							int y;
-							char xchar = ((item_name[dance[next]->TOP]).c_str())[0];
-							char ychar = ((item_name[dance[next]->TOP]).c_str())[1];
-							//cout<<head<<"  "<<xchar<<"  "<<ychar<<endl;
-							x = xchar-'0';
-							y = ychar-'0';
-							//cout<<head<<" "<<x<<" "<<y<<endl;
-							//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
-							if (head=='X')
-							{
-								Xxsum +=x;
-								Xysum +=y;
-								//cout<<head<<" "<<Xxsum<<" "<<Xysum<<endl;
-							}
-							else
-							{
-								rsuv.push_back(std::make_pair(x,y));
-							}
-
-							#if 0
-							if (head=='R')
-							{
-								xb.push_back(make_pair(x,y));
-							}
-							#endif
-						}
-					}
-
-					cord++;
-					next = next+1;
-				}
-				
-				
-				cout<<endl;
-			}
-			
-			int xc = Xxsum / 5;
-			int yc = Xysum / 5;
-			/*
-				   #
-				  ###
-				   #
-			   
-			    	         (xc-2,yc)
-
-				(xc-1,yc-1)      #      (xc-1, yc+1)
-
-	(xc, yc-2)		 #	  	  (xc,yc)		 #			(xc, yc+2)
-
-				(xc+1, yc-1)	 #		(xc+1, yc+1)
-
-							(xc+2, yc)
-			*/
-
-			if (((xc-2)>=0) && (yc>=0))
-			{
-				xb.push_back(make_pair(xc-2,yc));
-			}
-
-			if (((xc-1)>=0) && (yc-1))
-			{
-				xb.push_back(make_pair(xc-1,yc-1));	
-			}
-			
-
-			if (((xc-1)>=0) && ((yc+1)>=0))
-			{
-				xb.push_back(make_pair(xc-1,yc+1));
-			}
-			
-			if ((xc>=0) && ((yc-2)>=0))
-			{
-				xb.push_back(make_pair(xc,yc-2));
-			}
-
-			if ((xc>=0) && ((yc+2)>=0))
-			{
-				xb.push_back(make_pair(xc,yc+2));
-			}
-
-			if (((xc+1)>=0) && ((yc-1)>=0))
-			{
-				xb.push_back(make_pair(xc+1,yc-1));	
-			}
-			
-			if (((xc+1)>=0) && ((yc+1)>=0))
-			{
-				xb.push_back(make_pair(xc+1,yc+1));
-			}
-			
-			if (((xc+2)>=0) && (yc>=0))
-			{
-				xb.push_back(make_pair(xc+2,yc));
-			}
-			
-
-#if 0
-			cout<<"("<<xc-2<<","<<yc<<")"<<"("<<xc-1<<","<<yc-1<<")"<<"("<<xc-1<<","<<yc+1<<")"<<endl;
-			cout<<"("<<xc<<","<<yc-2<<")"<<"("<<xc<<","<<yc+2<<")"<<"("<<xc+1<<","<<yc-1<<")"<<endl;
-			cout<<"("<<xc+1<<","<<yc+1<<")"<<"("<<xc+2<<","<<yc<<")"<<endl;
-#endif
-			/* For each element in xb, see if belongs to rsuv or not.
-				If yes, then it meets the requirement of Exercise 255. f)
-				If no, then X touchs other pentomino.
-
-			*/
-			bool bT = true;
-			vector<pair<int, int>>::iterator it;
-			for (it=xb.begin(); it!=xb.end(); it++)
-			{
-				//if (find(rsuv.begin(), rsuv.end(),make_pair(it->first,it->second))==rsuv.end())
-				if (find(rsuv.begin(), rsuv.end(), *it)==rsuv.end())
-				{
-					bT = false;
-					break;
-				}
-			}
-
-			if (bT)
-			{
-				touchX++;
-				index.push_back(count);
-			}
-
-			cout<<endl;
-			#endif
-		}
-
+		visit();
 		goto C8;
 	}
 
@@ -1143,40 +755,24 @@ bool ColorDancing::touch()
 }
 */
 
-int ColorDancing::c1_init()
+int ColorDancing::init()
 {
-	//exer8();
-	//return 0;
+	int nRet = -1;
 
-
-	N = exact();//Set the problem up in memory
-	Z = dance.size()-1;
+	nRet = exact(danceFile);//Set the problem up in memory
+	
 	l = 0;
-	cout<<"N  : "<<N<<"  (number of items)"<<endl;
-	cout<<"np : "<<np<<"  (number of primary items)"<<endl;
-	cout<<"P  : "<<P<<"  (number of options)"<<endl;
-	cout<<"Z  : "<<Z<<"  (last spacer address)"<<endl;
-	cout<<"l  : "<<l<<"  (start level at D1)"<<endl;
-	cout<<endl;
-
+	
+	
 	for (int s=0; s<P+1; s++)
 	{
 		x.push_back(s);
 	}
-
-	cout<<"Record.size: "<<record.size()<<endl;
-
-	//cout<<"record.size(): "<<record.size()<<endl;
 	
-	//if (np > (record.size()-1))
+	np_input = np;
 	if ( (np > N) || (np<=0))
 	{
-		cout<<"Number of Primary Items np: "<<np<<" is out of range 1.."<<N<<"(total number of items)"<<endl;
 		np = N;
-		cout<<"To make sense, now set num Of primary items to total number of items."<<endl<<endl;
-
-		cout<<"N  (total number of items)  : "<<N<<endl;
-		cout<<"np (number of primary items): "<<np<<endl<<endl;
 	}
 	//r_1, r_2, r_3, r_4, c_1, c_2, c_3, c_4//unsigned int numberOfPrimary = 8;//r_1, r_2, r_3, r_4, c_1, c_2, c_3, c_4
 	record[0]->LLINK = np;
@@ -1190,29 +786,465 @@ int ColorDancing::c1_init()
 
 
 #if	defined(DEBUGPRINT)
+	if ( (np_input > N) || (np<=0))
+	{
+		cout<<"Number of Primary Items by Input np: "<<np_input<<" is out of range 1.."<<N<<"(total number of items)"<<endl;
+		cout<<"To make sense, now set num Of primary items to total number of items."<<endl<<endl;
+
+		cout<<"N  (total number of items)  : "<<N<<endl;
+		cout<<"np (number of primary items): "<<np<<endl<<endl;
+	}
+
+
+	cout<<"N  : "<<N<<"  (number of items)"<<endl;
+	cout<<"np : "<<np<<"  (number of primary items)"<<endl;
+	cout<<"P  : "<<P<<"  (number of options)"<<endl;
+	cout<<"Z  : "<<Z<<"  (last spacer address)"<<endl;
+	cout<<"l  : "<<l<<"  (start level at D1)"<<endl;
+	cout<<endl;
+
+	cout<<"Record.size: "<<record.size()<<endl;
+
+
 	for (int i=0; i<record.size(); i++)
 	{
 		cout<<"Item: "<<i<<"  NAME:"<<record[i]->NAME<<"  LLINK:"<<record[i]->LLINK<<"  RLINK:"<<record[i]->RLINK<<endl;
 	}
-#endif
 
-#if defined(DEBUGPRINT)
 	for (int i=np+1; i<=N; i++)//record.size(); i++)
 	{
 		cout<<i<<"th item which is "<<i-np<<"th secondary item "<<record[i]->NAME<<" with LEN: "<<dance[i]->LEN<<endl;
 	}
 	cout<<endl;
-#endif
+
 	/*
 	for (int s=0; s<P+1; s++)
 	{
 		cout<<x[s]<<" ";
 	}
 	*/
+#endif
 
 	return 0;
 }
 
+
+int ColorDancing::visit()
+{
+
+/*  Update 2017-09-22 For DanceColor.cpp changes for Exercise 18 will be removed since 
+			there is no such requirement for exact cover with color.   And, what's more,
+			at this moment, I have not get correct result for exercise 18 yet! So there 
+			must be bugs in touch() function.....
+
+18. [21] Modify Algorithm D so that it doesn't require the presence of any primary
+items in the options. A valid solution should not contain any purely secondary options;
+but it must intersect every such option. (For example, if only items a and b of (6) were
+primary, the only valid solution would be to choose options 'a d g' and 'b c f'.)
+
+*/
+	//bool bTouch = touch();
+	//if (bTouch)
+	{
+		cout<<"Total level: "<<l<<endl;
+		count++;
+		cout<<"This is the "<<count<<"th solution."<<endl;
+		//Visit solution specified by x[0..l-1]
+		for (int s=0; s<l; s++)
+		{
+			//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
+			cout<<x[s]<<" ";
+		}
+		cout<<endl;
+
+		//Original output for dance linking color 27-Nov-2017 Jacob
+
+		for  (int s=0; s<l; s++)
+		{
+			int next = x[s];
+			while (((ColorNode*)dance[next-1])->TOP >0)
+			{
+				next = next -1;
+			}
+
+			while (((ColorNode*)dance[next])->TOP >0)
+			{
+				cout<<item_name[dance[next]->TOP]<<" ";
+				next = next+1;
+			}
+			//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
+			cout<<endl;
+		}
+		cout<<endl;
+
+			
+
+			
+
+			#if 0 // 04-Dec-2017 Jacob Below is the version to count Exer 255 e)
+			/* TAOCP 7.2.2.1 Exercises
+				254. [20] There are 2339 ways to pack the twelve pentominoes into a 6 x 10 box, not
+				counting reflections. What's a good way to find them all, using Algorithm D?
+				255. [23] Continuing exercise 254, explain how to find special kinds of packings:
+					e) Those with the minimum number of pentominoes touching the outer boundary.
+				To be started tomorrow 5-Dec-2017. ^_^
+			*/
+			
+			int countBond = 0;
+			for  (int s=0; s<l; s++)
+			{
+				int next = x[s];
+				while (((ColorNode*)dance[next-1])->TOP >0)
+				{
+					next = next -1;
+				}
+
+				int cord = 0;
+				bool bBond = false;
+				while (((ColorNode*)dance[next])->TOP >0)
+				{
+					cout<<item_name[dance[next]->TOP]<<" ";
+					
+					int pos;
+					if (cord>0)
+					{
+						//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
+						if ( ((((item_name[dance[next]->TOP]).c_str())[0])=='0') ||
+							 ((((item_name[dance[next]->TOP]).c_str())[0])=='5') ||//row == 6
+							 ((((item_name[dance[next]->TOP]).c_str())[1])=='0') ||
+							 ((((item_name[dance[next]->TOP]).c_str())[1])=='9'))//col == 10
+						{
+							bBond = true;
+						}
+						
+					}
+
+					cord++;
+					next = next+1;
+				}
+				
+				if (bBond)
+				{
+					countBond++;
+				}
+				//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
+				cout<<endl;
+			}
+
+			bc[countBond]++;
+			
+			cout<<endl;
+			#endif
+	}
+
+	return 0;
+}
+
+
+int ColorDancing::countExer255a()
+{
+	// 03-Dec-2017 Jacob Below is the version to count Exer 255 a)
+	/* TAOCP 7.2.2.1 Exercises
+		254. [20] There are 2339 ways to pack the twelve pentominoes into a 6 x 10 box, not
+		counting reflections. What's a good way to find them all, using Algorithm D?
+		255. [23] Continuing exercise 254, explain how to find special kinds of packings:
+			a) Those that decomose into 6 x k and 6 x (10-k).
+
+	*/
+	int idx[10] = {0};
+	for  (int s=0; s<l; s++)
+	{
+		int next = x[s];
+		while (((ColorNode*)dance[next-1])->TOP >0)
+		{
+			next = next -1;
+		}
+
+		int cord = 0;
+		int start = 100;
+		while (((ColorNode*)dance[next])->TOP >0)
+		{
+			cout<<item_name[dance[next]->TOP]<<" ";
+			
+			int pos;
+			if (cord>0)
+			{
+				//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
+				switch (((item_name[dance[next]->TOP]).c_str())[1])
+				{
+					case '0': pos = 0; break;
+					case '1': pos = 1; break;
+					case '2': pos = 2; break;
+					case '3': pos = 3; break;
+					case '4': pos = 4; break;
+					case '5': pos = 5; break;
+					case '6': pos = 6; break;
+					case '7': pos = 7; break;
+					case '8': pos = 8; break;
+					case '9': pos = 9; break;
+				}
+				if (start>pos) start = pos;
+			}
+
+			cord++;
+			next = next+1;
+		}
+		idx[start]++;
+		//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
+		cout<<endl;
+	}
+
+	int check_cut=0;
+	int cut_610 = 0;
+
+	for (int i=0; i<=4; i++)
+	{
+		check_cut += idx[i];				
+	}
+	if (check_cut == 6)
+	{
+			cut_610++;
+	}
+
+	cout<<endl;
+
+	return 0;
+}
+
+int ColorDancing::count5x12()
+{
+	// 27-Nov-2017 Jacob Below is the version for 5x12 5*k+(12-5)*k
+			int idx[12] = {0};
+			for  (int s=0; s<l; s++)
+			{
+				int next = x[s];
+				while (((ColorNode*)dance[next-1])->TOP >0)
+				{
+					next = next -1;
+				}
+
+				int cord = 0;
+				int start = 100;
+				while (((ColorNode*)dance[next])->TOP >0)
+				{
+					cout<<item_name[dance[next]->TOP]<<" ";
+					
+					int pos;
+					if (cord>0)
+					{
+						//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
+						switch (((item_name[dance[next]->TOP]).c_str())[1])
+						{
+							case '0': pos = 0; break;
+							case '1': pos = 1; break;
+							case '2': pos = 2; break;
+							case '3': pos = 3; break;
+							case '4': pos = 4; break;
+							case '5': pos = 5; break;
+							case '6': pos = 6; break;
+							case '7': pos = 7; break;
+							case '8': pos = 8; break;
+							case '9': pos = 9; break;
+							case 'a': pos = 10; break;
+							case 'b': pos = 11; break;
+						}
+						if (start>pos) start = pos;
+					}
+
+					cord++;
+					next = next+1;
+				}
+				idx[start]++;
+				//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
+				cout<<endl;
+			}
+
+			int check_cut=0;
+			int cut_512 =0;
+			for (int i=0; i<11; i++)
+			{
+				check_cut += idx[i];
+				if (check_cut == (i+1))
+				{
+					cut_512++;
+				}
+			}
+
+			cout<<endl;
+
+	return 0;
+}
+
+
+int ColorDancing::countExer255f()
+{
+ // 06-Dec-2017 Jacob Below is the version to count Exer 255 f)
+	/* TAOCP 7.2.2.1 Exercises
+
+		254. [20] There are 2339 ways to pack the twelve pentominoes into a 6 x 10 box, not
+		counting reflections. What's a good way to find them all, using Algorithm D?
+
+		255. [23] Continuing exercise 254, explain how to find special kinds of packings:
+		f) X pentomino should touch only the R, S, U and V -- no others.
+	*/
+
+		vector<pair<int, int>> rsuv;
+		vector<pair<int, int>> xb;
+		int Xxsum=0;
+		int Xysum=0;
+		for  (int s=0; s<l; s++)
+		{
+			int next = x[s];
+			while (((ColorNode*)dance[next-1])->TOP >0)
+			{
+				next = next -1;
+			}
+
+			int cord = 0;
+			char head = 0;
+			while (((ColorNode*)dance[next])->TOP >0)
+			{
+				cout<<item_name[dance[next]->TOP]<<" ";
+				
+				if (cord==0)
+				{
+					head = ((item_name[dance[next]->TOP]).c_str())[0];
+				}
+
+
+				if (cord>0)
+				{
+					if ((head=='X') || (head=='R') || (head=='S') || (head=='U') || (head=='V'))
+					{
+						int x;
+						int y;
+						char xchar = ((item_name[dance[next]->TOP]).c_str())[0];
+						char ychar = ((item_name[dance[next]->TOP]).c_str())[1];
+						//cout<<head<<"  "<<xchar<<"  "<<ychar<<endl;
+						x = xchar-'0';
+						y = ychar-'0';
+						//cout<<head<<" "<<x<<" "<<y<<endl;
+						//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
+						if (head=='X')
+						{
+							Xxsum +=x;
+							Xysum +=y;
+							//cout<<head<<" "<<Xxsum<<" "<<Xysum<<endl;
+						}
+						else
+						{
+							rsuv.push_back(std::make_pair(x,y));
+						}
+
+						#if 0
+						if (head=='R')
+						{
+							xb.push_back(make_pair(x,y));
+						}
+						#endif
+					}
+				}
+
+				cord++;
+				next = next+1;
+			}
+				
+				
+			cout<<endl;
+		}
+			
+		int xc = Xxsum / 5;
+		int yc = Xysum / 5;
+		/*
+				   #
+				  ###
+				   #
+			   
+			    	         (xc-2,yc)
+
+				(xc-1,yc-1)      #      (xc-1, yc+1)
+
+	(xc, yc-2)		 #	  	  (xc,yc)		 #			(xc, yc+2)
+
+				(xc+1, yc-1)	 #		(xc+1, yc+1)
+
+							(xc+2, yc)
+			*/
+
+		if (((xc-2)>=0) && (yc>=0))
+		{
+			xb.push_back(make_pair(xc-2,yc));
+		}
+
+		if (((xc-1)>=0) && (yc-1))
+		{
+			xb.push_back(make_pair(xc-1,yc-1));	
+		}
+			
+		if (((xc-1)>=0) && ((yc+1)>=0))
+		{
+			xb.push_back(make_pair(xc-1,yc+1));
+		}
+			
+		if ((xc>=0) && ((yc-2)>=0))
+		{
+			xb.push_back(make_pair(xc,yc-2));
+		}
+
+		if ((xc>=0) && ((yc+2)>=0))
+		{
+			xb.push_back(make_pair(xc,yc+2));
+		}
+
+		if (((xc+1)>=0) && ((yc-1)>=0))
+		{
+			xb.push_back(make_pair(xc+1,yc-1));	
+		}
+			
+		if (((xc+1)>=0) && ((yc+1)>=0))
+		{
+			xb.push_back(make_pair(xc+1,yc+1));
+		}
+			
+		if (((xc+2)>=0) && (yc>=0))
+		{
+			xb.push_back(make_pair(xc+2,yc));
+		}
+			
+
+#if 0
+			cout<<"("<<xc-2<<","<<yc<<")"<<"("<<xc-1<<","<<yc-1<<")"<<"("<<xc-1<<","<<yc+1<<")"<<endl;
+			cout<<"("<<xc<<","<<yc-2<<")"<<"("<<xc<<","<<yc+2<<")"<<"("<<xc+1<<","<<yc-1<<")"<<endl;
+			cout<<"("<<xc+1<<","<<yc+1<<")"<<"("<<xc+2<<","<<yc<<")"<<endl;
+#endif
+		/* For each element in xb, see if belongs to rsuv or not.
+			If yes, then it meets the requirement of Exercise 255. f)
+			If no, then X touchs other pentomino.
+
+		*/
+		bool bT = true;
+		vector<pair<int, int>>::iterator it;
+		for (it=xb.begin(); it!=xb.end(); it++)
+		{
+			//if (find(rsuv.begin(), rsuv.end(),make_pair(it->first,it->second))==rsuv.end())
+			if (find(rsuv.begin(), rsuv.end(), *it)==rsuv.end())
+			{
+				bT = false;
+				break;
+			}
+		}
+
+		int touchX = 0;
+		if (bT)
+		{
+			touchX++;
+			//index.push_back(count);  // 2019-May-25 Not remember what this is for....
+		}
+
+		cout<<endl;
+
+	return 0;
+}
 
 /* 7.2.2.1 DANCING LINKS: EXERCISES  -- First Set
  8. [22] Design an algorithm to set up the initial memory contents of an exact cover
@@ -1227,13 +1259,23 @@ algorithm should consist of a sequence of lines with the following format:
 
 */
 
-int ColorDancing::exact()
+int ColorDancing::exact(const string& dancingFile)
 {
-	vector<string> name;
+	int nRet = 0;
 
 	fstream fs;
 	//fs.open("exer8.dat", fstream::in);
-	fs.open(danceFile.c_str(), fstream::in);
+	fs.open(dancingFile.c_str(), fstream::in);
+
+	if (fs.fail())
+	{
+		nRet = -2;
+		cerr<<dancingFile<<" file open failed with error "<<strerror(errno)<<'\n';
+		return nRet;
+	}
+
+	vector<string> name;
+
 	string line;
 	
 	getline(fs, line);
@@ -1496,7 +1538,10 @@ for (auto& s: dance)
 	cout<<"*****************************     END    **********************************"<<endl<<endl;
 #endif	
 
-	return item_count;
+	N = item_count;
+	Z = dance.size()-1;
+
+	return nRet;
 }
 
 

@@ -45,13 +45,14 @@ private:
 	map<int, string> item_name;
 	int N;	//number of items
 	int np;	//number of primary items
+	int np_input;//np_input is used to record the original input of number of primary items.
 	int P;	//number of options
-	int Z;	//last spacer address
+	unsigned long Z;	//last spacer address
 	int l;	//level
 	int count;
-	vector<int> x;
+	vector<int> x;//solution specified by x_0 x_1 ... x_(l-1)
 
-	int exact();
+	int exact(const string& dancingFile);
 	int exer8();
 	int cover(int i);
 	int hide(int p);
@@ -62,7 +63,13 @@ private:
 	int uncommit(int p, int j);
 	int unpurify(int p);
 
-	int c1_init();
+	int init();
+	int visit();
+
+	int count5x12();
+	int countExer255a();
+	int countExer255f();
+	
 };
 
 
