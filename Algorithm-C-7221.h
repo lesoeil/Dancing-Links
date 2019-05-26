@@ -51,9 +51,7 @@ private:
 	int l;	//level
 	int count;
 	vector<int> x;//solution specified by x_0 x_1 ... x_(l-1)
-
-	int exact(const string& dancingFile);
-	int exer8();
+	
 	int cover(int i);
 	int hide(int p);
 	int uncover(int i);
@@ -65,11 +63,16 @@ private:
 
 	int init();
 	int visit();
+	int choose();
+	int tryxl();
 
-	int count5x12();
+	
 	int countExer255a();
 	int countExer255f();
-	
+	int count5x12();
+
+	int exact(const string& dancingFile);
+	int exer8();
 };
 
 

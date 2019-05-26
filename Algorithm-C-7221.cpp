@@ -352,54 +352,13 @@ C3:/*[Choose i.] At this point the items i_1, ..., i_t still need to be covered,
 	 i_1 = RLINK(0), i_(j+1) = RLINK(i_j), RLINK(i_t) = 0. Choose one of them, and 
 	 call it i. (The MRV heuristic of exercise 9 often works well in practice.)
 	*/
-	//TODO: To replace with MRV in exercise 9
-	//i = record[0]->RLINK;
+	i = choose();
 
-	/* 7.2.2.1 COMBINATORIAL SEARCHING (F5C: 11 Oct 2017@2319)  Exercise
-	  9. [18] Explain how to branch in step D3 on an item i for which LEN(i) is minimum.
-	If several items have that minimum length, i itself should also be minimum. (This
-	choice is often called the "minimum remaining values" (MRV) heuristic.)
-	*/
-	/* Jacob 2017-10-31 20:37 This is a very simple routine to implement MRV heuristic, 
-		which is used to choose the item to be covered with the minimum length and minimum index.
-		MRV heuristic makes fundanmental changes to processing speed of Algorithm D and Algorithm C.
-		Without MRV heuristic, Algorithm C just can not get first output after several hours.
-		By using MRV heuristic, Algorithm C get the output almost immediately.
-	 */
-	{
-	int start = 0;
-
-	int min_len = 0;
-	int min_addr = 0;
-	int i_addr = 0;
-	int i_len = 0;
-
-	i_addr = record[0]->RLINK;
-	i_len = dance[i_addr]->LEN;
-	min_addr = i_addr;
-	min_len = i_len;
-
-	while ((record[i_addr]->RLINK) != start)
-	{
-		i_addr = record[i_addr]->RLINK;
-		i_len = dance[i_addr]->LEN;
-
-		if (min_len > i_len)
-		{
-			min_addr = i_addr;
-			min_len = i_len;
-		}
-	}
-
-
-	i = min_addr;
-	//cout<<"C3: choose node "<<i<<endl;
-	}
-
-C4:/*[Cover i.] Cover item i using (50), and set x_l = DLINK(i). */
+C4:/*[Cover i.] Cover item i using (50), and set x_l <- DLINK(i). */
 	cover(i);
 	//x.push_back(dance[i]->DLINK);
 	x[l] = dance[i]->DLINK;
+
 C5:/*[Try x_l] If x_l = i, go to C7 (we've tried all options for i). Otherwise set
 	 p <- (x_l)+1, and do the following while p != x_l: Set j <- TOP(p); if j<=0, set 
 	 p <- ULINK(p); otherwise commit(p,j) and set p <- p+1. (This covers the 
@@ -411,22 +370,7 @@ C5:/*[Try x_l] If x_l = i, go to C7 (we've tried all options for i). Otherwise s
 	}
 	else
 	{
-		p = x[l] + 1;
-		while (p != x[l])
-		{
-			j = dance[p]->TOP;
-			if (j<=0)
-			{
-				p = dance[p]->ULINK;
-			}
-			else
-			{
-				commit(p,j);
-				p = p+1;
-			}
-		}
-
-		l = l+1;
+		tryxl();
 		goto C2;
 	}
 
@@ -941,6 +885,82 @@ primary, the only valid solution would be to choose options 'a d g' and 'b c f'.
 }
 
 
+int ColorDancing::choose()
+{
+	//This is the most simple way to choose i, while, very slow...
+	//i = record[0]->RLINK;
+
+
+	//TODO: To replace with MRV in exercise 9
+	/* 7.2.2.1 COMBINATORIAL SEARCHING (F5C: 11 Oct 2017@2319)  Exercise
+	  9. [18] Explain how to branch in step D3 on an item i for which LEN(i) is minimum.
+	If several items have that minimum length, i itself should also be minimum. (This
+	choice is often called the "minimum remaining values" (MRV) heuristic.)
+	*/
+	/* Jacob 2017-10-31 20:37 This is a very simple routine to implement MRV heuristic, 
+		which is used to choose the item to be covered with the minimum length and minimum index.
+		MRV heuristic makes fundanmental changes to processing speed of Algorithm D and Algorithm C.
+		Without MRV heuristic, Algorithm C just can not get first output after several hours.
+		By using MRV heuristic, Algorithm C get the output almost immediately.
+	 */
+
+	int start = 0;
+
+	int min_len = 0;
+	int min_addr = 0;
+	int i_addr = 0;
+	int i_len = 0;
+
+	i_addr = record[0]->RLINK;
+	i_len = dance[i_addr]->LEN;
+	min_addr = i_addr;
+	min_len = i_len;
+
+	while ((record[i_addr]->RLINK) != start)
+	{
+		i_addr = record[i_addr]->RLINK;
+		i_len = dance[i_addr]->LEN;
+
+		if (min_len > i_len)
+		{
+			min_addr = i_addr;
+			min_len = i_len;
+		}
+	}
+
+	//i = min_addr;
+	//cout<<"C3: choose node "<<i<<endl;
+
+	return min_addr;
+}
+
+
+int ColorDancing::tryxl()
+{
+	int p = -1;
+	int j = -1;
+
+	p = x[l] + 1;
+	while (p != x[l])
+	{
+		j = dance[p]->TOP;
+		if (j<=0)
+		{
+			p = dance[p]->ULINK;
+		}
+		else
+		{
+			commit(p,j);
+			p = p+1;
+		}
+	}
+
+	l = l+1;
+
+	return 0;
+}
+
+
 int ColorDancing::countExer255a()
 {
 	// 03-Dec-2017 Jacob Below is the version to count Exer 255 a)
@@ -1007,70 +1027,6 @@ int ColorDancing::countExer255a()
 	}
 
 	cout<<endl;
-
-	return 0;
-}
-
-int ColorDancing::count5x12()
-{
-	// 27-Nov-2017 Jacob Below is the version for 5x12 5*k+(12-5)*k
-			int idx[12] = {0};
-			for  (int s=0; s<l; s++)
-			{
-				int next = x[s];
-				while (((ColorNode*)dance[next-1])->TOP >0)
-				{
-					next = next -1;
-				}
-
-				int cord = 0;
-				int start = 100;
-				while (((ColorNode*)dance[next])->TOP >0)
-				{
-					cout<<item_name[dance[next]->TOP]<<" ";
-					
-					int pos;
-					if (cord>0)
-					{
-						//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
-						switch (((item_name[dance[next]->TOP]).c_str())[1])
-						{
-							case '0': pos = 0; break;
-							case '1': pos = 1; break;
-							case '2': pos = 2; break;
-							case '3': pos = 3; break;
-							case '4': pos = 4; break;
-							case '5': pos = 5; break;
-							case '6': pos = 6; break;
-							case '7': pos = 7; break;
-							case '8': pos = 8; break;
-							case '9': pos = 9; break;
-							case 'a': pos = 10; break;
-							case 'b': pos = 11; break;
-						}
-						if (start>pos) start = pos;
-					}
-
-					cord++;
-					next = next+1;
-				}
-				idx[start]++;
-				//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
-				cout<<endl;
-			}
-
-			int check_cut=0;
-			int cut_512 =0;
-			for (int i=0; i<11; i++)
-			{
-				check_cut += idx[i];
-				if (check_cut == (i+1))
-				{
-					cut_512++;
-				}
-			}
-
-			cout<<endl;
 
 	return 0;
 }
@@ -1245,6 +1201,71 @@ int ColorDancing::countExer255f()
 
 	return 0;
 }
+
+int ColorDancing::count5x12()
+{
+	// 27-Nov-2017 Jacob Below is the version for 5x12 5*k+(12-5)*k
+			int idx[12] = {0};
+			for  (int s=0; s<l; s++)
+			{
+				int next = x[s];
+				while (((ColorNode*)dance[next-1])->TOP >0)
+				{
+					next = next -1;
+				}
+
+				int cord = 0;
+				int start = 100;
+				while (((ColorNode*)dance[next])->TOP >0)
+				{
+					cout<<item_name[dance[next]->TOP]<<" ";
+					
+					int pos;
+					if (cord>0)
+					{
+						//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
+						switch (((item_name[dance[next]->TOP]).c_str())[1])
+						{
+							case '0': pos = 0; break;
+							case '1': pos = 1; break;
+							case '2': pos = 2; break;
+							case '3': pos = 3; break;
+							case '4': pos = 4; break;
+							case '5': pos = 5; break;
+							case '6': pos = 6; break;
+							case '7': pos = 7; break;
+							case '8': pos = 8; break;
+							case '9': pos = 9; break;
+							case 'a': pos = 10; break;
+							case 'b': pos = 11; break;
+						}
+						if (start>pos) start = pos;
+					}
+
+					cord++;
+					next = next+1;
+				}
+				idx[start]++;
+				//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
+				cout<<endl;
+			}
+
+			int check_cut=0;
+			int cut_512 =0;
+			for (int i=0; i<11; i++)
+			{
+				check_cut += idx[i];
+				if (check_cut == (i+1))
+				{
+					cut_512++;
+				}
+			}
+
+			cout<<endl;
+
+	return 0;
+}
+
 
 /* 7.2.2.1 DANCING LINKS: EXERCISES  -- First Set
  8. [22] Design an algorithm to set up the initial memory contents of an exact cover
