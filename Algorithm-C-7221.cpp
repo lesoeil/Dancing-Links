@@ -379,23 +379,7 @@ C6:/*[Try again.] Set p <- (x_l) - 1, and do the following while p != x_l: Set
 	 p <- p-1. (This uncovers the items != i in the option that contains p, using 
 	 the reverse order.) Seet i <- TOP(x_l), x_l <- DLINK(x_l), and return to C5.
 	*/
-	p = x[l]-1;
-	while (p != x[l])
-	{
-		j = dance[p]->TOP;
-		if (j<=0)
-		{
-			p = dance[p]->DLINK;
-		}
-		else
-		{
-			uncommit(p,j);
-			p = p-1;
-		}
-	}
-
-	i = dance[x[l]]->TOP;
-	x[l] = dance[x[l]]->DLINK;
+	tryAgain(&i);
 	goto C5;
 
 C7://[Backtrack.]
@@ -820,65 +804,6 @@ primary, the only valid solution would be to choose options 'a d g' and 'b c f'.
 			cout<<endl;
 		}
 		cout<<endl;
-
-			
-
-			
-
-			#if 0 // 04-Dec-2017 Jacob Below is the version to count Exer 255 e)
-			/* TAOCP 7.2.2.1 Exercises
-				254. [20] There are 2339 ways to pack the twelve pentominoes into a 6 x 10 box, not
-				counting reflections. What's a good way to find them all, using Algorithm D?
-				255. [23] Continuing exercise 254, explain how to find special kinds of packings:
-					e) Those with the minimum number of pentominoes touching the outer boundary.
-				To be started tomorrow 5-Dec-2017. ^_^
-			*/
-			
-			int countBond = 0;
-			for  (int s=0; s<l; s++)
-			{
-				int next = x[s];
-				while (((ColorNode*)dance[next-1])->TOP >0)
-				{
-					next = next -1;
-				}
-
-				int cord = 0;
-				bool bBond = false;
-				while (((ColorNode*)dance[next])->TOP >0)
-				{
-					cout<<item_name[dance[next]->TOP]<<" ";
-					
-					int pos;
-					if (cord>0)
-					{
-						//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
-						if ( ((((item_name[dance[next]->TOP]).c_str())[0])=='0') ||
-							 ((((item_name[dance[next]->TOP]).c_str())[0])=='5') ||//row == 6
-							 ((((item_name[dance[next]->TOP]).c_str())[1])=='0') ||
-							 ((((item_name[dance[next]->TOP]).c_str())[1])=='9'))//col == 10
-						{
-							bBond = true;
-						}
-						
-					}
-
-					cord++;
-					next = next+1;
-				}
-				
-				if (bBond)
-				{
-					countBond++;
-				}
-				//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
-				cout<<endl;
-			}
-
-			bc[countBond]++;
-			
-			cout<<endl;
-			#endif
 	}
 
 	return 0;
@@ -961,6 +886,32 @@ int ColorDancing::tryxl()
 }
 
 
+int ColorDancing::tryAgain(int* pI)
+{
+	int p = -1;
+	int j = -1;
+
+	p = x[l]-1;
+	while (p != x[l])
+	{
+		j = dance[p]->TOP;
+		if (j<=0)
+		{
+			p = dance[p]->DLINK;
+		}
+		else
+		{
+			uncommit(p,j);
+			p = p-1;
+		}
+	}
+
+	*pI = dance[x[l]]->TOP;
+	x[l] = dance[x[l]]->DLINK;
+
+	return 0;
+}
+
 int ColorDancing::countExer255a()
 {
 	// 03-Dec-2017 Jacob Below is the version to count Exer 255 a)
@@ -1028,6 +979,66 @@ int ColorDancing::countExer255a()
 
 	cout<<endl;
 
+	return 0;
+}
+
+
+int ColorDancing::countExer255e()
+{
+	// 04-Dec-2017 Jacob Below is the version to count Exer 255 e)
+	/* TAOCP 7.2.2.1 Exercises
+		254. [20] There are 2339 ways to pack the twelve pentominoes into a 6 x 10 box, not
+		counting reflections. What's a good way to find them all, using Algorithm D?
+		255. [23] Continuing exercise 254, explain how to find special kinds of packings:
+			e) Those with the minimum number of pentominoes touching the outer boundary.
+		To be started tomorrow 5-Dec-2017. ^_^
+	*/
+	
+	int countBond = 0;
+	for  (int s=0; s<l; s++)
+	{
+		int next = x[s];
+		while (((ColorNode*)dance[next-1])->TOP >0)
+		{
+			next = next -1;
+		}
+
+		int cord = 0;
+		bool bBond = false;
+		while (((ColorNode*)dance[next])->TOP >0)
+		{
+			cout<<item_name[dance[next]->TOP]<<" ";
+			
+			int pos;
+			if (cord>0)
+			{
+				//cout<<((item_name[dance[next]->TOP]).c_str())[1]<<endl;
+				if ( ((((item_name[dance[next]->TOP]).c_str())[0])=='0') ||
+					 ((((item_name[dance[next]->TOP]).c_str())[0])=='5') ||//row == 6
+					 ((((item_name[dance[next]->TOP]).c_str())[1])=='0') ||
+					 ((((item_name[dance[next]->TOP]).c_str())[1])=='9'))//col == 10
+				{
+					bBond = true;
+				}
+				
+			}
+
+			cord++;
+			next = next+1;
+		}
+		
+		if (bBond)
+		{
+			countBond++;
+		}
+		//cout<<x[s]<<" (option: "<<(-((dance[x[s]-1])->TOP))+1<<") ";
+		cout<<endl;
+	}
+
+	//bc[countBond]++;	// Forget what this bc[] is used for... commment it on 27-May-2019 08:20PM
+	
+	cout<<endl;
+	
 	return 0;
 }
 

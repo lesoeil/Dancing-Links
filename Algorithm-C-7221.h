@@ -65,9 +65,11 @@ private:
 	int visit();
 	int choose();
 	int tryxl();
+	int tryAgain(int* pI);
 
 	
 	int countExer255a();
+	int countExer255e();
 	int countExer255f();
 	int count5x12();
 
