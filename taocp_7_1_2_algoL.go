@@ -15,7 +15,7 @@ func main() {
 			fmt.Printf("%d : %f\n", n, expr)
 		}
 	*/
-	var n uint
+	var n uint64
 	n = 4
 	AlgoL(n)
 
@@ -25,12 +25,13 @@ func main() {
 This algorithm determines L(f) for all normal truth tables 0 ≤ f < 2^(2^n-1),
 by building lists of all nonzero normal functions of length r for r ≥ 0.
 */
-func AlgoL(n uint) {
+func AlgoL(n uint64) {
+	var c uint64
 
 	// L1. Initialize.
-	var mP = uint64(Ppow2(float64(n)))
-	fmt.Printf("n: %d ppower: %d\n", n, mP)
-	L := make([]uint64, mP)
+	var fTotal = Ppow2(n) / 2
+	fmt.Printf("n: %d ppower: %d\n", n, fTotal)
+	L := make([]uint64, fTotal)
 
 	for i := range L {
 		L[i] = math.MaxUint64
@@ -47,12 +48,17 @@ func AlgoL(n uint) {
 	}
 	x := make([]uint64, n+1)
 	for k := 1; k <= int(n); k++ {
-		x[k] = uint64((math.Pow(2, (math.Pow(2, float64(n)))) - 1) / (math.Pow(2, (math.Pow(2, float64(int(n)-k)))+1)))
-		fmt.Printf("%x ", x[k])
+		x[k] = (Ppow(2, n) - 1) / (Ppow(2, n-uint64(k)) + 1)
+		fmt.Printf("x[%d]: %x ", k, x[k])
 		var y = list[0]
 		y[x[k]] = true
-
+		if k == int(n) {
+			fmt.Println()
+		}
 	}
+
+	c = Ppow(2, n)/2 - (n + 1)
+	fmt.Printf("Number of places where L(f) = ∞ : %#x i.e. %d in decimal\n", c, c)
 
 	/*
 		c := int(math.Pow(2, (math.Pow(2, float64(n)) - 1)))
@@ -62,13 +68,13 @@ func AlgoL(n uint) {
 }
 
 //Ppow2 return base 2 power of n
-func Ppow2(n float64) (expr float64) {
+func Ppow2(n uint64) (expr uint64) {
 
 	return Ppow(2, n)
 }
 
-//Ppow return power of n with base
-func Ppow(base float64, n float64) (expr float64) {
-	expr = math.Pow(base, (math.Pow(base, n) - 1))
-	return expr
+//Ppow calls math.Pow twice to provide the result of (base^(base^n))
+func Ppow(base uint64, n uint64) (expr uint64) {
+	expr = uint64(math.Pow(float64(base), (math.Pow(float64(base), float64(n)))))
+	return
 }
