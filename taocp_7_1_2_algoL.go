@@ -1,25 +1,9 @@
-package main
+package taocp
 
 import (
 	"fmt"
 	"math"
 )
-
-func main() {
-	//fmt.Print("Nihonggo")
-	/*
-		for n := 2; n <= 15; n++ {
-			var k float64
-			k = float64(n)
-			expr := Ppow2(k) //Ppow(2, 5)
-			fmt.Printf("%d : %f\n", n, expr)
-		}
-	*/
-	var n uint64
-	n = 4
-	AlgoL(n)
-
-}
 
 /*AlgoL is the implementation of 7.1.2 Algorithm L (Find normal lengths).
 This algorithm determines L(f) for all normal truth tables 0 ≤ f < 2^(2^n-1),
@@ -50,6 +34,11 @@ func AlgoL(n uint64) {
 	for k := 1; k <= int(n); k++ {
 		x[k] = (Ppow(2, n) - 1) / (Ppow(2, n-uint64(k)) + 1)
 		fmt.Printf("x[%d]: %x ", k, x[k])
+
+		//Set L(x_k) <- 0
+		L[x[k]] = 0
+
+		//Put x_k into list 0
 		var y = list[0]
 		y[x[k]] = true
 		if k == int(n) {
@@ -58,12 +47,23 @@ func AlgoL(n uint64) {
 	}
 
 	c = Ppow(2, n)/2 - (n + 1)
-	fmt.Printf("Number of places where L(f) = ∞ : %#x i.e. %d in decimal\n", c, c)
+	//fmt.Printf("Number of places where L(f) = ∞ : %#x i.e. %d in decimal\n", c, c)
 
 	/*
 		c := int(math.Pow(2, (math.Pow(2, float64(n)) - 1)))
 		fmt.Printf("0x%x Number of places when L(f) = ∞", c)
 	*/
+
+	var cc uint64
+	for idx, v := range L {
+		fmt.Printf("%d: %08x\n", idx, v)
+		if v == math.MaxUint64 {
+			cc++
+		}
+	}
+
+	fmt.Printf("L(i) equal to %08x : %08x\n", uint64(math.MaxUint64), cc)
+	fmt.Printf("Number of places where L(f) = ∞ : %#x i.e. %d in decimal\n", c, c)
 
 }
 
