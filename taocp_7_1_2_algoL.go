@@ -3,6 +3,7 @@ package taocp
 import (
 	"fmt"
 	"math"
+	"os"
 )
 
 //L is list
@@ -11,7 +12,7 @@ var L []uint64
 type set64 map[uint64]bool
 
 // List is
-var list [10]set64
+var list = make([]set64, 10)
 
 /*AlgoL is the implementation of 7.1.2 Algorithm L (Find normal lengths).
 This algorithm determines L(f) for all normal truth tables 0 ≤ f < 2^(2^n-1),
@@ -80,23 +81,66 @@ func AlgoL(n uint64) {
 		} else {
 			fmt.Printf("c is %x , so loop L2 still run.\n", c)
 		}
-		algoL3(r)
+		algoL3(r, c)
 	}
 
 }
 
-func algoL3(r int) {
+func algoL3(r int, c uint64) {
 	fmt.Printf("Entering L3 with r = %x\n", r)
 	for j, k := 0, r-1; j <= k; j, k = j+1, k-1 {
-		algoL4(j, k)
+		algoL4(j, k, r, c)
 	}
 	fmt.Printf("Exit L3 with r = %x\n", r)
 }
 
-func algoL4(j int, k int) {
+func algoL4(j int, k int, r int, c uint64) {
 	fmt.Printf("Entering L4 with j = %x  k = %x\n", j, k)
+	if j == k { //To restrict h to functions that follow g in list k
+
+	} else {
+		for g := range list[j] {
+			for h := range list[k] {
+				fmt.Printf("list[%d] g: %d  list[%d] h: %d \n", j, g, k, h)
+				algoL5(g, h, r, c)
+			}
+		}
+	}
 
 	fmt.Printf("Exit L4 with j = %x  k = %x\n", j, k)
+}
+
+func algoL5(g uint64, h uint64, r int, c uint64) {
+
+	var f uint64
+
+	f = g & h
+	algoL6(f, r, c)
+
+	f = (math.MaxUint64 - g) & h
+	algoL6(f, r, c)
+
+	f = g & (math.MaxUint64 - h)
+	algoL6(f, r, c)
+
+	f = g | h
+	algoL6(f, r, c)
+
+	f = g ^ h
+	algoL6(f, r, c)
+}
+
+func algoL6(f uint64, r int, c uint64) {
+	if L[f] == math.MaxUint64 {
+		L[f] = uint64(r)
+		c = c - 1
+		temp := list[r]
+		temp[f] = true
+	}
+
+	if c == 0 {
+		os.Exit(0)
+	}
 }
 
 //Ppow2 return base 2 power of n
