@@ -12,7 +12,7 @@ var L []uint64
 type set64 map[uint64]bool
 
 // List is
-var list = make([]set64, 10)
+var list = make([]set64, 100000)
 
 /*AlgoL is the implementation of 7.1.2 Algorithm L (Find normal lengths).
 This algorithm determines L(f) for all normal truth tables 0 ≤ f < 2^(2^n-1),
@@ -97,7 +97,14 @@ func algoL3(r int, c uint64) {
 func algoL4(j int, k int, r int, c uint64) {
 	fmt.Printf("Entering L4 with j = %x  k = %x\n", j, k)
 	if j == k { //To restrict h to functions that follow g in list k
-
+		for g := range list[j] {
+			for h := range list[k] {
+				if h > g {
+					fmt.Printf("list[%d] g: %d  list[%d] h: %d \n", j, g, k, h)
+					algoL5(g, h, r, c)
+				}
+			}
+		}
 	} else {
 		for g := range list[j] {
 			for h := range list[k] {
@@ -153,4 +160,17 @@ func Ppow2(n uint64) (expr uint64) {
 func Ppow(base uint64, n uint64) (expr uint64) {
 	expr = uint64(math.Pow(float64(base), (math.Pow(float64(base), float64(n)))))
 	return
+}
+
+//PrintBinary is to print uint64 from 1 to n in binary form.
+func PrintBinary(n uint64) {
+	var idx uint64
+	idx = 0
+	for {
+		if idx > n {
+			break
+		}
+		fmt.Printf("%04x: %016b\n", idx, idx)
+		idx++
+	}
 }

@@ -1,6 +1,9 @@
 package taocp
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestAlgoL(t *testing.T) {
 	//fmt.Print("Nihonggo")
@@ -16,4 +19,11 @@ func TestAlgoL(t *testing.T) {
 	n = 4
 	AlgoL(n)
 
+}
+
+func TestPrintBinary(t *testing.T) {
+	var k uint64
+	k = Ppow(2, 4)
+	fmt.Println(k)
+	PrintBinary(k - 1)
 }
